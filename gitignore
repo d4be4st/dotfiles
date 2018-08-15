@@ -1,0 +1,9 @@
+tags
+.DS_Store
+node_modules
+.rake_tasks
+coverage
+.flooignore
+.floo
+.vscode
+tags

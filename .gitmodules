@@ -1,0 +1,12 @@
+[submodule "dotbot"]
+	path = dotbot
+	url = https://github.com/anishathalye/dotbot
+[submodule "tmux/themes/tmux-onedark-theme"]
+	path = tmux/themes/tmux-onedark-theme
+	url = https://github.com/odedlaz/tmux-onedark-theme.git
+[submodule "rbenv/plugins/rbenv-ctags"]
+	path = rbenv/plugins/rbenv-ctags
+	url = https://github.com/tpope/rbenv-ctags
+[submodule "rbenv/plugins/rbenv-default-gems"]
+	path = rbenv/plugins/rbenv-default-gems
+	url = https://github.com/rbenv/rbenv-default-gems

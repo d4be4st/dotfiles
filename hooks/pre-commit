@@ -1,0 +1,2 @@
+exec openssl enc -aes-256-cbc -e -in zshenv -out zshenv.enc -pass file:.pass
+exec git add zshenv.enc
