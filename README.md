@@ -1,7 +1,7 @@
-Encryption: openssl enc -aes-256-cbc -e -in [input path/file] -out [output path/file]
+# Dotfiles
 
-Decryption:  openssl enc -aes-256-cbc -d -in [input path/file] -out [output path/file]
+## How to use
 
-openssl enc -aes-256-cbc -e -in ssh/id_rsa -out ssh/id_rsa.enc
-openssl enc -aes-256-cbc -e -in ssh/id_rsa.pub -out ssh/id_rsa.pub.enc
-openssl enc -aes-256-cbc -e -in zshenv -out zshenv -pass file:.pass
+    git clone git@github.com:d4be4st/dotfiles.git ~/.dotfiles
+    cd ~/.dotfiles
+    ./install
