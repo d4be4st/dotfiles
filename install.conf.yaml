@@ -12,7 +12,6 @@
   # - openssl enc -aes-256-cbc -d -in ssh/id_rsa.pub.enc -out ssh/id_rsa.pub -pass file:.pass
 
 - link:
-    # ~/.dotfiles: ''
     ~/.dotfiles/.git/hooks: hooks
     ~/.aprc: aprc
     ~/.config/nvim/init.vim: config/nvim/init.vim
