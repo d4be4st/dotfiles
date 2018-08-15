@@ -3,7 +3,7 @@
 	url = https://github.com/anishathalye/dotbot
 [submodule "tmux/themes/tmux-onedark-theme"]
 	path = tmux/themes/tmux-onedark-theme
-	url = https://github.com/odedlaz/tmux-onedark-theme.git
+	url = https://github.com/odedlaz/tmux-onedark-theme
 [submodule "rbenv/plugins/rbenv-ctags"]
 	path = rbenv/plugins/rbenv-ctags
 	url = https://github.com/tpope/rbenv-ctags
