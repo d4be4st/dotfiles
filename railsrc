@@ -1,3 +1,4 @@
 -B
 -T
 -d postgresql
+-m https://raw.githubusercontent.com/infinum/default_rails_template/master/template.rb
