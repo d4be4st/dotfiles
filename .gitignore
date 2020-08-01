@@ -1,5 +1,6 @@
 ssh/id_rsa
 ssh/id_rsa.pub
 zshenv
+ssh/config
 .pass
-tmux/ressurect/tmux*
+tmux/ressurect/tmux_*
