@@ -3,6 +3,7 @@ scriptencoding utf-8
 " map leader key to comma
 let mapleader = "\<space>"
 
+
 " define a group `vimrc` and initialize.
 " http://rbtnn.hateblo.jp/entry/2014/12/28/010913
 augroup vimrc
@@ -17,6 +18,13 @@ call plug#begin()
 
 " Windows
 " Plug 'zefei/vim-wintabs'
+
+"" Theme
+Plug 'joshdick/onedark.vim'
+" {{{
+  let g:onedark_termcolors = 16
+" }}}
+Plug 'rakr/vim-one'
 
 "" Alignment
 Plug 'junegunn/vim-easy-align'
@@ -35,7 +43,7 @@ Plug 'jiangmiao/auto-pairs'
 " }}}
 
 "" Filetree
-let g:loaded_python3_provider = 1
+" let g:loaded_python3_provider = 1
 " Plug 'ipod825/vim-netranger'
 " Plug 'Shougo/vimfiler.vim'
 " " {{{
@@ -45,12 +53,25 @@ let g:loaded_python3_provider = 1
 "   nnoremap <silent> <leader>vg :VimFilerExplorer -no-quit -find<CR>
 "   " nnoremap <buffer> <C-l> <Plug>(vimfiler_switch_to_other_window)
 " }}}
+Plug 'zgpio/tree.nvim'
+" {{{
+  nnoremap <silent> <leader>vf :<C-u>Tree -columns=mark:git:indent:icon:filename:size
+      \ -split=vertical
+      \ -direction=topleft
+      \ -winwidth=40
+      \ -listed
+      \ `expand('%:p:h')`<CR>
+
+  " call tree#custom#option('_', {
+  "       \ 'root_marker': '',
+  "       \ })
+" }}}
 
 " {{{
-  let g:netrw_banner            = 0
-  let g:netrw_browse_split      = 1 " Vertical split
-  let g:netrw_liststyle         = 3
-  nnoremap <silent> <leader>vf :Lex<CR>
+  " let g:netrw_banner            = 0
+  " let g:netrw_browse_split      = 1 " Vertical split
+  " let g:netrw_liststyle         = 3
+  " nnoremap <silent> <leader>vf :Lex<CR>
 " }}}
 
 "" Fuzzy search
@@ -67,12 +88,13 @@ Plug 'junegunn/fzf.vim'
   nnoremap <silent> <leader>fm :Maps<CR>
   nnoremap <silent> <leader>fs :Snippets<CR>
   nnoremap <silent> <leader>fy :Filetypes<CR>
+  autocmd vimrc Filetype fzf nnoremap <buffer> <Esc><Esc> :q<cr>
 " }}}
 
 "" Html tags
 Plug 'alvan/vim-closetag'
 " {{{
-  let g:closetag_filenames = '*.html,*.vue,*.md'
+  let g:closetag_filenames = '*.html,*.vue,*.md,*.rb'
 " }}}
 
 "" Lightline
@@ -146,9 +168,10 @@ Plug 'itchyny/lightline.vim'
   endfunction
 
   let g:lightline = {
+        \ 'colorscheme': $ITERM_PROFILE == 'Light' ?  'one' : 'onedark',
         \ 'active': {
         \   'left': [ [ 'mode', 'paste' ],
-        \             [ 'gitgutter', 'filename' ] ],
+        \             [ 'cocstatus', 'gitgutter', 'filename' ] ],
         \   'right': [ [ 'percent', 'lineinfo' ],
         \              [ 'neomake_errors', 'neomake_warnings' ],
         \              [ 'filetype' ] ]
@@ -160,24 +183,45 @@ Plug 'itchyny/lightline.vim'
         \   'modified': 'LightLineModified',
         \   'neomake_errors': 'LightLineNeomakeErrors',
         \   'neomake_warnings': 'LightLineNeomakeWarnings',
-        \   'filename': 'LightLineFilename'
+        \   'filename': 'LightLineFilename',
+        \   'cocstatus': 'coc#status'
         \ },
         \ 'separator': { 'left': '▓▒░', 'right': '░▒▓' },
         \ 'subseparator': { 'left': '>', 'right': '' }
         \ }
   set noshowmode
+  autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 " }}}
 
-"" Theme
-Plug 'joshdick/onedark.vim'
-" {{{
-  let g:onedark_termcolors = 16
-" }}}
-Plug 'rakr/vim-one'
+" Plug 'TaDaa/vimade'
 
 " Wakatime
 Plug 'wakatime/vim-wakatime'
 
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"""
+  " set cmdheight=2
+  " set updatetime=300
+  " set shortmess+=c
+  " set signcolumn=yes
+
+  " " Remap keys for gotos
+  " " nmap <silent> gd <Plug>(coc-definition)
+  " " nmap <silent> gy <Plug>(coc-type-definition)
+  " " nmap <silent> gi <Plug>(coc-implementation)
+  " " nmap <silent> gr <Plug>(coc-references)
+
+  " " Trigger completion
+  " inoremap <silent><expr> <c-n> coc#refresh()
+  " " Use <C-l> for trigger snippet expand.
+  " imap <C-l> <Plug>(coc-snippets-expand)
+
+  " " Use <C-j> for select text for visual placeholder of snippet.
+  " vmap <C-j> <Plug>(coc-snippets-select)
+
+  " " Commment higliht
+  " autocmd FileType json syntax match Comment +\/\/.\+$+
+"""
 " Snippets
 Plug 'Shougo/neosnippet.vim'
 " {{{
@@ -224,7 +268,9 @@ Plug 'prabirshrestha/asyncomplete-tags.vim'
 
 " Commenting
 Plug 'ddollar/nerdcommenter'
-
+" {{{
+  let g:NERDCustomDelimiters = { 'eruby.yaml': { 'left': '#' } }
+" }}}
 
 " Search across project
 Plug 'dyng/ctrlsf.vim'
@@ -246,20 +292,34 @@ Plug 'machakann/vim-highlightedyank'
 Plug 'benekastah/neomake'
 " {{{
   autocmd! vimrc BufWritePost * Neomake
-  let g:neomake_ruby_enabled_makers = ['mri', 'rubocop', 'ctags']
+  let g:neomake_ruby_enabled_makers = ['mri', 'rubocop', 'ctags', 'reek']
   let g:neomake_ruby_rubocop_maker = {
-      \ 'args': ['-D', '-R', '--force-exclusion']
+      \ 'args': ['-D', '--force-exclusion']
       \ }
   let g:neomake_ruby_ctags_maker = {
       \ 'args': ['--languages=Ruby', '-R'],
       \ 'append_file': 0
       \ }
+  let g:neomake_javascript_eslint_exe = $PWD .'/node_modules/.bin/eslint'
   let g:neomake_javascript_enabled_makers = ['eslint']
+  let g:neomake_vue_eslint_exe = $PWD .'/node_modules/.bin/eslint'
+  let g:neomake_vue_enabled_makers = ['eslint']
+  let g:neomake_vue_eslint_maker = {
+        \ 'args': ['--plugin=vue', '--format=compact'],
+        \ 'errorformat': '%E%f: line %l\, col %c\, Error - %m,' .
+        \   '%W%f: line %l\, col %c\, Warning - %m,%-G,%-G%*\d problems%#',
+        \ 'cwd': '%:p:h',
+        \ 'output_stream': 'stdout',
+        \ }
   let g:neomake_elixir_enabled_makers = ['credo']
-  let g:neomake_elixir_format_maker = {
-      \ 'exe': 'mix',
-      \ 'args': ['format']
-      \ }
+  " let g:neomake_elixir_format_maker = {
+  "     \ 'exe': 'mix',
+  "     \ 'args': ['format']
+  "     \ }
+" }}}
+Plug 'mhinz/vim-mix-format'
+" {{{
+  let g:mix_format_on_save = 1
 " }}}
 
 Plug 'AndrewRadev/splitjoin.vim'
@@ -272,12 +332,19 @@ Plug 'AndrewRadev/splitjoin.vim'
 Plug 'sheerun/vim-polyglot'
 " {{{
   let g:vim_markdown_conceal = 0
+  let g:vim_markdown_fenced_languages = ['ruby', 'html', 'bash=sh']
 " }}}
+
+" Plug 'tpope/vim-markdown'
+" let g:markdown_fenced_languages = ['ruby', 'html', 'bash=sh']
+
+
 
 " Tests - running inside vim
 Plug 'janko-m/vim-test'
 " {{{
   let test#strategy = 'neovim'
+  " let test#neovim#term_position = "vertical"
   let test#ruby#rspec#options = {
   \ 'file':    '--format documentation',
   \ 'nearest':    '--format documentation'
@@ -291,22 +358,47 @@ Plug 'janko-m/vim-test'
 " Whitespace remover
 Plug 'ntpeters/vim-better-whitespace'
 " {{{
-  autocmd vimrc BufEnter * EnableStripWhitespaceOnSave
+  " autocmd vimrc BufEnter * EnableStripWhitespaceOnSave
+  let g:better_whitespace_enabled=1
+  let g:strip_whitespace_on_save=1
+  let g:strip_whitespace_confirm=0
 " }}}
+
+" file tree
+Plug 'mcchrish/nnn.vim'
+" {{{
+  let g:nnn#set_default_mappings = 0
+  let g:nnn#layout = { 'left': '~20%' } "
+  let g:nnn#action = {
+      \ '<c-t>': 'tab split',
+      \ '<c-x>': 'split',
+      \ '<c-v>': 'vsplit' }
+  let g:nnn#command = 'nnn -l'
+  nnoremap <silent> <leader>vv :NnnPicker<CR>
+  nnoremap <silent> <leader>vf :NnnPicker '%:p:h'<CR>
+" }}}
+" Plug 'RRethy/vim-hexokinase'
+" " {{{
+"   let g:Hexokinase_refreshEvents = ['BufWritePost']
+"   let g:Hexokinase_ftAutoload = ['css', 'scss', 'sass']
+" " }}}
 
 Plug 'airblade/vim-gitgutter'         " Show git diff in gutter
 Plug 'tpope/vim-fugitive'             " Awesome git plugin
 Plug 'tpope/vim-endwise'              " autocomplete end
 Plug 'tpope/vim-repeat'               " Enables dot command repeating for vim-surround, vim-unimpaired, etc
 Plug 'tpope/vim-eunuch'               " file commands
-Plug 'ap/vim-css-color'               " adds color to hex colors in CSS
+" Plug 'AGhost-7/critiq.vim'            " Github pull requests
+" Plug 'ap/vim-css-color'               " adds color to hex colors in CSS
 Plug 'mkitt/tabline.vim'              " tab improvements
 Plug 'chrisbra/csv.vim'               " CSV tables
 Plug 'tpope/vim-surround'             " Awesome surround plugin
 Plug 'fcpg/vim-spotlightify'          " Advanced search via /
 Plug 'Yggdroot/indentLine'            " Display the indention levels
 Plug 'whiteinge/diffconflicts'        " Better git mergetool
-
+Plug 'wellle/targets.vim'             " Better object targets
+Plug 'ryvnf/readline.vim'             " Readline style mappings for command-line mode in Vim
+Plug 'psliwka/vim-smoothie'
 
 " Languages
 " Ruby
@@ -325,12 +417,12 @@ Plug 'pangloss/vim-javascript'
 
 
 " Markdown with rust
-function! BuildComposer(info)
-  if a:info.status !=? 'unchanged' || a:info.force
-    !cargo build --release
-  endif
-endfunction
-Plug 'euclio/vim-markdown-composer', { 'do': function('BuildComposer') }
+" function! BuildComposer(info)
+"   if a:info.status !=? 'unchanged' || a:info.force
+"     !cargo build --release
+"   endif
+" endfunction
+" Plug 'euclio/vim-markdown-composer', { 'do': function('BuildComposer') }
 
 call plug#end()
 
@@ -344,16 +436,11 @@ set termguicolors
 if $ITERM_PROFILE == 'Light'
   set background=light
   colorscheme one
-  let g:lightline = {
-        \ 'colorscheme': 'one',
-        \ }
 else
   set background=dark
   colorscheme onedark
-  let g:lightline = {
-        \ 'colorscheme': 'onedark',
-        \ }
 endif
+
 
 " Settings
 set noswapfile
@@ -361,9 +448,7 @@ set noswapfile
 
 set inccommand=split
 set regexpengine=1
-
-" Disable comment on new line when hitting o/O
-set formatoptions-=o
+set gdefault
 
 " Set tab to 2 spaces, disable wrapping, tweaks
 set shiftwidth=2
@@ -419,7 +504,7 @@ set undofile
 set undodir=~/.config/nvim/undodir
 
 " Automatic file refresh
-autocmd vimrc FocusGained * :checktime
+autocmd vimrc BufEnter,FocusGained * :checktime
 
 " Remove highlights
 nnoremap <silent> <Esc><Esc> :nohlsearch<CR><Esc>
@@ -474,7 +559,7 @@ nnoremap <Leader>tj :rightbelow new<CR>:terminal<CR>
 nnoremap <leader>tt :tabe<CR>:terminal<CR>
 
 " Easier window switching
-nmap <silent> <C-w><C-w> :call utils#intelligentCycling()<CR>
+" nmap <silent> <C-w><C-w> :call utils#intelligentCycling()<CR>
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -515,6 +600,12 @@ vnoremap // y/<C-R>"<CR>
 " Delete and change to black hole
 nnoremap <leader>d "_dd
 vnoremap <leader>d "_d
+
+" Always paste the last yank
+" nnoremap p "0p
+" vnoremap p "0p
+" xnoremap p "0p
+
 " nnoremap d "_d
 " nnoremap D "_D
 " vnoremap d "_d
@@ -584,6 +675,10 @@ nnoremap <Leader>nl :rightbelow vnew<CR>
 nnoremap <Leader>nk :leftabove  new<CR>
 nnoremap <Leader>nj :rightbelow new<CR>
 nnoremap <Leader>nt :tabe<CR>
+
+" Emacs in command line
+cnoremap <c-a> <home>
+cnoremap <c-e> <end>
 
 " Color debug
 map <Leader>b :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'

@@ -6,4 +6,8 @@ coverage
 .flooignore
 .floo
 .vscode
+.asdfrc
+.git
 tags
+
+stef_*.md

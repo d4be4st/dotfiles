@@ -1,5 +1,6 @@
 Host *
   UseKeychain yes
+  ServerAliveInterval 60
 
 Host server
   User stef
@@ -19,119 +20,67 @@ Host pi2
   Hostname 192.168.1.11
   Port 22
 
-Host hadjic
-  User deploy
-  Hostname 46.101.186.187
-  Port 22
-
-Host hadjic_root
-  User stef
-  Hostname 46.101.186.187
-  Port 22
-
-Host vz2m
-  User www-data
-  Hostname 5.9.64.118
-  Port 22
-
-Host orlovac
-  User legacy
-  Hostname 148.251.10.219
-  port 22219
-
-Host orlovac_root
-  User root
-  Hostname 148.251.10.219
-  port 22219
-
-Host rakovac
-  User staging
-  Hostname 148.251.10.220
-  port 22220
-
-Host rakovac_root
-  User root
-  Hostname 148.251.10.220
-  port 22220
-
 Host borlin
-  User productive
-  Hostname 148.251.10.221
-  port 22221
-
-Host borlin_root
-  User root
-  Hostname 148.251.10.221
-  port 22221
-
-Host cmt
-  User cmt
-  Hostname 172.31.26.31
-
-Host rqn
-  User cmt
-  Hostname 10.159.1.240
-
-Host svarca_root
   User stef
-  Hostname svarca.infinum.hr
+  Hostname borlin.infinum.co
+  port 229
+
+Host rovinj
+  User stef
+  Hostname rovinj.infinum.co
+  port 229
 
 Host svarca
-  User deploy
+  User stef
   Hostname svarca.infinum.hr
 
 Host jamadol
-  User deploy
-  Hostname jamadol.infinum.co
-
-Host jamadol_root
   User stef
   Hostname jamadol.infinum.co
-
-Host dds
-  User dds
-  Hostname 192.168.1.248
-  ForwardAgent yes
-
-Host youfinder
-  User youfinder
-  Hostname 192.168.1.18
-  ForwardAgent yes
-
-Host infinum
-  User infinum
-  Hostname 213.147.102.42
-  Port 44222
-
-Host infinum_local
-  User infinum
-  Hostname 192.168.1.200
-  Port 44222
 
 Host truck
-  User deploy
-  Hostname truck.infinum.co
-
-Host truck_root
   User stef
-  Hostname truck.infinum.co
+  Hostname 3.127.58.31
+  Port 229
 
-Host tvornica_root
+Host truck-staging
   User stef
-  Hostname 52.28.178.221
+  Hostname truck-staging.byinfinum.co
+  Port 229
+
+Host truck_us
+  User stef
+  Hostname truck-us-staging.byinfinum.co
+
+Host truck-grafana
+  User ubuntu
+  Hostname grafana.dev-tpe.com
 
 Host tvornica
-  User deploy
-  Hostname 52.28.178.221
+  User stef
+  Hostname tvornica-snova.hr
 
-Host vina
-  Hostname bastion.us-east-1.staging.heyvina.net
+Host atlas-stag
+  User stef
+  Hostname 18.195.56.170
+  Port 229
+
+Host atlas-prod
+  User stef
+  Hostname 18.196.11.246
+  Port 229
+
+Host atlas-grafana
   User ubuntu
-  IdentityFile ~/.ssh/vina-devops-us-west-1.pem
-  ForwardAgent yes
-  IdentitiesOnly yes
+  Hostname grafana.pmiapps.com
+  Port 22
 
-Host hpb-production
-  Hostname hpbcms.cloudapp.net
-  User deploy
+Host ida
+  User stef
+  Hostname ida.infinum.co
+  Port 229
 
+Host grafana
+  User stef
+  Hostname monitor.infinum.co
+  Port 229
