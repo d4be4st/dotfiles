@@ -8,6 +8,7 @@
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
   - ["openssl enc -aes-256-cbc -d -in zshenv.enc -out zshenv -pass file:.pass", Decrypt zshenv]
+  - ["openssl enc -aes-256-cbc -d -in ssh_config.enc -out ssh/config -pass file:.pass", Decrypt ssh config]
 
 - link:
     ~/.dotfiles/.git/hooks: hooks

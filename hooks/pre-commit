@@ -1,2 +1,4 @@
 openssl enc -aes-256-cbc -e -in zshenv -out zshenv.enc -pass file:.pass
 git add zshenv.enc
+openssl enc -aes-256-cbc -e -in ssh/config -out ssh_config.enc -pass file:.pass
+git add ssh_config.enc
