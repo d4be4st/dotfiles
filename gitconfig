@@ -25,3 +25,10 @@
 	keepBackup = false
 [merge]
 	tool = diffconflicts
+[pull]
+	rebase = true
+[rebase]
+	autoStash = true
+	autosquash = true
+[rerere]
+	enabled = true

@@ -1,7 +1,6 @@
 bundler
 mina-infinum
 secrets_cli
-git-up
 rubocop
 scss_lint
 overcommit
