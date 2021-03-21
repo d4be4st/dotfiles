@@ -3,4 +3,6 @@ ssh/id_rsa.pub
 zshenv
 ssh/config
 .pass
-tmux/ressurect/tmux_*
+tmux/resurrect/*
+tmux/plugins/*
+tmux/themes/*
