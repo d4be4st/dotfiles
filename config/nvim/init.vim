@@ -11,7 +11,7 @@ augroup END
 
 call plug#begin()
 
-"" Theme
+" Theme
 Plug 'joshdick/onedark.vim'
 " {{{
   let g:onedark_termcolors = 16
@@ -103,6 +103,7 @@ Plug 'dense-analysis/ale'
 " " }}}
 " Plug 'honza/vim-snippets'
 
+Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-compe'
 " {{{
   inoremap <silent><expr> <C-k> compe#confirm({ 'keys': '<CR>', 'mode': 'n', 'select': v:true })
@@ -147,9 +148,11 @@ Plug 'itchyny/lightline.vim'
   function! Tab_num(n) abort
     return a:n." \ue0bb"
   endfunction
-  function! GitStatus()
-    return sy#repo#get_stats_decorated()
-  endfunction
+  " function! GitStatus()
+  "   return sy#repo#get_stats_decorated()
+  "   " return {get(b:,'gitsigns_status','')}
+  " endfunction
+
 
   let g:lightline = {}
   let g:lightline.colorscheme = 'onedark'
@@ -180,8 +183,7 @@ Plug 'itchyny/lightline.vim'
         \ }
   let g:lightline.tabline = {
         \ 'left': [ [ 'vim_logo', 'tabs' ] ],
-        \ 'right': [ [ 'gitbranch' ],
-        \ [ 'gitstatus' ] ]
+        \ 'right': [ [ 'gitbranch' ] ]
         \ }
   let g:lightline.tab = {
         \ 'active': [ 'tabnum', 'filename', 'modified' ],
@@ -222,7 +224,6 @@ Plug 'itchyny/lightline.vim'
         \ }
   let g:lightline.component_function = {
         \ 'gitbranch': 'FugitiveHead',
-        \ 'gitstatus' : 'GitStatus',
         \ 'devicons_filetype': 'Devicons_Filetype',
         \ 'devicons_fileformat': 'Devicons_Fileformat'
         \ }
@@ -260,6 +261,8 @@ Plug 'AndrewRadev/splitjoin.vim'
 " }}}
 
 " Git in gutter
+" Plug 'nvim-lua/plenary.nvim'
+" Plug 'lewis6991/gitsigns.nvim', { 'branch': 'main' }
 Plug 'mhinz/vim-signify'
 " {{{
   set signcolumn=yes
@@ -272,10 +275,6 @@ Plug 'tpope/vim-eunuch'               " file commands
 Plug 'chrisbra/csv.vim'               " CSV tables
 Plug 'tpope/vim-surround'             " Awesome surround plugin
 Plug 'fcpg/vim-spotlightify'          " Advanced search via /
-" Plug 'Yggdroot/indentLine'            " Display the indention levels
-" " {{{
-"   let g:indentLine_concealcursor = "nv"
-" " }}}
 Plug 'whiteinge/diffconflicts'        " Better git mergetool
 Plug 'wellle/targets.vim'             " Better object targets
 Plug 'ryvnf/readline.vim'             " Readline style mappings for command-line mode in Vim
@@ -309,8 +308,12 @@ Plug 'pangloss/vim-javascript'
 Plug 'slim-template/vim-slim'
 Plug 'amadeus/vim-mjml'
 Plug 'elixir-editors/vim-elixir'
+Plug 'tbastos/vim-lua'
 
 call plug#end()
+
+lua require('lsp')
+" lua require('gitsigns').setup()
 
 " Theme
 set termguicolors

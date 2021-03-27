@@ -5,4 +5,3 @@ ssh/config
 .pass
 tmux/resurrect/*
 tmux/plugins/*
-tmux/themes/*
