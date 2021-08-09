@@ -42,6 +42,8 @@ bindkey '^N' history-substring-search-down
 # allow ctrl-a and ctrl-e to move to beginning/end of line
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
+bindkey "^[[1;3C" forward-word
+bindkey "^[[1;3D" backward-word
 
 bindkey -M vicmd 'L' vi-end-of-line
 bindkey -M vicmd 'H' vi-beginning-of-line
@@ -58,7 +60,7 @@ alias ms='mina ssh'
 alias vi="nvim"
 alias vim="nvim"
 alias minad="/Users/stef/dev/gems/mina/bin/mina"
-alias gm="git merge --no-edit"
+alias gm="git merge --no-edit --no-ff"
 alias gcpc="git cherry-pick --continue"
 alias gcpa="git cherry-pick --abort"
 alias gcps="git cherry-pick --skip"

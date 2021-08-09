@@ -1,0 +1,15 @@
+{
+  "pry": {
+    "prefix": ["pry"],
+    "body": [ "binding.pry" ],
+    "description": "binding.pry"
+  },
+  "Module definition": {
+    "prefix": "module",
+    "body": [
+      "module ${1:ModuleName}",
+      "\t$0",
+      "end"
+    ]
+  }
+}

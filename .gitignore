@@ -5,3 +5,9 @@ ssh/config
 .pass
 tmux/resurrect/*
 tmux/plugins/*
+
+config/nvim/plugged
+config/nvim/undodir
+config/nvim/vscode-css/css-language-features
+config/nvim/.netrwhist
+config/nvim/plugin/packer_compiled.lua

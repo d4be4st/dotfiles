@@ -17,7 +17,7 @@
 - link:
     ~/.dotfiles/.git/hooks: hooks
     ~/.aprc: aprc
-    ~/.config/nvim/init.vim: config/nvim/init.vim
+    ~/.config/nvim: config/nvim
     ~/.gemrc: gemrc
     ~/.gitconfig: gitconfig
     ~/.gitignore: gitignore

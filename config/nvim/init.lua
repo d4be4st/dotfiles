@@ -1,0 +1,13 @@
+require "general.settings"
+require "general.theme"
+require "general.mappings"
+
+require	"plugins"
+require "plugins.lsp"
+require "plugins.completion"
+require "plugins.telescope"
+require "plugins.treesitter"
+require "plugins.galaxyline"
+require "plugins.ctrlsf"
+require "plugins.snippets"
+require "plugins.other"

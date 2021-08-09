@@ -1,0 +1,16 @@
+{
+  "pry": {
+    "prefix": "pry",
+    "body": [
+      "binding.pry"
+    ],
+    "description": "bindng.pry"
+  },
+  "rpry": {
+    "prefix": "require + pry",
+    "body": [
+      "require 'pry'; binding.pry"
+    ],
+    "description": "require 'pry'; bindng.pry"
+  }
+}

@@ -7,5 +7,7 @@ coverage
 .vscode
 .asdfrc
 .git
+.solargraph.yml
+.tool-versions
 
 stef_*.md
