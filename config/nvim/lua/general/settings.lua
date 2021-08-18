@@ -4,6 +4,7 @@ vim.o.hidden = false -- close hidden buffers
 vim.o.scrolloff = 8 -- minimal number of screen lines above and below cursor
 vim.o.showmode = false -- remove --INSERT--
 vim.o.showtabline = 2 -- always show tabline
+vim.o.tabline = '%!v:lua.require\'luatab\'.tabline()'
 vim.o.splitbelow = true -- open new splits below
 vim.o.splitright = true -- open new splits on the right
 vim.o.switchbuf = "usetab,newtab" -- open buffer in new tab

@@ -7,8 +7,7 @@ require("lspkind").init(
 require('gitsigns').setup()
 require('colorizer').setup()
 require('neoscroll').setup()
-require("surround").setup({})
-require('specs').setup({})
+require("octo").setup()
 
 require('kommentary.config').configure_language("default", {
     prefer_single_line_comments = true,

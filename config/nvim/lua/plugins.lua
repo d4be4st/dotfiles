@@ -12,6 +12,7 @@ return require("packer").startup(
     use 'norcalli/nvim-colorizer.lua'
     use "tjdevries/colorbuddy.vim"
     use "Th3Whit3Wolf/onebuddy"
+    use 'EdenEast/nightfox.nvim'
     use "neovim/nvim-lspconfig"
     use "onsails/lspkind-nvim"
     use "nvim-lua/lsp-status.nvim"
@@ -24,14 +25,13 @@ return require("packer").startup(
     use "lewis6991/gitsigns.nvim"
     use {'glepnir/galaxyline.nvim', branch = "main"}
     use 'karb94/neoscroll.nvim'
-    use 'blackCauldron7/surround.nvim'
+    -- use 'blackCauldron7/surround.nvim'
     use 'b3nj5m1n/kommentary'
 
     -- new stuff
-    use "tversteeg/registers.nvim"
-    use 'edluffy/specs.nvim'
     use 'yamatsum/nvim-cursorline'
-    use 'windwp/nvim-spectre'
+    use 'pwntester/octo.nvim'
+    use 'alvarosevilla95/luatab.nvim'
 
     -- vim
     use 'wakatime/vim-wakatime'
@@ -41,16 +41,19 @@ return require("packer").startup(
     use 'whiteinge/diffconflicts'
     use 'machakann/vim-highlightedyank'
     use 'rhysd/clever-f.vim'
-    use 'elixir-editors/vim-elixir'
-
     use 'tpope/vim-eunuch'
+    use 'tpope/vim-surround'
+
+    -- languages
+    -- use 'elixir-editors/vim-elixir'
+    use 'slim-template/vim-slim'
+
     -- use 'alvan/vim-closetag'
     -- use 'svermeulen/vim-yoink'
     -- use 'wellle/targets.vim'
     -- use 'vim-ruby/vim-ruby'
     -- use 'tpope/vim-rails'
     -- use 'pangloss/vim-javascript'
-    use 'slim-template/vim-slim'
     -- use 'amadeus/vim-mjml'
     -- use 'tbastos/vim-lua'
   end

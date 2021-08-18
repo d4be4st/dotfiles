@@ -67,6 +67,15 @@ vimp.nnoremap('vA', 'ggVG')
 
 -- Switch between tabs
 -- set Ctrl-n to S-Fn in iterm prefs
+-- vimp.nmap('<S-F1>', '1gt')
+-- vimp.nmap('<S-F2>', '2gt')
+-- vimp.nmap('<S-F3>', '3gt')
+-- vimp.nmap('<S-F4>', '4gt')
+-- vimp.nmap('<S-F5>', '5gt')
+-- vimp.nmap('<S-F6>', '6gt')
+-- vimp.nmap('<S-F7>', '7gt')
+-- vimp.nmap('<S-F8>', '8gt')
+-- vimp.nmap('<S-F9>', '9gt')
 vimp.nmap('<F13>', '1gt')
 vimp.nmap('<F14>', '2gt')
 vimp.nmap('<F15>', '3gt')
