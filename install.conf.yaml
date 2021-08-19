@@ -3,7 +3,12 @@
       relink: true
       create: true
 
-- clean: ["~", "~/.config/nvim", "~/.ssh", "~/.rbenv"]
+- clean:
+  - "~"
+  - "~/.config/nvim"
+  - "~/.config/alacritty"
+  - "~/.ssh"
+  - "~/.rbenv"
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
