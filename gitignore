@@ -9,5 +9,6 @@ coverage
 .git
 .solargraph.yml
 .tool-versions
+Guardfile
 
 stef_*.md

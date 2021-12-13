@@ -1,5 +1,7 @@
 local vimp = require('vimp')
 
+vim.g.mapleader = " " -- user <space> as leader
+
 -- Allow misspellings
 vim.cmd('cnoreabbrev qw wq')
 vim.cmd('cnoreabbrev Wq wq')
@@ -33,7 +35,7 @@ vimp.xnoremap('>', '>gv')
 vimp.nnoremap('<C-h>', '<C-w>h')
 vimp.nnoremap('<C-j>', '<C-w>j')
 vimp.nnoremap('<C-k>', '<C-w>k')
-vimp.nnoremap('<C-l>', '<C-w>l')
+vimp.nnoremap({'override'}, '<C-l>', '<C-w>l')
 
 -- Remap H and L (top, bottom of screen to left and right end of line)
 vimp.nnoremap('H', '^')
@@ -42,7 +44,7 @@ vimp.vnoremap('H', '^')
 vimp.vnoremap('L', 'g_')
 
 -- More logical Y (default was alias for yy)
-vimp.nnoremap('Y', 'y$')
+vimp.nnoremap({'override'}, 'Y', 'y$')
 
 -- Yank and paste from clipboard
 vimp.vnoremap('<leader>y', '"+y')

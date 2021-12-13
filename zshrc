@@ -1,4 +1,5 @@
 export ZPLUG_HOME=/usr/local/opt/zplug
+export ZSH_CACHE_DIR=/usr/local/opt/zplug/cache
 source $ZPLUG_HOME/init.zsh
 
 zstyle ':prezto:*:*' color 'yes'

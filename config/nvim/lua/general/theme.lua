@@ -12,10 +12,19 @@
 
 -- Group.new('DiffChange',  c.hue_6, c.syntax_bg, colorbuddy.underline)
 
--- Example in lua
--- vim.g.nightfox_style = "palefox"
--- vim.g.nightfox_color_delimiter = "red"
-vim.g.nightfox_italic_comments = 1
-
 -- Load the colorscheme
-require('nightfox').set()
+local nightfox = require('nightfox')
+local colors = require("nightfox.colors").init()
+nightfox.setup({
+  styles = {
+    comments = "italic", -- change style of comments to be italic
+    keywords = "bold", -- change style of keywords to be bold
+    -- functions = "italic,bold" -- styles can be a comma separated list
+  },
+  hlgroups = {
+    TabLine = { fg = colors.white },
+    TabLineFill = { bg = colors.bg_statusline },
+    TabLineSel = { bg = colors.white, fg = colors.bg_statusline }
+  }
+})
+nightfox.load()

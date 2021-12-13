@@ -3,26 +3,24 @@ local vimp = require("vimp")
 local ts_builtin = require("telescope.builtin")
 
 local on_attach = function(client, bufnr)
-  -- local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
   buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
    -- Mappings.
-   vimp.nnoremap('<leader>lp', function() vim.lsp.diagnostic.goto_prev() end)
-   vimp.nnoremap('<leader>ln', function() vim.lsp.diagnostic.goto_next() end)
-   vimp.nnoremap('<leader>ll', function() vim.lsp.diagnostic.show_line_diagnostics() end)
+   vimp.nnoremap('<leader>lp', function() vim.diagnostic.goto_prev() end)
+   vimp.nnoremap('<leader>ln', function() vim.diagnostic.goto_next() end)
+   vimp.nnoremap('<leader>ll', function() vim.diagnostic.show_line_diagnostics() end)
    vimp.nnoremap('<leader>lr', function() vim.lsp.buf.rename() end)
    vimp.nnoremap('<leader>lh', function() vim.lsp.buf.hover() end)
    vimp.nnoremap('<leader>lD', function() vim.lsp.buf.declaration() end)
    vimp.nnoremap('<leader>ld', function() ts_builtin.lsp_definitions() end)
    vimp.nnoremap('<leader>li', function() vim.lsp.buf.implementation() end)
    vimp.nnoremap('<leader>ls', function() vim.lsp.buf.signature_help() end)
-   vimp.nnoremap('<leader>lt', function() vim.lsp.buf.type_definition() end)
    vimp.nnoremap('<leader>lR', function() ts_builtin.lsp_references() end)
    vimp.nnoremap('<leader>la', function() ts_builtin.lsp_code_actions() end)
    vimp.nnoremap('<leader>le', function() ts_builtin.lsp_document_diagnostics() end)
-
+   vimp.nnoremap('<leader>lt', function() require('trouble').open() end)
 
    if client.resolved_capabilities.document_formatting then
      vimp.nnoremap('<leader>lf', function() vim.lsp.buf.formatting() end)
@@ -54,7 +52,8 @@ local lua_settings = {
 
 -- config that activates keymaps and enables snippet support
 local function make_config()
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
   capabilities.textDocument.completion.completionItem.snippetSupport = true
   return {
     -- enable snippet support
@@ -66,7 +65,7 @@ end
 
 local function setup_servers()
   -- get all installed servers
- local servers = {"pyright", "tsserver", "cssls", "jsonls", "yamlls", "sumneko_lua", "solargraph", "elixirls"}
+ local servers = {"pyright", "tsserver", "cssls", "jsonls", "yamlls", "sumneko_lua", "elixirls", "solargraph"}
 
   for _, server in pairs(servers) do
     local config = make_config()
@@ -78,6 +77,7 @@ local function setup_servers()
     end
 
     if server == "solargraph" then
+      config.cmd = { "solargraph", "stdio" }
       config.flags = { debounce_text_changes = 150 }
     end
 
@@ -89,36 +89,18 @@ local function setup_servers()
   end
 end
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] =
-  function(_, _, params, client_id, _)
-    local config = { -- your config
-      underline = true,
-      virtual_text = {
-        spacing = 4,
-      },
-      signs = true,
-      update_in_insert = false,
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = {
+      format = function(diagnostic)
+        if diagnostic.user_data and diagnostic.user_data.lsp.code then
+           return string.format("[%s] %s", diagnostic.user_data.lsp.code, diagnostic.message)
+        else
+          return diagnostic.message
+        end
+      end
     }
-    local uri = params.uri
-    local bufnr = vim.uri_to_bufnr(uri)
-
-    if not bufnr then
-      return
-    end
-
-    local diagnostics = params.diagnostics
-
-    for i, v in ipairs(diagnostics) do
-      diagnostics[i].message = string.format("[%s] %s", v.code or v.source, v.message)
-    end
-
-    vim.lsp.diagnostic.save(diagnostics, bufnr, client_id)
-
-    if not vim.api.nvim_buf_is_loaded(bufnr) then
-      return
-    end
-
-    vim.lsp.diagnostic.display(diagnostics, bufnr, client_id, config)
-  end
+  }
+)
 
 setup_servers()

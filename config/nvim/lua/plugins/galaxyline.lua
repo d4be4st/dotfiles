@@ -4,7 +4,7 @@ local condition = require('galaxyline.condition')
 local gls = gl.section
 gl.short_line_list = {'packer'}
 
-local colors = require("nightfox.colors").setup()
+local colors = require("nightfox.colors").init()
 
 --[[ local rgb = function(color)
   return color.to_rgb(color, color.H, color.S, color.L)
@@ -26,10 +26,27 @@ local colors = {
   hue_6_2 = rgb(ccolors.hue_6_2), -- light organge
 } ]]
 
+local mode_color = {
+  n = colors.blue,
+  no = colors.blue,
+  i = colors.green,
+  v = colors.magenta,
+  [''] = colors.magenta,
+  V = colors.magenta,
+  c = colors.orange
+}
+
+local function set_vi_mode_color (name)
+  vim.api.nvim_command('hi Galaxy'..name..' guifg='..(mode_color[vim.fn.mode()] or colors.blue))
+end
+
 gls.left[1] = {
   RainbowRed = {
-    provider = function() return '▊ ' end,
-    highlight = {colors.blue,colors.black}
+    provider = function()
+      set_vi_mode_color('RainbowRed')
+      return '▊ '
+    end,
+    highlight = {colors.blue, colors.bg_statusline}
     --  highlight = {colors.hue_1,colors.visual_grey}
   },
 }
@@ -46,19 +63,10 @@ gls.left[2] = {
       --   V = colors.hue_3,
       --   c = colors.hue_1
       -- }
-      local mode_color = {
-        n = colors.blue,
-        no = colors.blue,
-        i = colors.green,
-        v = colors.magenta,
-        [''] = colors.magenta,
-        V = colors.magenta,
-        c = colors.orange
-      }
-      vim.api.nvim_command('hi GalaxyViMode guifg='..(mode_color[vim.fn.mode()] or colors.blue))
+      set_vi_mode_color('ViMode')
       return require('galaxyline.provider_fileinfo').get_file_icon()..' '
     end,
-    highlight = {colors.blue, colors.black, 'bold'},
+    highlight = {colors.blue, colors.bg_statusline, 'bold'},
     --  highlight = {colors.hue_4,colors.visual_grey, 'bold'},
   },
 }
@@ -69,8 +77,8 @@ gls.left[3] = {
     separator = ' ',
     --  separator_highlight = {'NONE',colors.visual_grey},
     --  highlight = {colors.mono_1, colors.visual_grey, 'bold'}
-    highlight = {colors.white, colors.black, 'bold'},
-    separator_highlight = {'NONE',colors.black}
+    highlight = {colors.white, colors.bg_statusline, 'bold'},
+    separator_highlight = {'NONE',colors.bg_statusline}
   }
 }
 
@@ -82,8 +90,8 @@ gls.mid[1] = {
     separator = '  ',
     --  separator_highlight = {'NONE',colors.syntax_bg},
     --  highlight = {colors.hue_6_2, colors.syntax_bg}
-    separator_highlight = {'NONE',colors.black},
-    highlight = {colors.white, colors.black}
+    separator_highlight = {'NONE',colors.bg_statusline},
+    highlight = {colors.white, colors.bg_statusline}
   }
 }
 gls.mid[2] = {
@@ -91,7 +99,7 @@ gls.mid[2] = {
     provider = 'DiagnosticError',
     icon = '  ',
     --  highlight = {colors.hue_5,colors.syntax_bg}
-    highlight = {colors.red, colors.black}
+    highlight = {colors.red, colors.bg_statusline}
   }
 }
 gls.mid[3] = {
@@ -99,14 +107,14 @@ gls.mid[3] = {
     provider = 'DiagnosticWarn',
     icon = '  ',
     --  highlight = {colors.hue_6_2,colors.syntax_bg},
-    highlight = {colors.yellow, colors.black},
+    highlight = {colors.yellow, colors.bg_statusline},
   }
 }
 gls.mid[4] = {
   DiagnosticHint = {
     provider = 'DiagnosticHint',
     icon = '  ',
-    highlight = {colors.blue, colors.black},
+    highlight = {colors.blue, colors.bg_statusline},
     --  highlight = {colors.hue_2,colors.syntax_bg},
   }
 }
@@ -116,7 +124,7 @@ gls.mid[5] = {
     provider = 'DiagnosticInfo',
     icon = '  ',
     --  highlight = {colors.hue_1,colors.visual_grey},
-    highlight = {colors.blue, colors.black},
+    highlight = {colors.blue, colors.bg_statusline},
   }
 }
 
@@ -133,22 +141,25 @@ gls.right[2] = {
     separator = ' ',
     --  separator_highlight = {'NONE',colors.visual_grey},
     --  highlight = {colors.mono_1,colors.visual_grey,'bold'},
-    separator_highlight = {'NONE',colors.black},
-    highlight = {colors.white,colors.black,'bold'},
+    separator_highlight = {'NONE',colors.bg_statusline},
+    highlight = {colors.white,colors.bg_statusline,'bold'},
   }
 }
 gls.right[3] = {
   PerCent = {
     provider = 'LinePercent',
     --  highlight = {colors.mono_1,colors.visual_grey,'bold'},
-    highlight = {colors.white,colors.black,'bold'},
+    highlight = {colors.white,colors.bg_statusline,'bold'},
   }
 }
 gls.right[4] = {
   RainbowBlue = {
-    provider = function() return ' ▊' end,
+    provider = function()
+      set_vi_mode_color('RainbowBlue')
+      return ' ▊'
+    end,
     --  highlight = {colors.hue_2,colors.visual_grey}
-    highlight = {colors.blue, colors.black},
+    highlight = {colors.blue, colors.bg_statusline},
   },
 }
 
