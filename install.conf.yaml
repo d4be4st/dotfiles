@@ -14,6 +14,10 @@
   - [git submodule update --init --recursive, Installing submodules]
   - [rm -rf .git/hooks]
   - [rm ~/.zshrc]
+  - [op get document zshenv --output zshenv]
+  - [op get document id_rsa --output ssh/id_rsa]
+  - [op get document id_rsa.pub --output ssh/id_rsa.pub]
+  - [op get document ssh_config --output ssh/config]
 
 - link:
     ~/.dotfiles/.git/hooks: hooks
@@ -25,7 +29,7 @@
     ~/.railsrc: railsrc
     ~/.rbenv/default-gems: rbenv/default-gems
     ~/.rbenv/plugins: rbenv/plugins
-    ~/.ssh/config: ssh/config
+    ~/.ssh: ssh
     ~/.tmux: tmux
     ~/.tmux.conf: tmux.conf
     ~/.zshrc: zshrc
