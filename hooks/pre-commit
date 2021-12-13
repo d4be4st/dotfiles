@@ -1,8 +1,4 @@
-openssl enc -aes-256-cbc -e -in zshenv -out zshenv.enc -pass file:.pass
-git add zshenv.enc
-openssl enc -aes-256-cbc -e -in ssh/config -out ssh_config.enc -pass file:.pass
-git add ssh_config.enc
-openssl enc -aes-256-cbc -e -in ssh/id_rsa -out burek.enc -pass file:.pass
-git add burek.enc
-openssl enc -aes-256-cbc -e -in ssh/id_rsa.pub -out kifla.enc -pass file:.pass
-git add kifla.enc
+op edit document zshenv zshenv
+op edit document id_rsa ssh/id_rsa
+op edit document id_rsa.pub ssh/id_rsa.pub
+op edit document ssh_config ssh/config
