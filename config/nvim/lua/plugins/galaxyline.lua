@@ -4,18 +4,32 @@ local condition = require('galaxyline.condition')
 local gls = gl.section
 gl.short_line_list = {'packer'}
 
-local nightfox_colors = require("nightfox.colors").init()
+-- local nightfox_colors = require("nightfox.colors").init()
+-- local colors = {
+--   normal = nightfox_colors.blue,
+--   insert = nightfox_colors.green,
+--   visual = nightfox_colors.magenta,
+--   command = nightfox_colors.orange,
+--   warning = nightfox_colors.yellow,
+--   danger = nightfox_colors.red,
+--   fg_active = nightfox_colors.white,
+--   bg_active = nightfox_colors.bg_statusline,
+--   fg_inactive = nightfox_colors.fg_alt,
+--   bg_inactive = nightfox_colors.bg_highlight
+-- }
+
+local cat_colors = require'catppuccin.api.colors'.get_colors()
 local colors = {
-  normal = nightfox_colors.blue,
-  insert = nightfox_colors.green,
-  visual = nightfox_colors.magenta,
-  command = nightfox_colors.orange,
-  warning = nightfox_colors.yellow,
-  danger = nightfox_colors.red,
-  fg_active = nightfox_colors.white,
-  bg_active = nightfox_colors.bg_statusline,
-  fg_inactive = nightfox_colors.fg_alt,
-  bg_inactive = nightfox_colors.bg_highlight
+  normal = cat_colors.blue,
+  insert = cat_colors.green,
+  visual = cat_colors.mauve,
+  command = cat_colors.orange,
+  warning = cat_colors.yellow,
+  danger = cat_colors.red,
+  fg_active = cat_colors.white,
+  bg_active = cat_colors.black1,
+  fg_inactive = cat_colors.gray0,
+  bg_inactive = cat_colors.black3
 }
 
 local mode_color = {

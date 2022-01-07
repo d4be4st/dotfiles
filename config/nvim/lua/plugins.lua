@@ -13,6 +13,10 @@ return require("packer").startup(
 
     -- theme
     use 'EdenEast/nightfox.nvim'
+    use({
+      "catppuccin/nvim",
+      as = "catppuccin"
+    })
 
     -- LSP
     use "neovim/nvim-lspconfig"
