@@ -65,7 +65,7 @@ end
 
 local function setup_servers()
   -- get all installed servers
- local servers = {"pyright", "tsserver", "cssls", "jsonls", "yamlls", "sumneko_lua", "elixirls", "solargraph"}
+ local servers = {"pyright", "tsserver", "cssls", "jsonls", "yamlls", "sumneko_lua", "solargraph", "elixirls" }
 
   for _, server in pairs(servers) do
     local config = make_config()
@@ -82,7 +82,8 @@ local function setup_servers()
     end
 
     if server == "elixirls" then
-      config.cmd = { "/Users/stef/.asdf/installs/elixir/1.11.2//elixir-ls/language_server.sh" }
+      -- config.cmd = { "/Users/stef/.asdf/installs/elixir/1.11.2//elixir-ls/language_server.sh" }
+      config.cmd = { "/Users/stef/.asdf/installs/elixir/1.13.0-otp-24/elixir-ls/language_server.sh" }
     end
 
     nvim_lsp[server].setup(config)

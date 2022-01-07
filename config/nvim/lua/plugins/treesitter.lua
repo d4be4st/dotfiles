@@ -3,7 +3,7 @@ require'nvim-treesitter.configs'.setup {
     "bash",
     "crystal",
     "css",
-    "elixir",
+    -- "elixir",
     "html",
     "javascript",
     "json",
@@ -16,7 +16,7 @@ require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,              -- false will disable the whole extension
     use_languagetree = true
-  },
+  }
 }
 
 vim.api.nvim_set_keymap('x', 'iu', ':lua require"treesitter-unit".select()<CR>', {noremap=true})

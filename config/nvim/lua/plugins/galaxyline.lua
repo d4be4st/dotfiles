@@ -4,192 +4,157 @@ local condition = require('galaxyline.condition')
 local gls = gl.section
 gl.short_line_list = {'packer'}
 
-local colors = require("nightfox.colors").init()
-
---[[ local rgb = function(color)
-  return color.to_rgb(color, color.H, color.S, color.L)
-end
-
+local nightfox_colors = require("nightfox.colors").init()
 local colors = {
-  mono_1 = rgb(ccolors.mono_1),
-  mono_2 = rgb(ccolors.mono_2),
-  mono_4 = rgb(ccolors.mono_4),
-  visual_grey = rgb(ccolors.visual_grey),
-  pmenu = rgb(ccolors.pmenu),
-  syntax_bg = rgb(ccolors.syntax_bg),
-  hue_1 = rgb(ccolors.hue_1), -- light green
-  hue_2 = rgb(ccolors.hue_2), -- blue
-  hue_3 = rgb(ccolors.hue_3), -- pink
-  hue_4 = rgb(ccolors.hue_4), -- green
-  hue_5 = rgb(ccolors.hue_5), -- red
-  hue_6 = rgb(ccolors.hue_6), -- organge
-  hue_6_2 = rgb(ccolors.hue_6_2), -- light organge
-} ]]
+  normal = nightfox_colors.blue,
+  insert = nightfox_colors.green,
+  visual = nightfox_colors.magenta,
+  command = nightfox_colors.orange,
+  warning = nightfox_colors.yellow,
+  danger = nightfox_colors.red,
+  fg_active = nightfox_colors.white,
+  bg_active = nightfox_colors.bg_statusline,
+  fg_inactive = nightfox_colors.fg_alt,
+  bg_inactive = nightfox_colors.bg_highlight
+}
 
 local mode_color = {
-  n = colors.blue,
-  no = colors.blue,
-  i = colors.green,
-  v = colors.magenta,
-  [''] = colors.magenta,
-  V = colors.magenta,
-  c = colors.orange
+  n = colors.normal,
+  no = colors.normal,
+  i = colors.insert,
+  v = colors.visual,
+  [''] = colors.visual,
+  V = colors.visual,
+  c = colors.command
 }
 
 local function set_vi_mode_color (name)
-  vim.api.nvim_command('hi Galaxy'..name..' guifg='..(mode_color[vim.fn.mode()] or colors.blue))
+  vim.api.nvim_command('hi Galaxy'..name..' guifg='..(mode_color[vim.fn.mode()] or colors.normal))
 end
 
-gls.left[1] = {
+------------------------------------------- ACTIVE ----------------------
+------------------------------------------- LEFT ------------------------
+table.insert(gls.left, {
   RainbowRed = {
     provider = function()
       set_vi_mode_color('RainbowRed')
       return '▊ '
     end,
-    highlight = {colors.blue, colors.bg_statusline}
-    --  highlight = {colors.hue_1,colors.visual_grey}
+    highlight = {colors.normal, colors.bg_active}
   },
-}
-gls.left[2] = {
+})
+table.insert(gls.left, {
   ViMode = {
     provider = function()
       -- auto change color according the vim mode
-      -- local mode_color = {
-      --   n = colors.hue_4,
-      --   no = colors.hue_4,
-      --   i = colors.hue_2,
-      --   v = colors.hue_3,
-      --   [''] = colors.hue_3,
-      --   V = colors.hue_3,
-      --   c = colors.hue_1
-      -- }
       set_vi_mode_color('ViMode')
       return require('galaxyline.provider_fileinfo').get_file_icon()..' '
     end,
-    highlight = {colors.blue, colors.bg_statusline, 'bold'},
-    --  highlight = {colors.hue_4,colors.visual_grey, 'bold'},
+    highlight = {colors.normal, colors.bg_active, 'bold'},
   },
-}
-gls.left[3] = {
+})
+table.insert(gls.left, {
   FileName = {
     provider = 'FileName',
     condition = condition.buffer_not_empty,
     separator = ' ',
-    --  separator_highlight = {'NONE',colors.visual_grey},
-    --  highlight = {colors.mono_1, colors.visual_grey, 'bold'}
-    highlight = {colors.white, colors.bg_statusline, 'bold'},
-    separator_highlight = {'NONE',colors.bg_statusline}
+    highlight = {colors.fg_active, colors.bg_active, 'bold'},
+    separator_highlight = {'NONE',colors.bg_active}
   }
-}
+})
 
-gls.mid[1] = {
+------------------------------------------- MID -------------------------
+table.insert(gls.mid, {
   ShowLspClient = {
     provider = 'GetLspClient',
     condition = condition.buffer_not_empty,
     icon = ' : ',
     separator = '  ',
-    --  separator_highlight = {'NONE',colors.syntax_bg},
-    --  highlight = {colors.hue_6_2, colors.syntax_bg}
-    separator_highlight = {'NONE',colors.bg_statusline},
-    highlight = {colors.white, colors.bg_statusline}
+    separator_highlight = {'NONE',colors.bg_active},
+    highlight = {colors.fg_active, colors.bg_active}
   }
-}
-gls.mid[2] = {
+})
+table.insert(gls.mid, {
   DiagnosticError = {
     provider = 'DiagnosticError',
     icon = '  ',
-    --  highlight = {colors.hue_5,colors.syntax_bg}
-    highlight = {colors.red, colors.bg_statusline}
+    highlight = {colors.danger, colors.bg_active}
   }
-}
-gls.mid[3] = {
+})
+table.insert(gls.mid, {
   DiagnosticWarn = {
     provider = 'DiagnosticWarn',
     icon = '  ',
-    --  highlight = {colors.hue_6_2,colors.syntax_bg},
-    highlight = {colors.yellow, colors.bg_statusline},
+    highlight = {colors.warning, colors.bg_active},
   }
-}
-gls.mid[4] = {
+})
+table.insert(gls.mid, {
   DiagnosticHint = {
     provider = 'DiagnosticHint',
     icon = '  ',
-    highlight = {colors.blue, colors.bg_statusline},
-    --  highlight = {colors.hue_2,colors.syntax_bg},
+    highlight = {colors.normal, colors.bg_active},
   }
-}
-
-gls.mid[5] = {
+})
+table.insert(gls.mid, {
   DiagnosticInfo = {
     provider = 'DiagnosticInfo',
     icon = '  ',
-    --  highlight = {colors.hue_1,colors.visual_grey},
-    highlight = {colors.blue, colors.bg_statusline},
+    highlight = {colors.normal, colors.bg_active},
   }
-}
+})
 
--- gls.right[1] = {
---   LspStatus = {
---     provider = function() return vim.inspect(require('lsp-status').messages()) end,
---  --     highlight = {colors.mono_1,colors.visual_grey,'bold'},
---   }
--- }
+------------------------------------------- RIGHT ----------------------
 
-gls.right[2] = {
+table.insert(gls.right, {
   LineInfo = {
     provider = 'LineColumn',
     separator = ' ',
-    --  separator_highlight = {'NONE',colors.visual_grey},
-    --  highlight = {colors.mono_1,colors.visual_grey,'bold'},
-    separator_highlight = {'NONE',colors.bg_statusline},
-    highlight = {colors.white,colors.bg_statusline,'bold'},
+    separator_highlight = {'NONE',colors.bg_active},
+    highlight = {colors.fg_active,colors.bg_active,'bold'},
   }
-}
-gls.right[3] = {
+})
+table.insert(gls.right, {
   PerCent = {
     provider = 'LinePercent',
-    --  highlight = {colors.mono_1,colors.visual_grey,'bold'},
-    highlight = {colors.white,colors.bg_statusline,'bold'},
+    highlight = {colors.fg_active,colors.bg_active,'bold'},
   }
-}
-gls.right[4] = {
-  RainbowBlue = {
+})
+table.insert(gls.right, {
+  Rainbownormal = {
     provider = function()
-      set_vi_mode_color('RainbowBlue')
+      set_vi_mode_color('Rainbownormal')
       return ' ▊'
     end,
-    --  highlight = {colors.hue_2,colors.visual_grey}
-    highlight = {colors.blue, colors.bg_statusline},
+    highlight = {colors.normal, colors.bg_active},
   },
-}
+})
 
-gls.short_line_left[1] = {
+------------------------------------------- INACTIVE ----------------------
+------------------------------------------- LEFT ------------------------
+table.insert(gls.short_line_left, {
   RainbowGray = {
     provider = function() return '▊ ' end,
-    --  highlight = {colors.mono_2, colors.pmenu}
-    highlight = {colors.fg_alt, colors.bg_highlight}
+    highlight = {colors.fg_inactive, colors.bg_inactive}
   },
-}
-gls.short_line_left[2] = {
+})
+table.insert(gls.short_line_left, {
   SFileName = {
     provider =  'SFileName',
     condition = condition.buffer_not_empty,
-    --  highlight = {colors.mono_2, colors.pmenu}
-    highlight = {colors.fg_alt, colors.bg_highlight}
+    highlight = {colors.fg_inactive, colors.bg_inactive}
   }
-}
+})
 
-gls.short_line_right[1] = {
+------------------------------------------- RIGHT ------------------------
+table.insert(gls.short_line_right, {
   BufferIcon = {
     provider= 'BufferIcon',
-    --  highlight = {colors.mono_2,colors.pmenu}
-    highlight = {colors.fg_alt, colors.bg_highlight}
+    highlight = {colors.fg_inactive, colors.bg_inactive}
   }
-}
-gls.short_line_right[2] = {
+})
+table.insert(gls.short_line_right, {
   RainbowGray2 = {
     provider = function() return ' ▊' end,
-    --  highlight = {colors.mono_2, colors.pmenu}
-    highlight = {colors.fg_alt, colors.bg_highlight}
+    highlight = {colors.fg_inactive, colors.bg_inactive}
   },
-}
+})

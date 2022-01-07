@@ -75,11 +75,13 @@ return require("packer").startup(
     use 'tpope/vim-surround'
     use 'tpope/vim-repeat'
     use 'vim-crystal/vim-crystal'
+    use 'jidn/vim-dbml'
 
 
     -- languages
-    -- use 'elixir-editors/vim-elixir'
+    use 'elixir-editors/vim-elixir'
     use 'slim-template/vim-slim'
+    use 'glench/vim-jinja2-syntax'
 
     -- use 'alvan/vim-closetag'
     -- use 'svermeulen/vim-yoink'
@@ -89,5 +91,6 @@ return require("packer").startup(
     -- use 'pangloss/vim-javascript'
     -- use 'amadeus/vim-mjml'
     -- use 'tbastos/vim-lua'
+    use 'dstein64/vim-startuptime'
   end
 )
