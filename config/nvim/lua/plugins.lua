@@ -3,7 +3,7 @@ vim.cmd [[packadd packer.nvim]]
 return require("packer").startup(
   function(use)
     use {"wbthomason/packer.nvim", opt = true}
-    use 'svermeulen/vimpeccable'
+    -- use 'svermeulen/vimpeccable'
 
     use "nvim-lua/plenary.nvim"
     use "nvim-lua/popup.nvim"
@@ -20,7 +20,7 @@ return require("packer").startup(
 
     -- LSP
     use "neovim/nvim-lspconfig"
-    use { "onsails/lspkind-nvim", config = require("lspkind").init( { with_text = true })}
+    use { "onsails/lspkind-nvim", config = require("lspkind").init( { mode = "symbol_text" })}
     use "nvim-lua/lsp-status.nvim"
     use { "folke/trouble.nvim", config = function() require("trouble").setup { } end }
 
@@ -52,7 +52,8 @@ return require("packer").startup(
     -- use 'pwntester/octo.nvim'
     -- use 'jose-elias-alvarez/null-ls.nvim'
     use {'alvarosevilla95/luatab.nvim', config = require('luatab').setup({})}
-    use 'David-Kunz/treesitter-unit'
+    use { 'RRethy/nvim-treesitter-endwise', config = require('nvim-treesitter.configs').setup { endwise = { enable = true } } }
+    -- use 'David-Kunz/treesitter-unit'
     use {
       "cuducos/yaml.nvim",
       ft = {"yaml"},
@@ -66,7 +67,7 @@ return require("packer").startup(
         require('neoclip').setup()
       end,
     }
-
+    use { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install' }
     -- vim
     use 'wakatime/vim-wakatime'
     use { 'AndrewRadev/splitjoin.vim'}
@@ -86,6 +87,7 @@ return require("packer").startup(
     use 'elixir-editors/vim-elixir'
     use 'slim-template/vim-slim'
     use 'glench/vim-jinja2-syntax'
+    use 'hashivim/vim-terraform'
 
     -- use 'alvan/vim-closetag'
     -- use 'svermeulen/vim-yoink'

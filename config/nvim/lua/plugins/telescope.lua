@@ -1,34 +1,32 @@
-local vimp = require("vimp")
 local ts_builtin = require("telescope.builtin")
 
 require('telescope').load_extension('fzf')
+require("telescope").setup {
+  pickers = {
+    find_files = {
+      find_command = { "fd", "--type", "f", "--strip-cwd-prefix", "--hidden"}
+    },
+  }
+}
 
-vimp.nnoremap("<Leader>ff", function() ts_builtin.find_files() end)
-vimp.nnoremap("<Leader>fl", function() ts_builtin.current_buffer_fuzzy_find() end)
-vimp.nnoremap("<Leader>fb", function() ts_builtin.file_browser() end)
-vimp.nnoremap("<Leader>fc", function() ts_builtin.command_history() end)
--- vimp.nnoremap("<Leader>fr", function() ts_builtin.registers() end)
-vimp.nnoremap("<Leader>fm", function() ts_builtin.keymaps() end)
-vimp.nnoremap("<Leader>fy", function() ts_builtin.filetypes() end)
-vimp.nnoremap("<Leader>fg", function() ts_builtin.git_status() end)
-vimp.nnoremap("<Leader>fn", function() ts_builtin.reloader() end)
-vimp.nnoremap("<Leader>ft", function() ts_builtin.treesitter() end)
+vim.keymap.set('n', "<Leader>ff", function() ts_builtin.find_files() end)
+vim.keymap.set('n', "<Leader>fl", function() ts_builtin.current_buffer_fuzzy_find() end)
+vim.keymap.set('n', "<Leader>fb", function() ts_builtin.file_browser() end)
+vim.keymap.set('n', "<Leader>fc", function() ts_builtin.command_history() end)
+-- vim.keymap.set('n', "<Leader>fr", function() ts_builtin.registers() end)
+vim.keymap.set('n', "<Leader>fm", function() ts_builtin.keymaps() end)
+vim.keymap.set('n', "<Leader>fy", function() ts_builtin.filetypes() end)
+vim.keymap.set('n', "<Leader>fg", function() ts_builtin.git_status() end)
+vim.keymap.set('n', "<Leader>fn", function() ts_builtin.reloader() end)
+vim.keymap.set('n', "<Leader>ft", function() ts_builtin.treesitter() end)
 
 -- neoclip
-vimp.nnoremap("<Leader>fp", function() require('telescope').extensions.neoclip.default() end)
+vim.keymap.set('n', "<Leader>fp", function() require('telescope').extensions.neoclip.default() end)
 
 -- ruby
-vimp.nnoremap("<Leader>rm", function()
+vim.keymap.set('n', "<Leader>rm", function()
   local find_command = {'rg', '--files', '--hidden', '--follow', '--sortr=path', 'db/migrate'}
   ts_builtin.find_files({
     find_command = find_command
   })
 end)
-
-local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-parser_config.crystal = {
-  install_info = {
-    url = "~/dev/misc/tree-sitter-crystal", -- local path or git repo
-    files = {"src/parser.c"}
-  }
-}

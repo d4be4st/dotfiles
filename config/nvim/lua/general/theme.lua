@@ -81,7 +81,8 @@ local colors = require'catppuccin.api.colors'.get_colors() -- fetch colors with 
 catppuccin.remap({
   TabLine = { fg = colors.maroon, bg = colors.black1 },
   TabLineFill = { fg = colors.black1, bg = colors.black1 },
-  TabLineSel = { bg = colors.maroon, fg = colors.black1 }
+  TabLineSel = { bg = colors.maroon, fg = colors.black1 },
+  ColorColumn = { bg = colors.gray2 },
 })
 
 vim.cmd[[colorscheme catppuccin]]

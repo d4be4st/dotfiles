@@ -51,12 +51,13 @@ bindkey -M vicmd 'H' vi-beginning-of-line
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 alias es='exec $SHELL'
-alias gu='git up'
+alias ssh="TERM=xterm-256color ssh"
+alias aterm='TERM=xterm-256color'
 alias msd='mina staging deploy'
 alias mpd='mina production deploy'
-alias md='mina deploy'
 alias mps='mina production ssh'
 alias mss='mina staging ssh'
+alias md='mina deploy'
 alias ms='mina ssh'
 alias vi="nvim"
 alias vim="nvim"
@@ -66,15 +67,6 @@ alias gcpc="git cherry-pick --continue"
 alias gcpa="git cherry-pick --abort"
 alias gcps="git cherry-pick --skip"
 alias OD="OVERCOMMIT_DISABLE=1"
-pgld() {
- if [ -n "$1" ]
- then
-   git log --after="$1 00:00:00" --before="$1 23:59:59" --author="Stjepan Hadjic" --reverse --pretty=format:'%s'
- else
-   git log --since=0am --author="Stjepan Hadjic" --reverse --pretty=format:'* %s'
- fi
-}
-
 alias tl='tail -f log/development.log'
 alias lg='lazygit'
 alias rof='rspec --only-failures'
@@ -84,3 +76,17 @@ eval "$(fasd --init auto)"
 
 export PATH="./bin:$PATH"
 export PATH="~/bin:$PATH"
+
+function awsexec () {
+  local service_name=$1
+  local task_number=$(aws ecs list-tasks --cluster coinmara-dev-cluster --service-name $service_name | jq '.["taskArns"][0]' | sed 's/.*\/.*\/\(.*\)"/\1/')
+  if [[ -z "$task_number" ]]
+  then print "No tasks found"
+  else
+    print "Connecting to task $task_number ..."
+    aws ecs execute-command --cluster coinmara-dev-cluster --container $service_name --interactive --command "/bin/bash -i" --task $task_number
+  fi
+}
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/terraform terraform

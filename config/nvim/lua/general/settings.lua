@@ -2,6 +2,7 @@ vim.g.mapleader = " " -- user <space> as leader
 vim.opt.confirm = true -- confirm before exiting
 vim.opt.hidden = true -- close hidden buffers
 vim.opt.bufhidden = "hide"
+vim.opt.laststatus = 3 -- global statusline
 vim.opt.scrolloff = 8 -- minimal number of screen lines above and below cursor
 vim.opt.showmode = false -- remove --INSERT--
 vim.opt.showtabline = 2 -- always show tabline
@@ -33,4 +34,5 @@ vim.opt.tabstop = tabspaces
 vim.opt.shiftwidth = tabspaces
 vim.opt.expandtab = true
 
+-- vim.api.nvim_create_autocmd("
 vim.cmd('autocmd BufEnter * setlocal formatoptions-=o')

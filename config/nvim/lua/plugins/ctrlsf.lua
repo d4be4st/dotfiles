@@ -1,5 +1,5 @@
 vim.g.ctrlsf_ackprg = 'rg'
-vimp.nmap('<leader>gg', '<Plug>CtrlSFPrompt')
-vimp.nmap('<leader>gv', '<Plug>CtrlSFVwordExec')
-vimp.nmap('<leader>gw', '<Plug>CtrlSFCCwordExec')
-vimp.nnoremap('<leader>gs', function() require('spectre').open() end)
+vim.keymap.set('n', '<leader>gg', '<Plug>CtrlSFPrompt')
+vim.keymap.set('n', '<leader>gv', '<Plug>CtrlSFVwordExec')
+vim.keymap.set('n', '<leader>gw', '<Plug>CtrlSFCCwordExec')
+vim.keymap.set('n', '<leader>gs', function() require('spectre').open() end)

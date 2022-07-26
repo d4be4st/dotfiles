@@ -1,5 +1,4 @@
 local nvim_lsp = require('lspconfig')
-local vimp = require("vimp")
 local ts_builtin = require("telescope.builtin")
 
 local on_attach = function(client, bufnr)
@@ -8,24 +7,24 @@ local on_attach = function(client, bufnr)
   buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
    -- Mappings.
-   vimp.nnoremap('<leader>lp', function() vim.diagnostic.goto_prev() end)
-   vimp.nnoremap('<leader>ln', function() vim.diagnostic.goto_next() end)
-   vimp.nnoremap('<leader>ll', function() vim.diagnostic.show_line_diagnostics() end)
-   vimp.nnoremap('<leader>lr', function() vim.lsp.buf.rename() end)
-   vimp.nnoremap('<leader>lh', function() vim.lsp.buf.hover() end)
-   vimp.nnoremap('<leader>lD', function() vim.lsp.buf.declaration() end)
-   vimp.nnoremap('<leader>ld', function() ts_builtin.lsp_definitions() end)
-   vimp.nnoremap('<leader>li', function() vim.lsp.buf.implementation() end)
-   vimp.nnoremap('<leader>ls', function() vim.lsp.buf.signature_help() end)
-   vimp.nnoremap('<leader>lR', function() ts_builtin.lsp_references() end)
-   vimp.nnoremap('<leader>la', function() ts_builtin.lsp_code_actions() end)
-   vimp.nnoremap('<leader>le', function() ts_builtin.lsp_document_diagnostics() end)
-   vimp.nnoremap('<leader>lt', function() require('trouble').open() end)
+   vim.keymap.set('n', '<leader>lp', function() vim.diagnostic.goto_prev() end)
+   vim.keymap.set('n', '<leader>ln', function() vim.diagnostic.goto_next() end)
+   vim.keymap.set('n', '<leader>ll', function() vim.diagnostic.show_line_diagnostics() end)
+   vim.keymap.set('n', '<leader>lr', function() vim.lsp.buf.rename() end)
+   vim.keymap.set('n', '<leader>lh', function() vim.lsp.buf.hover() end)
+   vim.keymap.set('n', '<leader>lD', function() vim.lsp.buf.declaration() end)
+   vim.keymap.set('n', '<leader>ld', function() ts_builtin.lsp_definitions() end)
+   vim.keymap.set('n', '<leader>li', function() vim.lsp.buf.implementation() end)
+   vim.keymap.set('n', '<leader>ls', function() vim.lsp.buf.signature_help() end)
+   vim.keymap.set('n', '<leader>lR', function() ts_builtin.lsp_references() end)
+   vim.keymap.set('n', '<leader>la', function() ts_builtin.lsp_code_actions() end)
+   vim.keymap.set('n', '<leader>le', function() ts_builtin.lsp_document_diagnostics() end)
+   vim.keymap.set('n', '<leader>lt', function() require('trouble').open() end)
 
    if client.resolved_capabilities.document_formatting then
-     vimp.nnoremap('<leader>lf', function() vim.lsp.buf.formatting() end)
+     vim.keymap.set('n', '<leader>lf', function() vim.lsp.buf.formatting() end)
    elseif client.resolved_capabilities.document_range_formatting then
-     vimp.nnoremap('<leader>lf', function() vim.lsp.buf.range_formatting() end)
+     vim.keymap.set('n', '<leader>lf', function() vim.lsp.buf.range_formatting() end)
    end
 end
 -- Configure lua language server for neovim development
@@ -38,7 +37,7 @@ local lua_settings = {
     },
     diagnostics = {
       -- Get the language server to recognize the `vim` global
-      globals = {'vim', 'vimp', 'use'},
+      globals = {'vim', 'use'},
     },
     workspace = {
       -- Make the server aware of Neovim runtime files
@@ -65,7 +64,7 @@ end
 
 local function setup_servers()
   -- get all installed servers
- local servers = {"pyright", "tsserver", "cssls", "jsonls", "yamlls", "sumneko_lua", "solargraph", "elixirls" }
+ local servers = {"pyright", "tsserver", "cssls", "jsonls", "yamlls", "sumneko_lua", "solargraph", "elixirls", "crystalline" }
 
   for _, server in pairs(servers) do
     local config = make_config()
@@ -94,8 +93,9 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, {
     virtual_text = {
       format = function(diagnostic)
-        if diagnostic.user_data and diagnostic.user_data.lsp.code then
-           return string.format("[%s] %s", diagnostic.user_data.lsp.code, diagnostic.message)
+        vim.pretty_print(diagnostic)
+        if diagnostic.code then
+           return string.format("[%s] %s", diagnostic.code, diagnostic.message)
         else
           return diagnostic.message
         end

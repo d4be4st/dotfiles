@@ -1,5 +1,3 @@
-local vimp = require('vimp')
-
 vim.g.mapleader = " " -- user <space> as leader
 
 -- Allow misspellings
@@ -14,124 +12,124 @@ vim.cmd('cnoreabbrev t tabe')
 vim.cmd('cnoreabbrev qt tabclose')
 
 -- remove highlights
-vimp.nnoremap({'silent'}, '<leader><leader>', function()
+vim.keymap.set('n', '<leader><leader>', function()
   vim.cmd('nohlsearch')
-end)
+end, {silent = true})
 
 -- undo
-vimp.nnoremap('U', '<C-r>')
+vim.keymap.set('n', 'U', '<C-r>')
 -- misspelled :q
-vimp.nnoremap('q:', '')
+vim.keymap.set('n', 'q:', '')
 
 -- Saner command line history
-vimp.cnoremap('<c-n>', '<down>')
-vimp.cnoremap('<c-p>', '<up>')
+vim.keymap.set('c', '<c-n>', '<down>')
+vim.keymap.set('c', '<c-p>', '<up>')
 
 -- Don't lose selection when shifting sidewards
-vimp.xnoremap('<', '<gv')
-vimp.xnoremap('>', '>gv')
+vim.keymap.set('x', '<', '<gv')
+vim.keymap.set('x', '>', '>gv')
 
 -- Easier window switching
-vimp.nnoremap('<C-h>', '<C-w>h')
-vimp.nnoremap('<C-j>', '<C-w>j')
-vimp.nnoremap('<C-k>', '<C-w>k')
-vimp.nnoremap({'override'}, '<C-l>', '<C-w>l')
+vim.keymap.set('n', '<C-h>', '<C-w>h')
+vim.keymap.set('n', '<C-j>', '<C-w>j')
+vim.keymap.set('n', '<C-k>', '<C-w>k')
+vim.keymap.set('n', '<C-l>', '<C-w>l')
 
 -- Remap H and L (top, bottom of screen to left and right end of line)
-vimp.nnoremap('H', '^')
-vimp.nnoremap('L', '$')
-vimp.vnoremap('H', '^')
-vimp.vnoremap('L', 'g_')
+vim.keymap.set('n', 'H', '^')
+vim.keymap.set('n', 'L', '$')
+vim.keymap.set('v', 'H', '^')
+vim.keymap.set('v', 'L', 'g_')
 
 -- More logical Y (default was alias for yy)
-vimp.nnoremap({'override'}, 'Y', 'y$')
+vim.keymap.set('n', 'Y', 'y$')
 
 -- Yank and paste from clipboard
-vimp.vnoremap('<leader>y', '"+y')
-vimp.nnoremap('<leader>Y', '"+Y')
-vimp.vnoremap('<leader>Y', '"+Y')
-vimp.nnoremap('<leader>yy', '"+yy')
-vimp.nnoremap('<leader>p', '"+p')
-vimp.vnoremap('<leader>p', '"+p')
+vim.keymap.set('v', '<leader>y', '"+y')
+vim.keymap.set('n', '<leader>Y', '"+Y')
+vim.keymap.set('v', '<leader>Y', '"+Y')
+vim.keymap.set('n', '<leader>yy', '"+yy')
+vim.keymap.set('n', '<leader>p', '"+p')
+vim.keymap.set('v', '<leader>p', '"+p')
 
 -- Delete and change to black hole
-vimp.nnoremap('<leader>d', '"_dd')
-vimp.vnoremap('<leader>d', '"_d')
+vim.keymap.set('n', '<leader>d', '"_dd')
+vim.keymap.set('v', '<leader>d', '"_d')
 
 -- Keep the cursor in place while joining lines
-vimp.nnoremap('J', 'mzJ`z')
+vim.keymap.set('n', 'J', 'mzJ`z')
 
 -- [S]plit line (sister to [J]oin lines) S is covered by cc.
-vimp.nnoremap('S', 'mzi<CR><ESC>`z')
+vim.keymap.set('n', 'S', 'mzi<CR><ESC>`z')
 
 -- Select all text
-vimp.nnoremap('vA', 'ggVG')
+vim.keymap.set('n', 'vA', 'ggVG')
 
 -- Switch between tabs
 -- set Ctrl-n to S-Fn in iterm prefs
--- vimp.nmap('<S-F1>', '1gt')
--- vimp.nmap('<S-F2>', '2gt')
--- vimp.nmap('<S-F3>', '3gt')
--- vimp.nmap('<S-F4>', '4gt')
--- vimp.nmap('<S-F5>', '5gt')
--- vimp.nmap('<S-F6>', '6gt')
--- vimp.nmap('<S-F7>', '7gt')
--- vimp.nmap('<S-F8>', '8gt')
--- vimp.nmap('<S-F9>', '9gt')
-vimp.nmap('<F13>', '1gt')
-vimp.nmap('<F14>', '2gt')
-vimp.nmap('<F15>', '3gt')
-vimp.nmap('<F16>', '4gt')
-vimp.nmap('<F17>', '5gt')
-vimp.nmap('<F18>', '6gt')
-vimp.nmap('<F19>', '7gt')
-vimp.nmap('<F20>', '8gt')
-vimp.nmap('<F21>', '9gt')
+-- vim.keymap.set('n', '<S-F1>', '1gt')
+-- vim.keymap.set('n', '<S-F2>', '2gt')
+-- vim.keymap.set('n', '<S-F3>', '3gt')
+-- vim.keymap.set('n', '<S-F4>', '4gt')
+-- vim.keymap.set('n', '<S-F5>', '5gt')
+-- vim.keymap.set('n', '<S-F6>', '6gt')
+-- vim.keymap.set('n', '<S-F7>', '7gt')
+-- vim.keymap.set('n', '<S-F8>', '8gt')
+-- vim.keymap.set('n', '<S-F9>', '9gt')
+vim.keymap.set('n', '<F13>', '1gt')
+vim.keymap.set('n', '<F14>', '2gt')
+vim.keymap.set('n', '<F15>', '3gt')
+vim.keymap.set('n', '<F16>', '4gt')
+vim.keymap.set('n', '<F17>', '5gt')
+vim.keymap.set('n', '<F18>', '6gt')
+vim.keymap.set('n', '<F19>', '7gt')
+vim.keymap.set('n', '<F20>', '8gt')
+vim.keymap.set('n', '<F21>', '9gt')
 
 -- Intelligent windows resizing using ctrl + arrow keys
-vimp.nnoremap('<S-Up>', '   :resize +2<CR>')
-vimp.nnoremap('<S-Down>', ' :resize -2<CR>')
-vimp.nnoremap('<S-Left>', ' :vertical resize +2<CR>')
-vimp.nnoremap('<S-Right>', ':vertical resize -2<CR>')
+vim.keymap.set('n', '<S-Up>', '   :resize +2<CR>')
+vim.keymap.set('n', '<S-Down>', ' :resize -2<CR>')
+vim.keymap.set('n', '<S-Left>', ' :vertical resize +2<CR>')
+vim.keymap.set('n', '<S-Right>', ':vertical resize -2<CR>')
 -- Zoom one pane
-vimp.nnoremap('<leader>-', '<C-W><C-|><C-W><C-_>')
+vim.keymap.set('n', '<leader>-', '<C-W><C-|><C-W><C-_>')
 -- Restore panes
-vimp.nnoremap('<leader>=', '<C-w><C-=>')
+vim.keymap.set('n', '<leader>=', '<C-w><C-=>')
 
 -- Creating splits withyempty buffers in all directions
-vimp.nnoremap('<Leader>nh', ':leftabove  vnew<CR>')
-vimp.nnoremap('<Leader>nl', ':rightbelow vnew<CR>')
-vimp.nnoremap('<Leader>nk', ':leftabove  new<CR>')
-vimp.nnoremap('<Leader>nj', ':rightbelow new<CR>')
-vimp.nnoremap('<Leader>nt', ':tabe<CR>')
+vim.keymap.set('n', '<Leader>nh', ':leftabove  vnew<CR>')
+vim.keymap.set('n', '<Leader>nl', ':rightbelow vnew<CR>')
+vim.keymap.set('n', '<Leader>nk', ':leftabove  new<CR>')
+vim.keymap.set('n', '<Leader>nj', ':rightbelow new<CR>')
+vim.keymap.set('n', '<Leader>nt', ':tabe<CR>')
 
-vimp.cnoremap('<C-a>', '<home>')
+vim.keymap.set('c', '<C-a>', '<home>')
 
 -- Current file things
-vimp.nnoremap('<leader>os', function()
+vim.keymap.set('n', '<leader>os', function()
   local path = vim.fn.expand('%')
   vim.api.nvim_input(":sav "..path)
 end)
-vimp.nnoremap('<leader>ok', function()
+vim.keymap.set('n', '<leader>ok', function()
   local path = vim.fn.expand('%:h')
   vim.api.nvim_input(":Mkdir! "..path)
 end)
-vimp.nnoremap('<leader>or', function()
+vim.keymap.set('n', '<leader>or', function()
   local path = vim.fn.expand('%:t')
   vim.api.nvim_input(":Rename "..path)
 end)
-vimp.nnoremap('<leader>om', function()
+vim.keymap.set('n', '<leader>om', function()
   local path = vim.fn.expand('%')
   vim.api.nvim_input(":Move "..path)
 end)
-vimp.nnoremap('<leader>od', function()
+vim.keymap.set('n', '<leader>od', function()
   vim.api.nvim_input(":Delete")
 end)
 
 -- Copy dir/file/line to clipboard
-vimp.nnoremap('<leader>sl', function()
+vim.keymap.set('n', '<leader>sl', function()
   vim.api.nvim_command('let @*=expand("%") . ":" . line(".")')
 end)
-vimp.nnoremap('<leader>sf', function()
+vim.keymap.set('n', '<leader>sf', function()
   vim.api.nvim_command('let @*=expand("%")')
 end)

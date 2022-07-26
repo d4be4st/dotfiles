@@ -46,48 +46,45 @@ end
 
 -- snippets
 
-ls.snippets = {
-  all = {
-  },
-  ruby = {
-    s({trig = "pry"}, {
-        t({"binding.pry"})
-    }),
-    s({trig = "frozen"}, {
-        t({"# frozen_string_literal: true", ""})
-    }),
-    s({trig = "defi"}, {
-        f(attr_readers, {1}),
-        t({"", "", "def initialize("}),
-        i(1),
-        t({")", ""}),
-        f(r_params, {1}),
-        i(0),
-        t({"", "end"})
-    }),
-    s({trig = "cla"}, {
-        t({"# frozen_string_literal: true", "", "class "}),
-        f(file_name, {}),
-        t({"", "  "}),
-        i(0),
-        t({"", "end"})
-    }),
-    s({trig = "mod"}, {
-        t({"# frozen_string_literal: true", "", "module "}),
-        f(file_name, {}),
-        t({"", "  "}),
-        i(0),
-        t({"", "end"})
-    }),
-  },
-  slim = {
-    s({trig = "pry"}, {
-        t({"- binding.pry"})
-    })
-  }
-}
+ls.add_snippets("ruby", {
+  s({trig = "pry"}, {
+      t({"binding.pry"})
+  }),
+  s({trig = "frozen"}, {
+      t({"# frozen_string_literal: true", ""})
+  }),
+  s({trig = "defi"}, {
+      f(attr_readers, {1}),
+      t({"", "", "def initialize("}),
+      i(1),
+      t({")", ""}),
+      f(r_params, {1}),
+      i(0),
+      t({"", "end"})
+  }),
+  s({trig = "cla"}, {
+      t({"# frozen_string_literal: true", "", "class "}),
+      f(file_name, {}),
+      t({"", "  "}),
+      i(0),
+      t({"", "end"})
+  }),
+  s({trig = "mod"}, {
+      t({"# frozen_string_literal: true", "", "module "}),
+      f(file_name, {}),
+      t({"", "  "}),
+      i(0),
+      t({"", "end"})
+  }),
+})
+
+ls.add_snippets("slim", {
+  s({trig = "pry"}, {
+      t({"- binding.pry"})
+  })
+})
 
 -- Mappings
-vimp.inoremap({'silent'}, '<Tab>', function() ls.jump(1) end)
-vimp.inoremap({'silent'}, '<S-Tab>', function() ls.jump(-1) end)
-vimp.inoremap({'expr', 'silent'}, '<C-e>', function() ls.change_choice(1) end)
+vim.keymap.set('i', '<Tab>', function() ls.jump(1) end, { silent = true })
+vim.keymap.set('i', '<S-Tab>', function() ls.jump(-1) end, { silent = true })
+vim.keymap.set('i', '<C-e>', function() ls.change_choice(1) end, { silent = true, expr = true})
