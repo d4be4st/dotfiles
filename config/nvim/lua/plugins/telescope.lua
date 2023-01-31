@@ -1,6 +1,6 @@
 local ts_builtin = require("telescope.builtin")
 
-require('telescope').load_extension('fzf')
+-- require('telescope').load_extension('fzf')
 require("telescope").setup {
   pickers = {
     find_files = {
@@ -11,7 +11,7 @@ require("telescope").setup {
 
 vim.keymap.set('n', "<Leader>ff", function() ts_builtin.find_files() end)
 vim.keymap.set('n', "<Leader>fl", function() ts_builtin.current_buffer_fuzzy_find() end)
-vim.keymap.set('n', "<Leader>fb", function() ts_builtin.file_browser() end)
+vim.keymap.set('n', "<Leader>fb", function() require "telescope".extensions.file_browser.file_browser() end)
 vim.keymap.set('n', "<Leader>fc", function() ts_builtin.command_history() end)
 -- vim.keymap.set('n', "<Leader>fr", function() ts_builtin.registers() end)
 vim.keymap.set('n', "<Leader>fm", function() ts_builtin.keymaps() end)

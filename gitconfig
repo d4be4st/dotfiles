@@ -1,6 +1,7 @@
 [user]
 	email = d4be4st@gmail.com
 	name = Stjepan Hadjic
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL5NrsstlxX9XmaWK/caALU+cQ00Z2lmZ6Edb1cuIaD+
 [core]
 	excludesfile = /Users/stef/.gitignore
 	editor = nvim
@@ -32,3 +33,9 @@
 	autosquash = true
 [rerere]
 	enabled = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[commit]
+	gpgsign = true

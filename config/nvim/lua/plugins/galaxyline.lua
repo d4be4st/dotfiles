@@ -4,33 +4,33 @@ local condition = require('galaxyline.condition')
 local gls = gl.section
 gl.short_line_list = {'packer'}
 
--- local nightfox_colors = require("nightfox.colors").init()
--- local colors = {
---   normal = nightfox_colors.blue,
---   insert = nightfox_colors.green,
---   visual = nightfox_colors.magenta,
---   command = nightfox_colors.orange,
---   warning = nightfox_colors.yellow,
---   danger = nightfox_colors.red,
---   fg_active = nightfox_colors.white,
---   bg_active = nightfox_colors.bg_statusline,
---   fg_inactive = nightfox_colors.fg_alt,
---   bg_inactive = nightfox_colors.bg_highlight
--- }
-
-local cat_colors = require'catppuccin.api.colors'.get_colors()
+local nightfox_colors = require("nightfox.palette").load("nightfox")
 local colors = {
-  normal = cat_colors.blue,
-  insert = cat_colors.green,
-  visual = cat_colors.mauve,
-  command = cat_colors.orange,
-  warning = cat_colors.yellow,
-  danger = cat_colors.red,
-  fg_active = cat_colors.white,
-  bg_active = cat_colors.black1,
-  fg_inactive = cat_colors.gray0,
-  bg_inactive = cat_colors.black3
+  normal = nightfox_colors.blue.base,
+  insert = nightfox_colors.green.base,
+  visual = nightfox_colors.magenta.base,
+  command = nightfox_colors.orange.base,
+  warning = nightfox_colors.yellow.base,
+  danger = nightfox_colors.red.base,
+  fg_active = nightfox_colors.white.base,
+  bg_active = nightfox_colors.bg0,
+  -- fg_inactive = nightfox_colors.fg0,
+  -- bg_inactive = nightfox_colors.bg4
 }
+
+-- local cat_colors = require("catppuccin.palettes").get_palette()
+-- local colors = {
+--   normal = cat_colors.blue,
+--   insert = cat_colors.green,
+--   visual = cat_colors.mauve,
+--   command = cat_colors.orange,
+--   warning = cat_colors.yellow,
+--   danger = cat_colors.red,
+--   fg_active = cat_colors.white,
+--   bg_active = cat_colors.black1,
+--   fg_inactive = cat_colors.gray0,
+--   bg_inactive = cat_colors.black3
+-- }
 
 local mode_color = {
   n = colors.normal,
@@ -143,32 +143,32 @@ table.insert(gls.right, {
   },
 })
 
-------------------------------------------- INACTIVE ----------------------
-------------------------------------------- LEFT ------------------------
-table.insert(gls.short_line_left, {
-  RainbowGray = {
-    provider = function() return '▊ ' end,
-    highlight = {colors.fg_inactive, colors.bg_inactive}
-  },
-})
-table.insert(gls.short_line_left, {
-  SFileName = {
-    provider =  'SFileName',
-    condition = condition.buffer_not_empty,
-    highlight = {colors.fg_inactive, colors.bg_inactive}
-  }
-})
+-- ------------------------------------------- INACTIVE ----------------------
+-- ------------------------------------------- LEFT ------------------------
+-- table.insert(gls.short_line_left, {
+--   RainbowGray = {
+--     provider = function() return '▊ ' end,
+--     highlight = {colors.fg_inactive, colors.bg_inactive}
+--   },
+-- })
+-- table.insert(gls.short_line_left, {
+--   SFileName = {
+--     provider =  'SFileName',
+--     condition = condition.buffer_not_empty,
+--     highlight = {colors.fg_inactive, colors.bg_inactive}
+--   }
+-- })
 
-------------------------------------------- RIGHT ------------------------
-table.insert(gls.short_line_right, {
-  BufferIcon = {
-    provider= 'BufferIcon',
-    highlight = {colors.fg_inactive, colors.bg_inactive}
-  }
-})
-table.insert(gls.short_line_right, {
-  RainbowGray2 = {
-    provider = function() return ' ▊' end,
-    highlight = {colors.fg_inactive, colors.bg_inactive}
-  },
-})
+-- ------------------------------------------- RIGHT ------------------------
+-- table.insert(gls.short_line_right, {
+--   BufferIcon = {
+--     provider= 'BufferIcon',
+--     highlight = {colors.fg_inactive, colors.bg_inactive}
+--   }
+-- })
+-- table.insert(gls.short_line_right, {
+--   RainbowGray2 = {
+--     provider = function() return ' ▊' end,
+--     highlight = {colors.fg_inactive, colors.bg_inactive}
+--   },
+-- })

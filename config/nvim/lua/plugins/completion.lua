@@ -1,21 +1,4 @@
--- vim.o.completeopt = "menuone,noselect"
--- vim.o.shortmess = vim.o.shortmess..'c'
-
--- require "compe".setup {
---     enabled = true,
---     documentation = true,
---     source = {
---       buffer = true,
---       path = true,
---       luasnip = true,
---       nvim_lsp = true,
---       nvim_lua = true,
---     }
--- }
-
--- vim.cmd([[inoremap <silent><expr> <C-k> compe#confirm({ 'keys': '<CR>', 'mode': 'n', 'select': v:true })]])
-
-local cmp = require'cmp'
+local cmp = require 'cmp'
 
 cmp.setup({
   snippet = {
@@ -24,7 +7,7 @@ cmp.setup({
       require('luasnip').lsp_expand(args.body)
     end,
   },
-  mapping = {
+  mapping = cmp.mapping.preset.insert({
     ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
     ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
     ['<C-s>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
@@ -36,7 +19,7 @@ cmp.setup({
     -- Accept currently selected item. If none selected, `select` first item.
     -- Set `select` to `false` to only confirm explicitly selected items.
     ['<C-k>'] = cmp.mapping.confirm({ select = true }),
-  },
+  }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
     -- { name = 'vsnip' }, -- For vsnip users.
@@ -50,6 +33,7 @@ cmp.setup({
 
 -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline('/', {
+  mapping = cmp.mapping.preset.cmdline(),
   sources = {
     { name = 'buffer' }
   }
@@ -57,9 +41,11 @@ cmp.setup.cmdline('/', {
 
 -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
   sources = cmp.config.sources({
     { name = 'path' }
   }, {
     { name = 'cmdline' }
   })
 })
+

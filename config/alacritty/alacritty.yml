@@ -100,7 +100,7 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: Cousine Nerd Font
+    family: FiraCode Nerd Font
 
     # The `style` can be specified to pick a specific face.
     # style: Regular
@@ -111,7 +111,7 @@ font:
     #
     # If the bold family is not specified, it will fall back to the
     # value specified for the normal font.
-    family: Cousine Nerd Font
+    family: FiraCode Nerd Font
 
     # The `style` can be specified to pick a specific face.
     # style: Bold
@@ -122,7 +122,7 @@ font:
     #
     # If the italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    family: Cousine Nerd Font
+    family: FiraCode Nerd Font
 
     # The `style` can be specified to pick a specific face.
     # style: Italic
@@ -133,7 +133,7 @@ font:
     #
     # If the bold italic family is not specified, it will fall back to the
     # value specified for the normal font.
-    family: Cousine Nerd Font
+    family: FiraCode Nerd Font
 
     # The `style` can be specified to pick a specific face.
     # style: Bold Italic
@@ -164,97 +164,72 @@ font:
 #draw_bold_text_with_bright_colors: false
 
 # Colors (Nightfox)
-# colors:
-#   # Default colors
-#   primary:
-#     # foreground: '0xCDCECF'
-#     # background: '0x192330'
-#     background: '0x192330'
-#     foreground: '0xcdcecf'
-
-#   # Cursor colors
-#   cursor:
-#     text: '0x5c6370'
-#     cursor: '0xabb2bf'
-
-#   # Normal colors
-#   normal:
-#     # black:   '0x5c6370'
-#     # red:     '0xe06c75'
-#     # green:   '0x98c379'
-#     # yellow:  '0xe5c07b'
-#     # blue:    '0x61afef'
-#     # magenta: '0xc678dd'
-#     # cyan:    '0x56b6c2'
-#     # white:   '0xabb2bf'
-#     black:   '0x393b44'
-#     red:     '0xc94f6d'
-#     green:   '0x81b29a'
-#     yellow:  '0xdbc074'
-#     blue:    '0x719cd6'
-#     magenta: '0x9d79d6'
-#     cyan:    '0x63cdcf'
-#     white:   '0xdfdfe0'
-#   # Bright colors
-#   bright:
-#     # black:   '0x4b5263'
-#     # red:     '0xbe5046'
-#     # green:   '0x98c379'
-#     # yellow:  '0xd19a66'
-#     # blue:    '0x61afef'
-#     # magenta: '0xc678dd'
-#     # cyan:    '0x56b6c2'
-#     # white:   '0x3e4452'
-
-#     black:   '0x7f8c98'
-#     red:     '0xd6616b'
-#     green:   '0x58cd8b'
-#     yellow:  '0xffe37e'
-#     blue:    '0x84cee4'
-#     magenta: '0xb8a1e3'
-#     cyan:    '0x59f0ff'
-#     white:   '0xf2f2f2'
-#   indexed_colors:
-#     - { index: 16, color: '0xf4a261' }
-#     - { index: 17, color: '0xd67ad2' }
-
-# Catppuccin!
 colors:
   # Default colors
   primary:
-    background: '#1E1E28'
-    foreground: '#DADAE8'
-
-  # Colors the cursor will use if `custom_cursor_colors` is true
-  cursor:
-    text: '#1E1E28'
-    cursor: '#B1E3AD'
-
+    background: '0x192330'
+    foreground: '0xcdcecf'
   # Normal colors
   normal:
-    black:   '#6E6C7E'
-    red:     '#E38C8F'
-    green:   '#B1E3AD'
-    yellow:  '#EBDDAA'
-    blue:    '#A4B9EF'
-    magenta: '#C6AAE8'
-    cyan:    '#E5B4E2'
-    white:   '#DADAE8'
-
+    black:   '0x393b44'
+    red:     '0xc94f6d'
+    green:   '0x81b29a'
+    yellow:  '0xdbc074'
+    blue:    '0x719cd6'
+    magenta: '0x9d79d6'
+    cyan:    '0x63cdcf'
+    white:   '0xdfdfe0'
   # Bright colors
   bright:
-    black:   '#6E6C7E'
-    red:     '#E38C8F'
-    green:   '#B1E3AD'
-    yellow:  '#EBDDAA'
-    blue:    '#A4B9EF'
-    magenta: '#C6AAE8'
-    cyan:    '#E5B4E2'
-    white:   '#DADAE8'
-
+    black:   '0x575860'
+    red:     '0xd16983'
+    green:   '0x8ebaa4'
+    yellow:  '0xe0c989'
+    blue:    '0x86abdc'
+    magenta: '0xbaa1e2'
+    cyan:    '0x7ad4d6'
+    white:   '0xe4e4e5'
   indexed_colors:
-    - { index: 16, color: '#F2CECF' }
-    - { index: 17, color: '#3E4058' }
+    - { index: 16, color: '0xf4a261' }
+    - { index: 17, color: '0xd67ad2' }
+
+# Catppuccin!
+# colors:
+#   # Default colors
+#   primary:
+#     background: '#1E1E28'
+#     foreground: '#DADAE8'
+
+#   # Colors the cursor will use if `custom_cursor_colors` is true
+#   cursor:
+#     text: '#1E1E28'
+#     cursor: '#B1E3AD'
+
+#   # Normal colors
+#   normal:
+#     black:   '#6E6C7E'
+#     red:     '#E38C8F'
+#     green:   '#B1E3AD'
+#     yellow:  '#EBDDAA'
+#     blue:    '#A4B9EF'
+#     magenta: '#C6AAE8'
+#     cyan:    '#E5B4E2'
+#     white:   '#DADAE8'
+
+#   # Bright colors
+#   bright:
+#     black:   '#6E6C7E'
+#     red:     '#E38C8F'
+#     green:   '#B1E3AD'
+#     yellow:  '#EBDDAA'
+#     blue:    '#A4B9EF'
+#     magenta: '#C6AAE8'
+#     cyan:    '#E5B4E2'
+#     white:   '#DADAE8'
+
+#   indexed_colors:
+#     - { index: 16, color: '#F2CECF' }
+#     - { index: 17, color: '#3E4058' }
 # Bell
 #
 # The bell is rung every time the BEL control character is received.

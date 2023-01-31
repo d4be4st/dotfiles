@@ -84,6 +84,19 @@ ls.add_snippets("slim", {
   })
 })
 
+ls.add_snippets("heex", {
+  s({trig = "="}, {
+      t("<%= "),
+      i(0),
+      t(" %>")
+  }),
+  s({trig = "%"}, {
+      t("<% "),
+      i(0),
+      t(" %>")
+  })
+})
+
 -- Mappings
 vim.keymap.set('i', '<Tab>', function() ls.jump(1) end, { silent = true })
 vim.keymap.set('i', '<S-Tab>', function() ls.jump(-1) end, { silent = true })

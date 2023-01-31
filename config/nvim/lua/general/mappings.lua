@@ -56,6 +56,9 @@ vim.keymap.set('v', '<leader>p', '"+p')
 vim.keymap.set('n', '<leader>d', '"_dd')
 vim.keymap.set('v', '<leader>d', '"_d')
 
+-- Reselect pasted text
+vim.keymap.set('n', 'gp', '`[v`]')
+
 -- Keep the cursor in place while joining lines
 vim.keymap.set('n', 'J', 'mzJ`z')
 

@@ -1,12 +1,11 @@
 vim.g.mapleader = " " -- user <space> as leader
+vim.opt.termguicolors = true
 vim.opt.confirm = true -- confirm before exiting
-vim.opt.hidden = true -- close hidden buffers
-vim.opt.bufhidden = "hide"
+vim.opt.hidden = false -- close hidden buffers
 vim.opt.laststatus = 3 -- global statusline
 vim.opt.scrolloff = 8 -- minimal number of screen lines above and below cursor
 vim.opt.showmode = false -- remove --INSERT--
 vim.opt.showtabline = 2 -- always show tabline
--- vim.opt.tabline = '%!v:lua.require\'luatab\'.tabline()'
 vim.opt.splitbelow = true -- open new splits below
 vim.opt.splitright = true -- open new splits on the right
 vim.opt.switchbuf = "usetab,newtab" -- open buffer in new tab
@@ -34,5 +33,7 @@ vim.opt.tabstop = tabspaces
 vim.opt.shiftwidth = tabspaces
 vim.opt.expandtab = true
 
--- vim.api.nvim_create_autocmd("
-vim.cmd('autocmd BufEnter * setlocal formatoptions-=o')
+vim.cmd("autocmd BufEnter * setlocal formatoptions-=o")
+-- vim.api.nvim_create_autocmd({"BufEnter"}, { pattern = {"*"}, callback = function ()
+--   vim.opt.formatoptions = 0
+-- end})

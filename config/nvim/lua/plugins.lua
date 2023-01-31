@@ -1,102 +1,81 @@
-vim.cmd [[packadd packer.nvim]]
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
 
-return require("packer").startup(
-  function(use)
-    use {"wbthomason/packer.nvim", opt = true}
-    -- use 'svermeulen/vimpeccable'
+require("lazy").setup({
+  "nvim-lua/plenary.nvim",
+  "nvim-lua/popup.nvim",
+  "kyazdani42/nvim-web-devicons",
 
-    use "nvim-lua/plenary.nvim"
-    use "nvim-lua/popup.nvim"
-    use "kyazdani42/nvim-web-devicons"
+  -- theme
+  'EdenEast/nightfox.nvim',
 
-    use { 'norcalli/nvim-colorizer.lua', config = require('colorizer').setup() }
+  -- LSP
+  "neovim/nvim-lspconfig",
+  { "onsails/lspkind-nvim", config = function() require("lspkind").init({ mode = "symbol_text" }) end },
+  "nvim-lua/lsp-status.nvim",
+  "folke/trouble.nvim",
+  "b0o/schemastore.nvim",
 
-    -- theme
-    use 'EdenEast/nightfox.nvim'
-    use({
-      "catppuccin/nvim",
-      as = "catppuccin"
+  -- completion
+  'hrsh7th/cmp-nvim-lsp',
+  'hrsh7th/cmp-buffer',
+  'hrsh7th/cmp-path',
+  'hrsh7th/cmp-cmdline',
+  'hrsh7th/nvim-cmp',
+  "L3MON4D3/LuaSnip",
+  'saadparwaiz1/cmp_luasnip',
+
+  "nvim-telescope/telescope.nvim",
+  { "nvim-telescope/telescope-file-browser.nvim" },
+  { "nvim-treesitter/nvim-treesitter", build = ':TSUpdate' },
+  { "lewis6991/gitsigns.nvim", config = function() require('gitsigns').setup() end },
+  "glepnir/galaxyline.nvim",
+  { 'karb94/neoscroll.nvim', config = function() require('neoscroll').setup() end },
+  { 'b3nj5m1n/kommentary', config = function()
+    require('kommentary.config').configure_language("default", {
+      prefer_single_line_comments = true,
     })
+  end },
 
-    -- LSP
-    use "neovim/nvim-lspconfig"
-    use { "onsails/lspkind-nvim", config = require("lspkind").init( { mode = "symbol_text" })}
-    use "nvim-lua/lsp-status.nvim"
-    use { "folke/trouble.nvim", config = function() require("trouble").setup { } end }
+  -- new stuff
+  "yamatsum/nvim-cursorline",
+  { 'alvarosevilla95/luatab.nvim', config = function() require('luatab').setup({}) end },
 
-    -- completion
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-buffer'
-    use 'hrsh7th/cmp-path'
-    use 'hrsh7th/cmp-cmdline'
-    use 'hrsh7th/nvim-cmp'
-    use "L3MON4D3/LuaSnip"
-    use 'saadparwaiz1/cmp_luasnip'
-    -- use 'akinsho/toggleterm.nvim'
+  "ggandor/leap.nvim",
 
-    use "nvim-telescope/telescope.nvim"
-    use {"nvim-treesitter/nvim-treesitter", run = ':TSUpdate' }
-    use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
-    use {"lewis6991/gitsigns.nvim", config = require('gitsigns').setup()}
-    use {'glepnir/galaxyline.nvim', branch = "main"}
-    use { 'karb94/neoscroll.nvim', config = require('neoscroll').setup() }
-    -- use 'blackCauldron7/surround.nvim'
-    use { 'b3nj5m1n/kommentary', config =
-      require('kommentary.config').configure_language("default", {
-          prefer_single_line_comments = true,
-      })
-    }
+  { "RRethy/nvim-treesitter-endwise",
+    config = function() require('nvim-treesitter.configs').setup { endwise = { enable = true } } end },
+  {
+    "AckslD/nvim-neoclip.lua",
+    config = function()
+      require('neoclip').setup()
+    end,
+  },
+  "AndrewRadev/splitjoin.vim",
+  'dyng/ctrlsf.vim',
+  'michaeljsmith/vim-indent-object',
+  'whiteinge/diffconflicts',
+  'machakann/vim-highlightedyank',
+  'rhysd/clever-f.vim',
+  'tpope/vim-eunuch',
+  'tpope/vim-surround',
+  'tpope/vim-repeat',
 
-    -- new stuff
-    use 'yamatsum/nvim-cursorline'
-    -- use 'pwntester/octo.nvim'
-    -- use 'jose-elias-alvarez/null-ls.nvim'
-    use {'alvarosevilla95/luatab.nvim', config = require('luatab').setup({})}
-    use { 'RRethy/nvim-treesitter-endwise', config = require('nvim-treesitter.configs').setup { endwise = { enable = true } } }
-    -- use 'David-Kunz/treesitter-unit'
-    use {
-      "cuducos/yaml.nvim",
-      ft = {"yaml"},
-      config = function ()
-        require("yaml_nvim").init()
-      end
-    }
-    use {
-      "AckslD/nvim-neoclip.lua",
-      config = function()
-        require('neoclip').setup()
-      end,
-    }
-    use { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install' }
-    -- vim
-    use 'wakatime/vim-wakatime'
-    use { 'AndrewRadev/splitjoin.vim'}
-    use 'dyng/ctrlsf.vim'
-    use 'michaeljsmith/vim-indent-object'
-    use 'whiteinge/diffconflicts'
-    use { 'machakann/vim-highlightedyank'}
-    use 'rhysd/clever-f.vim'
-    use 'tpope/vim-eunuch'
-    use 'tpope/vim-surround'
-    use 'tpope/vim-repeat'
-    use 'vim-crystal/vim-crystal'
-    use 'jidn/vim-dbml'
-
-
-    -- languages
-    use 'elixir-editors/vim-elixir'
-    use 'slim-template/vim-slim'
-    use 'glench/vim-jinja2-syntax'
-    use 'hashivim/vim-terraform'
-
-    -- use 'alvan/vim-closetag'
-    -- use 'svermeulen/vim-yoink'
-    -- use 'wellle/targets.vim'
-    -- { use 'vim-ruby/vim-ruby', config = "vim.g.ruby_indent_block_style = 'do'" }
-    -- use 'tpope/vim-rails'
-    -- use 'pangloss/vim-javascript'
-    -- use 'amadeus/vim-mjml'
-    -- use 'tbastos/vim-lua'
-    use 'dstein64/vim-startuptime'
-  end
-)
+  --     -- languages
+  'vim-crystal/vim-crystal',
+  'jidn/vim-dbml',
+  -- 'elixir-editors/vim-elixir'
+  'slim-template/vim-slim',
+  'glench/vim-jinja2-syntax',
+  'hashivim/vim-terraform',
+})

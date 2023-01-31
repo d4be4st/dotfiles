@@ -1,5 +1,4 @@
 require "general.settings"
-require "general.theme"
 require "general.mappings"
 
 require "plugins"
@@ -12,3 +11,5 @@ require "plugins.ctrlsf"
 require "plugins.snippets"
 -- require "plugins.toggleterm"
 require "plugins.other"
+
+require "general.theme"
