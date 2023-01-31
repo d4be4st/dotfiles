@@ -8,9 +8,6 @@
   - "~/.config/nvim"
   - "~/.ssh"
 
-- shell:
-  - [git submodule update --init --recursive, Installing submodules]
-
 - link:
     ~/.aprc: aprc
     ~/.config/nvim: config/nvim
@@ -18,4 +15,10 @@
     ~/.gitconfig: gitconfig
     ~/.gitignore: gitignore
     ~/.railsrc: railsrc
+    ~/Brewfile: Brewfile
+    ~/.zsh/aliases: zsh_aliases
+
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]
+  - [brew bundle]
 
