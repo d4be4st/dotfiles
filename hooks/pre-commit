@@ -1,4 +1,0 @@
-op edit document zshenv zshenv
-op edit document id_rsa ssh/id_rsa
-op edit document id_rsa.pub ssh/id_rsa.pub
-op edit document ssh_config ssh/config
