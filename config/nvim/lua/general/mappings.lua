@@ -1,8 +1,10 @@
+local wk = require("which-key")
+
 vim.g.mapleader = " " -- user <space> as leader
 
 -- Allow misspellings
 vim.cmd('cnoreabbrev qw wq')
-vim.cmd('cnoreabbrev Wq wq')
+vim.cmd("cnoreabbrev Wq wq")
 vim.cmd('cnoreabbrev WQ wq')
 vim.cmd('cnoreabbrev W w')
 vim.cmd('cnoreabbrev Q q')
@@ -14,59 +16,60 @@ vim.cmd('cnoreabbrev qt tabclose')
 -- remove highlights
 vim.keymap.set('n', '<leader><leader>', function()
   vim.cmd('nohlsearch')
-end, {silent = true})
+end, {silent = true, desc = "Clear search highlights"})
 
 -- undo
-vim.keymap.set('n', 'U', '<C-r>')
--- misspelled :q
-vim.keymap.set('n', 'q:', '')
+vim.keymap.set('n', 'U', '<C-r>', { desc = "Redo" })
+-- misstyped :q
+vim.keymap.set('n', 'q:', '', { desc = "Misstyped :q"})
 
 -- Saner command line history
-vim.keymap.set('c', '<c-n>', '<down>')
-vim.keymap.set('c', '<c-p>', '<up>')
+vim.keymap.set('c', '<c-n>', '<down>', { desc = "Command -- history [n]ext" })
+vim.keymap.set('c', '<c-p>', '<up>', {desc = "Command -- history [p]revious" })
 
 -- Don't lose selection when shifting sidewards
-vim.keymap.set('x', '<', '<gv')
-vim.keymap.set('x', '>', '>gv')
+vim.keymap.set('x', '<', '<gv', {desc = "Saner indent left"})
+vim.keymap.set('x', '>', '>gv', {desc = "Saner indent right"})
 
 -- Easier window switching
-vim.keymap.set('n', '<C-h>', '<C-w>h')
-vim.keymap.set('n', '<C-j>', '<C-w>j')
-vim.keymap.set('n', '<C-k>', '<C-w>k')
-vim.keymap.set('n', '<C-l>', '<C-w>l')
+vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = "Switch to pane left"})
+vim.keymap.set('n', '<C-j>', '<C-w>j', { desc = "Switch to pane down"})
+vim.keymap.set('n', '<C-k>', '<C-w>k', { desc = "Switch to pane up"})
+vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = "Switch to pane right"})
 
 -- Remap H and L (top, bottom of screen to left and right end of line)
-vim.keymap.set('n', 'H', '^')
-vim.keymap.set('n', 'L', '$')
-vim.keymap.set('v', 'H', '^')
-vim.keymap.set('v', 'L', 'g_')
+vim.keymap.set('n', 'H', '^', { desc = "Go to the beginning of the line"})
+vim.keymap.set('n', 'L', '$', { desc = "Go to the end of the line"})
+vim.keymap.set('v', 'H', '^', { desc = "Select to the beginning of the line"})
+vim.keymap.set('v', 'L', 'g_', { desc = "Select to the end of the line"})
 
 -- More logical Y (default was alias for yy)
-vim.keymap.set('n', 'Y', 'y$')
+vim.keymap.set('n', 'Y', 'y$', { desc = "[Y]ank whole line"})
 
 -- Yank and paste from clipboard
-vim.keymap.set('v', '<leader>y', '"+y')
-vim.keymap.set('n', '<leader>Y', '"+Y')
-vim.keymap.set('v', '<leader>Y', '"+Y')
-vim.keymap.set('n', '<leader>yy', '"+yy')
-vim.keymap.set('n', '<leader>p', '"+p')
-vim.keymap.set('v', '<leader>p', '"+p')
+wk.register({["<leader>y"] = { name = "+yank" }})
+vim.keymap.set('v', '<leader>y', '"+y', { desc = "Yank selection to clipboard"})
+vim.keymap.set('n', '<leader>Y', '"+Y', { desc = "Yank whole line to clipboard"})
+vim.keymap.set('v', '<leader>Y', '"+Y', { desc = "Yank whole line to clipboard"})
+vim.keymap.set('n', '<leader>yy', '"+yy', { desc = "Yank whole line to clipboard"})
+vim.keymap.set('n', '<leader>p', '"+p', { desc = "Paste from clipboard"})
+vim.keymap.set('v', '<leader>p', '"+p', { desc = "Paste from to selection"})
 
 -- Delete and change to black hole
-vim.keymap.set('n', '<leader>d', '"_dd')
-vim.keymap.set('v', '<leader>d', '"_d')
+vim.keymap.set('n', '<leader>d', '"_dd', { desc = "Delete without yanking"})
+vim.keymap.set('v', '<leader>d', '"_d', { desc = "Delete selection without yanking"})
 
 -- Reselect pasted text
-vim.keymap.set('n', 'gp', '`[v`]')
+vim.keymap.set('n', 'gp', '`[v`]', { desc = "Reselect pasted text"})
 
 -- Keep the cursor in place while joining lines
-vim.keymap.set('n', 'J', 'mzJ`z')
+vim.keymap.set('n', 'J', 'mzJ`z', { desc = "[J]oin lines"})
 
 -- [S]plit line (sister to [J]oin lines) S is covered by cc.
-vim.keymap.set('n', 'S', 'mzi<CR><ESC>`z')
+vim.keymap.set('n', 'S', 'mzi<CR><ESC>`z', { desc = "[S]plit line"})
 
 -- Select all text
-vim.keymap.set('n', 'vA', 'ggVG')
+vim.keymap.set('n', 'vA', 'ggVG', { desc = "Select all text"})
 
 -- Switch between tabs
 -- set Ctrl-n to S-Fn in iterm prefs
@@ -79,60 +82,82 @@ vim.keymap.set('n', 'vA', 'ggVG')
 -- vim.keymap.set('n', '<S-F7>', '7gt')
 -- vim.keymap.set('n', '<S-F8>', '8gt')
 -- vim.keymap.set('n', '<S-F9>', '9gt')
-vim.keymap.set('n', '<F13>', '1gt')
-vim.keymap.set('n', '<F14>', '2gt')
-vim.keymap.set('n', '<F15>', '3gt')
-vim.keymap.set('n', '<F16>', '4gt')
-vim.keymap.set('n', '<F17>', '5gt')
-vim.keymap.set('n', '<F18>', '6gt')
-vim.keymap.set('n', '<F19>', '7gt')
-vim.keymap.set('n', '<F20>', '8gt')
-vim.keymap.set('n', '<F21>', '9gt')
+-- vim.keymap.set('n', '<F13>', '1gt')
+-- vim.keymap.set('n', '<F14>', '2gt')
+-- vim.keymap.set('n', '<F15>', '3gt')
+-- vim.keymap.set('n', '<F16>', '4gt')
+-- vim.keymap.set('n', '<F17>', '5gt')
+-- vim.keymap.set('n', '<F18>', '6gt')
+-- vim.keymap.set('n', '<F19>', '7gt')
+-- vim.keymap.set('n', '<F20>', '8gt')
+-- vim.keymap.set('n', '<F21>', '9gt')
+vim.keymap.set('n', '<leader>1', '1gt')
+vim.keymap.set('n', '<leader>2', '2gt')
+vim.keymap.set('n', '<leader>3', '3gt')
+vim.keymap.set('n', '<leader>4', '4gt')
+vim.keymap.set('n', '<leader>5', '5gt')
+vim.keymap.set('n', '<leader>6', '6gt')
+vim.keymap.set('n', '<leader>7', '7gt')
+vim.keymap.set('n', '<leader>8', '8gt')
+vim.keymap.set('n', '<leader>9', '9gt')
+-- vim.keymap.set('n', '1', '1gt', { desc = "Go to tab 1"})
+-- vim.keymap.set('n', '2', '2gt', { desc = "Go to tab 2"})
+-- vim.keymap.set('n', '3', '3gt', { desc = "Go to tab 3"})
+-- vim.keymap.set('n', '4', '4gt', { desc = "Go to tab 4"})
+-- vim.keymap.set('n', '5', '5gt', { desc = "Go to tab 5"})
+-- vim.keymap.set('n', '6', '6gt', { desc = "Go to tab 6"})
+-- vim.keymap.set('n', '7', '7gt', { desc = "Go to tab 7"})
+-- vim.keymap.set('n', '8', '8gt', { desc = "Go to tab 8"})
+-- vim.keymap.set('n', '9', '9gt', { desc = "Go to tab 9"})
 
 -- Intelligent windows resizing using ctrl + arrow keys
-vim.keymap.set('n', '<S-Up>', '   :resize +2<CR>')
-vim.keymap.set('n', '<S-Down>', ' :resize -2<CR>')
-vim.keymap.set('n', '<S-Left>', ' :vertical resize +2<CR>')
-vim.keymap.set('n', '<S-Right>', ':vertical resize -2<CR>')
+-- vim.keymap.set('n', '<S-Up>', '   :resize +2<CR>')
+-- vim.keymap.set('n', '<S-Down>', ' :resize -2<CR>')
+-- vim.keymap.set('n', '<S-Left>', ' :vertical resize +2<CR>')
+-- vim.keymap.set('n', '<S-Right>', ':vertical resize -2<CR>')
 -- Zoom one pane
-vim.keymap.set('n', '<leader>-', '<C-W><C-|><C-W><C-_>')
+-- vim.keymap.set('n', '<leader>-', '<C-W><C-|><C-W><C-_>')
 -- Restore panes
-vim.keymap.set('n', '<leader>=', '<C-w><C-=>')
+-- vim.keymap.set('n', '<leader>=', '<C-w><C-=>')
 
 -- Creating splits withyempty buffers in all directions
-vim.keymap.set('n', '<Leader>nh', ':leftabove  vnew<CR>')
-vim.keymap.set('n', '<Leader>nl', ':rightbelow vnew<CR>')
-vim.keymap.set('n', '<Leader>nk', ':leftabove  new<CR>')
-vim.keymap.set('n', '<Leader>nj', ':rightbelow new<CR>')
-vim.keymap.set('n', '<Leader>nt', ':tabe<CR>')
+wk.register({["<leader>n"] = { name = "+new panes" } })
+vim.keymap.set('n', '<leader>nh', ':leftabove  vnew<CR>', { desc = "Create new pane above"})
+vim.keymap.set('n', '<leader>nl', ':rightbelow vnew<CR>', { desc = "Create new pane below"})
+vim.keymap.set('n', '<leader>nk', ':leftabove  new<CR>', { desc = "Create new pane left"})
+vim.keymap.set('n', '<leader>nj', ':rightbelow new<CR>', { desc = "Create new pane right"})
+vim.keymap.set('n', '<leader>nt', ':tabe<CR>', { desc = "Create new tab"})
 
-vim.keymap.set('c', '<C-a>', '<home>')
+-- Command Emacs home
+vim.keymap.set('c', '<C-a>', '<home>', { desc = "Command -- goto beginning"})
 
 -- Current file things
-vim.keymap.set('n', '<leader>os', function()
-  local path = vim.fn.expand('%')
-  vim.api.nvim_input(":sav "..path)
-end)
-vim.keymap.set('n', '<leader>ok', function()
-  local path = vim.fn.expand('%:h')
-  vim.api.nvim_input(":Mkdir! "..path)
-end)
-vim.keymap.set('n', '<leader>or', function()
-  local path = vim.fn.expand('%:t')
-  vim.api.nvim_input(":Rename "..path)
-end)
-vim.keymap.set('n', '<leader>om', function()
-  local path = vim.fn.expand('%')
-  vim.api.nvim_input(":Move "..path)
-end)
-vim.keymap.set('n', '<leader>od', function()
-  vim.api.nvim_input(":Delete")
-end)
+-- Eunuch
+-- vim.keymap.set('n', '<leader>os', function()
+--   local path = vim.fn.expand('%')
+--   vim.api.nvim_input(":sav "..path)
+-- end)
+-- vim.keymap.set('n', '<leader>ok', function()
+--   local path = vim.fn.expand('%:h')
+--   vim.api.nvim_input(":Mkdir! "..path)
+-- end)
+-- vim.keymap.set('n', '<leader>or', function()
+--   local path = vim.fn.expand('%:t')
+--   vim.api.nvim_input(":Rename "..path)
+-- end)
+-- vim.keymap.set('n', '<leader>om', function()
+--   local path = vim.fn.expand('%')
+--   vim.api.nvim_input(":Move "..path)
+-- end)
+-- vim.keymap.set('n', '<leader>od', function()
+--   vim.api.nvim_input(":Delete!")
+-- end)
 
 -- Copy dir/file/line to clipboard
+wk.register({ ["<leader>s"] = { name = "+specs" } })
 vim.keymap.set('n', '<leader>sl', function()
   vim.api.nvim_command('let @*=expand("%") . ":" . line(".")')
-end)
+end, { desc = "[S]pecs -- Copy file and [l]ine to clipboard"})
 vim.keymap.set('n', '<leader>sf', function()
   vim.api.nvim_command('let @*=expand("%")')
-end)
+end, { desc = "[S]pecs -- Copy [f]ile to clipboard"})
