@@ -1,6 +1,5 @@
 local wk = require("which-key")
 
-vim.g.mapleader = " " -- user <space> as leader
 
 -- Allow misspellings
 vim.cmd('cnoreabbrev qw wq')
@@ -154,10 +153,10 @@ vim.keymap.set('c', '<C-a>', '<home>', { desc = "Command -- goto beginning"})
 -- end)
 
 -- Copy dir/file/line to clipboard
-wk.register({ ["<leader>s"] = { name = "+specs" } })
-vim.keymap.set('n', '<leader>sl', function()
-  vim.api.nvim_command('let @*=expand("%") . ":" . line(".")')
-end, { desc = "[S]pecs -- Copy file and [l]ine to clipboard"})
-vim.keymap.set('n', '<leader>sf', function()
-  vim.api.nvim_command('let @*=expand("%")')
-end, { desc = "[S]pecs -- Copy [f]ile to clipboard"})
+-- wk.register({ ["<leader>s"] = { name = "+specs" } })
+-- vim.keymap.set('n', '<leader>sl', function()
+--   vim.api.nvim_command('let @*=expand("%") . ":" . line(".")')
+-- end, { desc = "[S]pecs -- Copy file and [l]ine to clipboard"})
+-- vim.keymap.set('n', '<leader>sf', function()
+--   vim.api.nvim_command('let @*=expand("%")')
+-- end, { desc = "[S]pecs -- Copy [f]ile to clipboard"})
