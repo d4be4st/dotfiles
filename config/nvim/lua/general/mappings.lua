@@ -1,6 +1,5 @@
 local wk = require("which-key")
 
-
 -- Allow misspellings
 vim.cmd('cnoreabbrev qw wq')
 vim.cmd("cnoreabbrev Wq wq")

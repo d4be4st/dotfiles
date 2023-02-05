@@ -9,7 +9,6 @@ return {
     extended_keymaps = true
   },
   },
-  "b0o/schemastore.nvim",
   { "chrisgrieser/nvim-genghis", dependencies = "stevearc/dressing.nvim" },
   'windwp/nvim-spectre',
   { 'sindrets/diffview.nvim' },
