@@ -109,10 +109,10 @@ vim.keymap.set('n', '<leader>9', '9gt')
 -- vim.keymap.set('n', '9', '9gt', { desc = "Go to tab 9"})
 
 -- Intelligent windows resizing using ctrl + arrow keys
--- vim.keymap.set('n', '<S-Up>', '   :resize +2<CR>')
--- vim.keymap.set('n', '<S-Down>', ' :resize -2<CR>')
--- vim.keymap.set('n', '<S-Left>', ' :vertical resize +2<CR>')
--- vim.keymap.set('n', '<S-Right>', ':vertical resize -2<CR>')
+vim.keymap.set('n', '<S-Up>', '   :resize +2<CR>', { silent = true, desc = "Resize up"})
+vim.keymap.set('n', '<S-Down>', ' :resize -2<CR>', { silent = true, desc = "Resize down"})
+vim.keymap.set('n', '<S-Left>', ' :vertical resize +2<CR>', { silent = true, desc = "Resize left"})
+vim.keymap.set('n', '<S-Right>', ':vertical resize -2<CR>', { silent = true, desc = "Resize right"})
 -- Zoom one pane
 -- vim.keymap.set('n', '<leader>-', '<C-W><C-|><C-W><C-_>')
 -- Restore panes

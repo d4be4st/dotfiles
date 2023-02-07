@@ -1,10 +1,12 @@
 return {
   {
     "neovim/nvim-lspconfig",
+    event = "BufReadPre",
     dependencies = {
       "mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "b0o/schemastore.nvim",
+      { "cshuaimin/ssr.nvim", name = "ssr" },
     },
     config = function()
       local nvim_lsp = require('lspconfig')

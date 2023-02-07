@@ -15,6 +15,7 @@ return {
           "heex",
           "html",
           "markdown",
+          "markdown_inline",
           "json",
           "lua",
           "ruby",
@@ -25,7 +26,7 @@ return {
         highlight = {
           enable = true, -- false will disable the whole extension
           use_languagetree = true,
-          additional_vim_regex_highlighting = false
+          additional_vim_regex_highlighting = { "markdown" },
         },
         indent = {
           enable = true
