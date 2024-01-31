@@ -10,18 +10,16 @@ return {
       require('spectre').setup()
     end
   },
-
   {
-    "ggandor/leap.nvim",
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    opts = {},
+    -- stylua: ignore
     keys = {
-      { '<leader>/', function() require('leap').leap {} end, { 'n', 'v' }, silent = true, desc = "Leap forward" },
-      { '<leader>?', function() require('leap').leap { backward = true } end, 'n', 'v',
-        { silent = true, desc = "Leap backwards" } },
-      { '<leader>=', function()
-        require('leap').leap {
-          target_windows = require 'leap.util'.get_enterable_windows()
-        }
-      end, { 'n', 'x', 'o' }, silent = true, desc = "Leap cross window" },
-    }
-  },
+      { "<leader>/", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    },
+  }
 }

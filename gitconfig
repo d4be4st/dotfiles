@@ -1,7 +1,7 @@
 [user]
 	email = d4be4st@gmail.com
 	name = Stjepan Hadjic
-	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL5NrsstlxX9XmaWK/caALU+cQ00Z2lmZ6Edb1cuIaD+
+	signingkey = ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4tg3BtZ8yvEMxouvdqEhgD09Fq/0GFU/IyT0P8gHfIqoCAvAFwdzPAU7k7djUhBJQvDh3u6LDr33Q2QadaYEQzt+XIZCCTt2y7X5vY15/XVi/atOrcOijOQnyZ8ffHxDkWHV6kJ9xmS/dojGUBTKxsoSedjLoaGV9WrafnSvgyFqIDhCgquAK2Kt88a30FwkUoJRw1nlddtrbMh2ACSNG+cV4lLS7Ihr6dNTNFsg1moLqx71lx3ENZdKhId533xgHoccvw4uLX93tF2I/OOvbX/6iBiC1p/3O59A52POA/kMb+ntnLjzKDqKYrGKcrykHRV3yqFKM6BQpoMIQg7Rr
 [core]
 	excludesfile = /Users/stef/.gitignore
 	editor = nvim
@@ -20,7 +20,7 @@
 [color]
 	ui = true
 [mergetool "diffconflicts"]
-	cmd = nvim -c DiffConflicts \"$MERGED\" \"$BASE\" \"$LOCAL\" \"$REMOTE\"
+	cmd = nvim -c DiffviewOpen
 	trustExitCode = true
 [mergetool]
 	keepBackup = false
@@ -39,3 +39,5 @@
 	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
 [commit]
 	gpgsign = true
+[init]
+	defaultBranch = master

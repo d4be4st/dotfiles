@@ -9,7 +9,6 @@
   - "~/.ssh"
 
 - link:
-    ~/.aprc: aprc
     ~/.config/nvim: config/nvim
     ~/.gemrc: gemrc
     ~/.gitconfig: gitconfig
@@ -17,6 +16,7 @@
     ~/.railsrc: railsrc
     ~/Brewfile: Brewfile
     ~/.zsh/aliases: zsh_aliases
+    ~/.zshrc: zshrc
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

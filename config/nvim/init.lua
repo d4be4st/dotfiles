@@ -21,3 +21,4 @@ require "general.settings"
 require("lazy").setup('plugins')
 
 require "general.mappings"
+require "my_plugins.file"

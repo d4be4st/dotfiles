@@ -36,13 +36,15 @@ return {
           -- { name = 'snippy' }, -- For snippy users.
           -- { name = 'nvim_lua' },
         }, {
-          { name = 'buffer',
-            option = {
-              get_bufnrs = function()
-                return vim.api.nvim_list_bufs()
-              end
-            }
-          },
+            {name = 'buffer'},
+            {name = 'path'}
+          -- { name = 'buffer',
+          --   option = {
+          --     get_bufnrs = function()
+          --       return vim.api.nvim_list_bufs()
+          --     end
+          --   }
+          -- },
         })
       })
 
@@ -75,8 +77,8 @@ return {
     },
     config = function()
       local ls = require('luasnip')
-      vim.keymap.set('i', '<Tab>', function() ls.jump(1) end, { silent = true })
-      vim.keymap.set('i', '<S-Tab>', function() ls.jump(-1) end, { silent = true })
+      vim.keymap.set('i', '<C-k>', function() ls.jump(1) end, { silent = true })
+      vim.keymap.set('i', '<S-C-k>', function() ls.jump(-1) end, { silent = true })
       vim.keymap.set('i', '<C-e>', function() ls.change_choice(1) end, { silent = true, expr = true})
 
       require("luasnip/loaders/from_vscode").lazy_load()

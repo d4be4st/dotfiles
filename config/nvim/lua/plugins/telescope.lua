@@ -1,10 +1,10 @@
 return {
   "nvim-telescope/telescope.nvim",
-  lazy = true,
   dependencies = {
     'nvim-lua/plenary.nvim',
     'nvim-tree/nvim-web-devicons',
-    "nvim-telescope/telescope-file-browser.nvim"
+    "nvim-telescope/telescope-file-browser.nvim",
+    "nvim-telescope/telescope-fzy-native.nvim",
   },
   opts = {
     pickers = {
@@ -15,6 +15,7 @@ return {
   },
   init = function()
     require("telescope").load_extension "file_browser"
+    require('telescope').load_extension('fzy_native')
     require("which-key").register({
       ["<leader>f"] = { name = "[Telescope] +[F]ind" },
       ["<leader>r"] = { name = "[Telescope] +[R]uby" }
@@ -31,7 +32,10 @@ return {
     vim.keymap.set('n', "<Leader>fr", ts_builtin.oldfiles, { desc = "Recently opened files" })
     vim.keymap.set('n', "<Leader>fb", function() telescope.extensions.file_browser.file_browser() end,
       { desc = "Open [B]rowser" })
+    vim.keymap.set('n', "<Leader>fB", function() telescope.extensions.file_browser.file_browser({path = '%:p:h', select_buffer =true}) end,
+      { desc = "Open [B]rowser in current path" })
     vim.keymap.set('n', "<Leader>fc", ts_builtin.command_history, { desc = "[C]ommand Histroy" })
+    vim.keymap.set('n', "<Leader>fe", ts_builtin.resume, { desc = "R[e]sume" })
     -- vim.keymap.set('n', "<Leader>fr", ts_builtin.registers)
     vim.keymap.set('n', "<Leader>fm", ts_builtin.keymaps, { desc = "Key[m]aps" })
     vim.keymap.set('n', "<Leader>fy", ts_builtin.filetypes, { desc = "Filet[y]pes" })
@@ -40,6 +44,7 @@ return {
     vim.keymap.set('n', "<Leader>ft", ts_builtin.treesitter, { desc = "[T]reesitter" })
     vim.keymap.set('n', "<Leader>fh", ts_builtin.help_tags, { desc = "[H]elp Tags" })
     -- vim.keymap.set('n', "<Leader>fd", ts_builtin.diagnostics, { desc = "[D]iagnostics"} )
+    vim.keymap.set('n', "<Leader>fs", ts_builtin.lsp_document_symbols, { desc = "LSP [S]ymobls" })
 
     -- ruby
     vim.keymap.set('n', "<Leader>rm", function()

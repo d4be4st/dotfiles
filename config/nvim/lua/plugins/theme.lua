@@ -18,11 +18,10 @@ return {
     end
   },
   {
-    'feline-nvim/feline.nvim',
+    'freddiehaddad/feline.nvim',
     name = "feline",
     config = function()
-      local ctp_feline = require('catppuccin.groups.integrations.feline')
-
+      local ctp_feline = require('my_plugins.feline')
       ctp_feline.setup({})
 
       require("feline").setup({

@@ -36,22 +36,26 @@ return {
           { desc = "Goto [P]revious Diagnostics" })
         vim.keymap.set('n', '<leader>ln', function() require("lspsaga.diagnostic"):goto_next() end,
           { desc = "Goto [N]ext Diagnostics" })
-        vim.keymap.set('n', '<leader>ll', function() require("lspsaga.diagnostic"):show_diagnostics(arg, 'line') end,
+        vim.keymap.set('n', '<leader>ll',
+          function() require("lspsaga.diagnostic.show"):show_diagnostics({ line = true, args = arg }) end,
           { desc = "Show [L]ine Diagnostics" })
-        vim.keymap.set('n', '<leader>lb', function() require("lspsaga.diagnostic"):show_buf_diagnsotic(arg, 'buffer') end
-          ,
+        vim.keymap.set('n', '<leader>lb',
+          function() require("lspsaga.diagnostic.show"):show_diagnsotics({ buffer = true, args = arg }) end,
           { desc = "Show [B]uffer diagnostics" })
+        vim.keymap.set('n', '<leader>lc',
+          function() require("lspsaga.diagnostic.show"):show_diagnsotics({ cursor = true, args = arg }) end,
+          { desc = "Show [C]ursor diagnostics" })
         vim.keymap.set('n', '<leader>la', function() require('lspsaga.codeaction'):code_action() end,
           { desc = "Code [A]ctions" })
         vim.keymap.set('n', '<leader>lh', function() require('lspsaga.hover'):render_hover_doc() end,
           { desc = "[H]over" })
         vim.keymap.set('n', '<leader>lr', function() require('lspsaga.rename'):lsp_rename() end, { desc = "[R]ename" })
-        vim.keymap.set('n', '<leader>ld', function() require('lspsaga.definition'):peek_definition() end,
+        vim.keymap.set('n', '<leader>ld', function() require('lspsaga.definition'):peek_definition(1) end,
           { desc = "peek [D]efinition" })
-        vim.keymap.set('n', '<leader>lg', function() require('lspsaga.definition'):goto_definition() end,
+        vim.keymap.set('n', '<leader>lg', function() require('lspsaga.definition'):goto_definition(1) end,
           { desc = "[G]oto Definition" })
-        vim.keymap.set('n', '<leader>lo', function() require('lspsaga.outline'):outline() end, { desc = "[O]utline" })
-        vim.keymap.set('n', '<leader>l/', function() require('lspsaga.finder'):lsp_finder() end, { desc = "[/] finder" })
+        vim.keymap.set('n', '<leader>lo', function() require('lspsaga.symbol'):outline() end, { desc = "[O]utline" })
+        vim.keymap.set('n', '<leader>l/', function() require('lspsaga.finder'):new() end, { desc = "[/] finder" })
         vim.keymap.set('n', '<leader>lf', function() vim.lsp.buf.format { async = true } end, { desc = "[F]ormat" })
         vim.keymap.set({ 'n', 'x' }, '<leader>ls', function() require('ssr').open() end,
           { desc = "[S]earch and replace" })
@@ -71,6 +75,7 @@ return {
           workspace = {
             -- Make the server aware of Neovim runtime files
             library = vim.api.nvim_get_runtime_file("", true),
+            checkThirdParty = false,
           },
           -- Do not send telemetry data containing a randomized but unique identifier
           telemetry = {
@@ -91,6 +96,7 @@ return {
             { textDocument = params },
             function(err, result)
               if err then return end
+              if result == nil then return end
 
               vim.lsp.diagnostic.on_publish_diagnostics(
                 nil,
@@ -129,19 +135,21 @@ return {
           "cssls",
           "jsonls",
           "yamlls",
-          "sumneko_lua",
+          "lua_ls",
           -- "solargraph",
-          "ruby_ls",
+          -- "ruby_ls",
+          "rubocop",
           "elixirls",
           "html",
           "svelte",
+          "sqlls"
         }
 
         for _, server in pairs(servers) do
           local config = make_config()
 
           -- language specific config
-          if server == "sumneko_lua" then
+          if server == "lua_ls" then
             config.settings = lua_settings
           end
 
@@ -169,8 +177,35 @@ return {
           if server == "ruby_ls" then
             config.on_attach = ruby_attach
             config.init_options = {
-              enabledFeatures = { "codeActions", "diagnostics", "documentHighlights", "documentSymbols", "formatting",
-                "inlayHint", "hover" }
+              safeAutocorrect = false,
+              rubyLsp = { featuresConfiguration = { inlayHint = { enableAll = true } } }
+              -- enabledFeatures = {
+              --   "codeActions",
+              --   "codeActionResolve",
+              --   "codeLens",
+              --   "definition",
+              --   "diagnostics",
+              --   "documentHighlights",
+              --   "documentLink",
+              --   "documentSymbols",
+              --   "foldingRange",
+              --   "formatting",
+              --   "inlayHint",
+              --   "hover",
+              --   "onTypeFormatting",
+              --   "pathCompletion",
+              --   "selectionRange",
+              --   "semanticHighlighting",
+              --   "showSyntaxTree",
+              --   "workspaceSymbol",
+              -- }
+            }
+            config.cmd = { "/Users/stef/.asdf/shims/ruby-lsp" }
+          end
+
+          if server == "rubocop" then
+            config.init_options = {
+              safeAutocorrect = false
             }
           end
 
@@ -197,15 +232,18 @@ return {
   },
 
   -- other
-  { "onsails/lspkind-nvim", config = function() require("lspkind").init({ mode = "symbol_text" }) end },
+  { "onsails/lspkind-nvim",              config = function() require("lspkind").init({ mode = "symbol_text" }) end },
   { "glepnir/lspsaga.nvim",
     event = "BufRead",
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
     opts = {
       lightbulb = {
         virtual_text = false,
       }
     }
   },
-  { "williamboman/mason.nvim", config = function() require("mason").setup() end },
+  { "williamboman/mason.nvim",           config = function() require("mason").setup() end },
   { "williamboman/mason-lspconfig.nvim", config = function() require("mason-lspconfig").setup() end },
 }

@@ -15,11 +15,12 @@ vim.opt.updatetime = 100 -- default updatetime 4000ms is not good for async upda
 vim.opt.swapfile = false -- do not use swapfile
 vim.opt.undofile = true -- enable undo file
 vim.opt.undofile = true -- enable undo file
-vim.opt.colorcolumn = "120" -- higlight column
+vim.opt.colorcolumn = "150" -- higlight column
 vim.opt.list = true -- show tabs
 vim.opt.number = true -- show numbers
 vim.opt.signcolumn = "yes" -- show gutter
 vim.opt.wrap = false -- disable wrap
+vim.opt.mouse = "a"
 
 -- search
 vim.opt.inccommand = "split" -- show search in preview

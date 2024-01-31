@@ -10,6 +10,7 @@ vim.cmd('cnoreabbrev Qa qa')
 vim.cmd('cnoreabbrev Xa xa')
 vim.cmd('cnoreabbrev t tabe')
 vim.cmd('cnoreabbrev qt tabclose')
+vim.cmd('cnoreabbrev Qt tabclose')
 
 -- remove highlights
 vim.keymap.set('n', '<leader><leader>', function()
@@ -53,9 +54,9 @@ vim.keymap.set('n', '<leader>yy', '"+yy', { desc = "Yank whole line to clipboard
 vim.keymap.set('n', '<leader>p', '"+p', { desc = "Paste from clipboard"})
 vim.keymap.set('v', '<leader>p', '"+p', { desc = "Paste from to selection"})
 
--- Delete and change to black hole
-vim.keymap.set('n', '<leader>d', '"_dd', { desc = "Delete without yanking"})
-vim.keymap.set('v', '<leader>d', '"_d', { desc = "Delete selection without yanking"})
+-- -- Delete and change to black hole
+-- vim.keymap.set('n', '<leader>d', '"_dd', { desc = "Delete without yanking"})
+-- vim.keymap.set('v', '<leader>d', '"_d', { desc = "Delete selection without yanking"})
 
 -- Reselect pasted text
 vim.keymap.set('n', 'gp', '`[v`]', { desc = "Reselect pasted text"})
@@ -129,33 +130,7 @@ vim.keymap.set('n', '<leader>nt', ':tabe<CR>', { desc = "Create new tab"})
 -- Command Emacs home
 vim.keymap.set('c', '<C-a>', '<home>', { desc = "Command -- goto beginning"})
 
--- Current file things
--- Eunuch
--- vim.keymap.set('n', '<leader>os', function()
---   local path = vim.fn.expand('%')
---   vim.api.nvim_input(":sav "..path)
--- end)
--- vim.keymap.set('n', '<leader>ok', function()
---   local path = vim.fn.expand('%:h')
---   vim.api.nvim_input(":Mkdir! "..path)
--- end)
--- vim.keymap.set('n', '<leader>or', function()
---   local path = vim.fn.expand('%:t')
---   vim.api.nvim_input(":Rename "..path)
--- end)
--- vim.keymap.set('n', '<leader>om', function()
---   local path = vim.fn.expand('%')
---   vim.api.nvim_input(":Move "..path)
--- end)
--- vim.keymap.set('n', '<leader>od', function()
---   vim.api.nvim_input(":Delete!")
--- end)
-
+-- Terminal mode
+vim.keymap.set('t', '<ESC>', [[<C-\><C-n>]], { desc = "Return to normal mode"})
 -- Copy dir/file/line to clipboard
 -- wk.register({ ["<leader>s"] = { name = "+specs" } })
--- vim.keymap.set('n', '<leader>sl', function()
---   vim.api.nvim_command('let @*=expand("%") . ":" . line(".")')
--- end, { desc = "[S]pecs -- Copy file and [l]ine to clipboard"})
--- vim.keymap.set('n', '<leader>sf', function()
---   vim.api.nvim_command('let @*=expand("%")')
--- end, { desc = "[S]pecs -- Copy [f]ile to clipboard"})

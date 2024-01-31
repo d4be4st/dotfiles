@@ -12,3 +12,6 @@ alias rbbI='rbbi \
   && print vendor/assets >>! .gitignore \
   && print vendor/bundle >>! .gitignore \
   && print vendor/cache  >>! .gitignore'
+
+alias ram="git ls-files -m | xargs ls -1 2>/dev/null | grep -E '\.rake$|\.rb$' | xargs rubocop -A"
+alias ras="git diff --name-only --cached | xargs ls -1 2>/dev/null | grep -E '\.rake$|\.rb$' | xargs rubocop -A"

@@ -2,6 +2,10 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ':TSUpdate',
+    dependencies = {
+      "RRethy/nvim-treesitter-endwise",
+      'nvim-treesitter/nvim-treesitter-textobjects',
+    },
     config = function()
       require 'nvim-treesitter.configs'.setup {
         ensure_installed = {
@@ -89,8 +93,7 @@ return {
           enable = true
         }
       }
-    end,
-    keys = function()
+
       local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
 
       -- Repeat movement with ; and ,
@@ -103,8 +106,11 @@ return {
       vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F)
       vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t)
       vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T)
-    end
+    end,
   },
-  { "RRethy/nvim-treesitter-endwise" },
-  { 'nvim-treesitter/nvim-treesitter-textobjects' },
+    -- Other languages
+  {
+    'jlcrochet/vim-crystal',
+  },
+
 }

@@ -10,5 +10,6 @@ coverage
 .solargraph.yml
 .tool-versions
 Guardfile
+priv_docs/
 
 stef_*.md
