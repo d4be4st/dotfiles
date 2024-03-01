@@ -27,6 +27,7 @@ return {
       vim.keymap.set("n", "<leader>do", dap.step_out, { desc = "Step [O]ut" })
       vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "Open [R]EPL" })
       vim.keymap.set("n", "<leader>dv", dap.step_over, { desc = "Step O[v]er" })
+      vim.keymap.set("n", "<leader>dx", dap.terminate, { desc = "[X] Terminate" })
 
       vim.keymap.set("n", "<leader>dC", dapui.close, { desc = "DAP UI: [C]lose" })
       vim.keymap.set("n", "<leader>dO", dapui.open, { desc = "DAP UI: [O]pen" })

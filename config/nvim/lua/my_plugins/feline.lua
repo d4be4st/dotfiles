@@ -31,7 +31,7 @@ local sett = {
   extras = C.overlay1,
   curr_file = C.maroon,
   curr_dir = C.flamingo,
-  show_modified = false,
+  show_modified = true,
 }
 
 if require("catppuccin").flavour == "latte" then
@@ -144,88 +144,23 @@ function M.get()
     hl = vi_mode_hl,
   }
 
-  -- there is a dilemma: we need to hide Diffs if there is no git info. We can do that, but this will
-  -- leave the right_separator colored with purple, and since we can't change the color conditonally
-  -- then the solution is to create two right_separators: one with a mauve sett.bkg and the other one normal
-  -- sett.bkg; both have the same fg (vi mode). The mauve one appears if there is git info, else the one with
-  -- the normal sett.bkg appears. Fixed :)
-
-  -- enable if git diffs are not available
   components.active[1][3] = {
-    provider = assets.right_separator,
-    hl = function()
-      return {
-        fg = mode_colors[vim.fn.mode()][2],
-        bg = sett.bkg,
-      }
+    provider = function()
+      local filename = vim.fn.expand "%:t"
+      local extension = vim.fn.expand "%:e"
+      local present, icons = pcall(require, "nvim-web-devicons")
+      local icon = present and icons.get_icon(filename, extension) or assets.file
+      return (sett.show_modified and "%m" or "") .. " " .. icon .. " " .. filename .. " "
     end,
-    enabled = function() return not any_git_changes() end,
-  }
-
-  -- enable if git diffs are available
-  components.active[1][4] = {
-    provider = assets.right_separator,
-    hl = function()
-      return {
-        fg = mode_colors[vim.fn.mode()][2],
-        bg = sett.diffs,
-      }
-    end,
-    enabled = function() return any_git_changes() end,
-  }
-  -- Current vi mode ------>
-
-  -- Diffs ------>
-  components.active[1][5] = {
-    provider = "git_diff_added",
+    enabled = is_enabled(70),
     hl = {
       fg = sett.text,
-      bg = sett.diffs,
+      bg = sett.curr_file,
     },
-    icon = " " .. assets.git.added .. " ",
   }
-
-  components.active[1][6] = {
-    provider = "git_diff_changed",
-    hl = {
-      fg = sett.text,
-      bg = sett.diffs,
-    },
-    icon = " " .. assets.git.changed .. " ",
-  }
-
-  components.active[1][7] = {
-    provider = "git_diff_removed",
-    hl = {
-      fg = sett.text,
-      bg = sett.diffs,
-    },
-    icon = " " .. assets.git.removed .. " ",
-  }
-
-  components.active[1][8] = {
-    provider = " ",
-    hl = {
-      fg = sett.bkg,
-      bg = sett.diffs,
-    },
-    enabled = function() return any_git_changes() end,
-  }
-
-  components.active[1][9] = {
-    provider = assets.right_separator,
-    hl = {
-      fg = sett.diffs,
-      bg = sett.bkg,
-    },
-    enabled = function() return any_git_changes() end,
-  }
-  -- Diffs ------>
-
-  -- Extras ------>
 
   -- file progress
-  components.active[1][10] = {
+  components.active[1][4] = {
     provider = function()
       local current_line = vim.fn.line "."
       local total_line = vim.fn.line "$"
@@ -249,7 +184,7 @@ function M.get()
   }
 
   -- position
-  components.active[1][11] = {
+  components.active[1][5] = {
     provider = "position",
     -- enabled = shortline or function(winid)
     -- 	return vim.api.nvim_win_get_width(winid) > 90
@@ -262,7 +197,7 @@ function M.get()
   }
 
   -- macro
-  components.active[1][12] = {
+  components.active[1][6] = {
     provider = "macro",
     enabled = function() return vim.api.nvim_get_option "cmdheight" == 0 end,
     hl = {
@@ -273,7 +208,7 @@ function M.get()
   }
 
   -- search count
-  components.active[1][13] = {
+  components.active[1][7] = {
     provider = "search_count",
     enabled = function() return vim.api.nvim_get_option "cmdheight" == 0 end,
     hl = {
@@ -403,29 +338,43 @@ function M.get()
     right_sep = invi_sep,
   }
 
+  -- Diffs ------>
   components.active[3][3] = {
-    provider = function()
-      local filename = vim.fn.expand "%:t"
-      local extension = vim.fn.expand "%:e"
-      local present, icons = pcall(require, "nvim-web-devicons")
-      local icon = present and icons.get_icon(filename, extension) or assets.file
-      return (sett.show_modified and "%m" or "") .. " " .. icon .. " " .. filename .. " "
-    end,
-    enabled = is_enabled(70),
+    provider = "git_diff_added",
     hl = {
       fg = sett.text,
-      bg = sett.curr_file,
+      bg = sett.diffs,
     },
-    left_sep = {
-      str = assets.left_separator,
-      hl = {
-        fg = sett.curr_file,
-        bg = sett.bkg,
-      },
-    },
+    icon = " " .. assets.git.added .. " ",
   }
 
   components.active[3][4] = {
+    provider = "git_diff_changed",
+    hl = {
+      fg = sett.text,
+      bg = sett.diffs,
+    },
+    icon = " " .. assets.git.changed .. " ",
+  }
+
+  components.active[3][5] = {
+    provider = "git_diff_removed",
+    hl = {
+      fg = sett.text,
+      bg = sett.diffs,
+    },
+    icon = " " .. assets.git.removed .. " ",
+    right_sep = {
+      str = " ",
+      hl = {
+        fg = sett.text,
+        bg = sett.diffs,
+      },
+    }
+  }
+  -- Diffs ------>
+
+  components.active[3][6] = {
     provider = function()
       local dir_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
       return " " .. assets.dir .. " " .. dir_name .. " "
@@ -434,13 +383,6 @@ function M.get()
     hl = {
       fg = sett.text,
       bg = sett.curr_dir,
-    },
-    left_sep = {
-      str = assets.left_separator,
-      hl = {
-        fg = sett.curr_dir,
-        bg = sett.curr_file,
-      },
     },
   }
   -- ######## Right
