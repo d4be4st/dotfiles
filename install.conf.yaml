@@ -17,6 +17,7 @@
     ~/Brewfile: Brewfile
     ~/.zsh/aliases: zsh_aliases
     ~/.zshrc: zshrc
+    ~/.warp: warp
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
