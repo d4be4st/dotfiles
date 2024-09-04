@@ -5,6 +5,7 @@ return {
     dependencies = {
       "RRethy/nvim-treesitter-endwise",
       'nvim-treesitter/nvim-treesitter-textobjects',
+      'nvim-treesitter/playground'
     },
     config = function()
       require 'nvim-treesitter.configs'.setup {
@@ -40,23 +41,33 @@ return {
             enable = true,
             lookahead = true,
             keymaps = {
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
+              ["am"] = "@function.outer",
+              ["im"] = "@function.inner",
               ["ac"] = "@class.outer",
               ["ic"] = "@class.inner",
               ['ab'] = '@block.outer',
               ['ib'] = '@block.inner',
               ['ap'] = '@parameter.outer',
               ['ip'] = '@parameter.inner',
+              ['ar'] = '@rspec_example.outer',
+              ['ir'] = '@rspec_example.inner',
+              ['aa'] = '@array.outer',
+              ['ia'] = '@array.inner',
+              ['ah'] = '@hash.outer',
+              ['ih'] = '@hash.inner'
             },
           },
           swap = {
             enable = true,
             swap_next = {
-              ["<leader>a"] = "@parameter.inner",
+              ["<leader>ip"] = "@parameter.inner",
+              ["<leader>ia"] = "@array.inner",
+              ["<leader>ih"] = "@hash.inner",
             },
             swap_previous = {
-              ["<leader>A"] = "@parameter.inner",
+              ["<leader>iP"] = "@parameter.inner",
+              ["<leader>iA"] = "@array.inner",
+              ["<leader>iH"] = "@hash.inner",
             },
           },
           move = {

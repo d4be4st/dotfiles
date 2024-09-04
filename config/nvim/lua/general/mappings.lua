@@ -35,6 +35,8 @@ vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = "Switch to pane left"})
 vim.keymap.set('n', '<C-j>', '<C-w>j', { desc = "Switch to pane down"})
 vim.keymap.set('n', '<C-k>', '<C-w>k', { desc = "Switch to pane up"})
 vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = "Switch to pane right"})
+vim.keymap.set('n', '<C-c>', '<C-w>c', { desc = "Close window"})
+vim.keymap.set('i', '<C-c>', '<Esc><C-w>c', { desc = "Close window"})
 
 -- Remap H and L (top, bottom of screen to left and right end of line)
 vim.keymap.set('n', 'H', '^', { desc = "Go to the beginning of the line"})

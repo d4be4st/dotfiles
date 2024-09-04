@@ -22,3 +22,5 @@ require("lazy").setup('plugins')
 
 require "general.mappings"
 require "my_plugins.file"
+require "my_plugins.gleam"
+require "my_plugins.git"

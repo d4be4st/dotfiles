@@ -35,6 +35,7 @@ return {
           -- { name = 'ultisnips' }, -- For ultisnips users.
           -- { name = 'snippy' }, -- For snippy users.
           -- { name = 'nvim_lua' },
+          -- { name = "codeium" },
         }, {
             {name = 'buffer'},
             {name = 'path'}

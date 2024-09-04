@@ -5,6 +5,7 @@ coverage
 .flooignore
 .floo
 .vscode
+.idea
 .asdfrc
 .git
 .solargraph.yml
@@ -13,3 +14,8 @@ Guardfile
 priv_docs/
 
 stef_*.md
+
+doc/
+.yardoc
+
+shell.nix

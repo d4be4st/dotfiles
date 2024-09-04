@@ -1,4 +1,5 @@
 vim.g.mapleader = " " -- user <space> as leader
+vim.cmd("syntax off")
 vim.opt.termguicolors = true
 vim.opt.confirm = true -- confirm before exiting
 vim.opt.hidden = false -- close hidden buffers

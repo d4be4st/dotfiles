@@ -35,22 +35,13 @@ return {
       gs.setup()
     end,
   },
-  -- {
-  --   'pwntester/octo.nvim',
-  --   config = function()
-  --     require('octo').setup({
-  --       pull_requests = {
-  --         order_by = {                           -- criteria to sort the results of `Octo pr list`
-  --           field = "UPDATED_AT",                -- either COMMENTS, CREATED_AT or UPDATED_AT (https://docs.github.com/en/graphql/reference/enums#issueorderfield)
-  --           direction = "DESC"                   -- either DESC or ASC (https://docs.github.com/en/graphql/reference/enums#orderdirection)
-  --         },
-  --       }}
-  --     )
-  --     require('which-key').register({ ["<leader>go"] = { name = "+[O]cto" } })
-  --     vim.keymap.set('n', '<leader>goa', "<cmd>Octo actions<cr>", { desc = "[A]ctions" })
-  --     vim.keymap.set('n', '<leader>gor', "<cmd>Octo review start<cr>", { desc = "[R]eview Start" })
-  --     vim.keymap.set('n', '<leader>gos', "<cmd>Octo review submit<cr>", { desc = "Review [S]ubmit" })
-  --     vim.keymap.set('n', '<leader>goc', "<cmd>Octo comment add<cr>", { desc = "[C]omment add" })
-  --   end,
-  -- }
+  {
+    "almo7aya/openingh.nvim",
+    config = function()
+      require("openingh").setup({})
+      vim.keymap.set('n', '<leader>gl', ":OpenInGHFileLines <CR>", { desc = "Open in GitHub [L]ines" })
+      vim.keymap.set('v', '<leader>gl', ":OpenInGHFileLines <CR>", { desc = "Open in GitHub [L]ines" })
+      vim.keymap.set('n', '<leader>gf', ":OpenInGHFile <CR>", { desc = "Open in GitHub [F]ile" })
+    end
+  }
 }

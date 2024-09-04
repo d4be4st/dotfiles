@@ -1,10 +1,41 @@
+local on_attach_global = function(bufnr)
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  require("which-key").register({ ["<leader>l"] = { name = "[L]sp" } })
+  vim.keymap.set('n', '<leader>lp', function() require("lspsaga.diagnostic"):goto_prev() end,
+    { desc = "Goto [P]revious Diagnostics" })
+  vim.keymap.set('n', '<leader>ln', function() require("lspsaga.diagnostic"):goto_next() end,
+    { desc = "Goto [N]ext Diagnostics" })
+  vim.keymap.set('n', '<leader>ll',
+    function() require("lspsaga.diagnostic.show"):show_diagnostics({ line = true, args = arg }) end,
+    { desc = "Show [L]ine Diagnostics" })
+  vim.keymap.set('n', '<leader>lb',
+    function() require("lspsaga.diagnostic.show"):show_diagnostics({ buffer = true, args = args }) end,
+    { desc = "Show [B]uffer diagnostics" })
+  vim.keymap.set('n', '<leader>lc',
+    function() require("lspsaga.diagnostic.show"):show_diagnostics({ cursor = true, args = arg }) end,
+    { desc = "Show [C]ursor diagnostics" })
+  vim.keymap.set('n', '<leader>la', function() require('lspsaga.codeaction'):code_action() end,
+    { desc = "Code [A]ctions" })
+  vim.keymap.set('n', '<leader>lh', function() require('lspsaga.hover'):render_hover_doc() end,
+    { desc = "[H]over" })
+  vim.keymap.set('n', '<leader>lr', function() require('lspsaga.rename'):lsp_rename() end, { desc = "[R]ename" })
+  vim.keymap.set('n', '<leader>ld', function() require('lspsaga.definition'):init(1, 1) end,
+    { desc = "peek [D]efinition" })
+  vim.keymap.set('n', '<leader>lg', function() require('lspsaga.definition'):init(1, 2) end,
+    { desc = "[G]oto Definition" })
+  vim.keymap.set('n', '<leader>lo', function() require('lspsaga.symbol'):outline() end, { desc = "[O]utline" })
+  vim.keymap.set('n', '<leader>l/', function() require('lspsaga.finder'):new() end, { desc = "[/] finder" })
+  vim.keymap.set('n', '<leader>lf', function() vim.lsp.buf.format { async = true } end, { desc = "[F]ormat" })
+  vim.keymap.set({ 'n', 'x' }, '<leader>ls', function() require('ssr').open() end,
+    { desc = "[S]earch and replace" })
+end
 return {
   {
     "neovim/nvim-lspconfig",
     event = "BufReadPre",
     dependencies = {
-      "mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
       "b0o/schemastore.nvim",
       { "cshuaimin/ssr.nvim", name = "ssr" },
     },
@@ -12,53 +43,7 @@ return {
       local nvim_lsp = require('lspconfig')
 
       local on_attach = function(client, bufnr)
-        vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-        -- Mappings.
-        -- local ts_builtin = require("telescope.builtin")
-        -- vim.keymap.set('n', '<leader>lp', function() vim.diagnostic.goto_prev() end)
-        -- vim.keymap.set('n', '<leader>ln', function() vim.diagnostic.goto_next() end)
-        -- vim.keymap.set('n', '<leader>ll', function() vim.diagnostic.show_line_diagnostics() end)
-        -- vim.keymap.set('n', '<leader>lr', function() vim.lsp.buf.rename() end)
-        -- vim.keymap.set('n', '<leader>lh', function() vim.lsp.buf.hover() end)
-        -- vim.keymap.set('n', '<leader>lD', function() vim.lsp.buf.declaration() end)
-        -- vim.keymap.set('n', '<leader>ld', function() ts_builtin.lsp_definitions() end)
-        -- vim.keymap.set('n', '<leader>li', function() vim.lsp.buf.implementation() end)
-        -- vim.keymap.set('n', '<leader>ls', function() vim.lsp.buf.signature_help() end)
-        -- vim.keymap.set('n', '<leader>lR', function() ts_builtin.lsp_references() end)
-        -- vim.keymap.set('n', '<leader>la', function() vim.lsp.buf.code_action() end)
-        -- vim.keymap.set('n', '<leader>le', function() ts_builtin.lsp_document_diagnostics() end)
-        -- vim.keymap.set('n', '<leader>lt', function() require('trouble').open() end)
-        -- vim.keymap.set('n', '<leader>lf', function() vim.lsp.buf.format { async = true } end)
-        -- LspSaga
-        require("which-key").register({ ["<leader>l"] = { name = "[L]sp" } })
-        vim.keymap.set('n', '<leader>lp', function() require("lspsaga.diagnostic"):goto_prev() end,
-          { desc = "Goto [P]revious Diagnostics" })
-        vim.keymap.set('n', '<leader>ln', function() require("lspsaga.diagnostic"):goto_next() end,
-          { desc = "Goto [N]ext Diagnostics" })
-        vim.keymap.set('n', '<leader>ll',
-          function() require("lspsaga.diagnostic.show"):show_diagnostics({ line = true, args = arg }) end,
-          { desc = "Show [L]ine Diagnostics" })
-        vim.keymap.set('n', '<leader>lb',
-          function() require("lspsaga.diagnostic.show"):show_diagnsotics({ buffer = true, args = arg }) end,
-          { desc = "Show [B]uffer diagnostics" })
-        vim.keymap.set('n', '<leader>lc',
-          function() require("lspsaga.diagnostic.show"):show_diagnsotics({ cursor = true, args = arg }) end,
-          { desc = "Show [C]ursor diagnostics" })
-        vim.keymap.set('n', '<leader>la', function() require('lspsaga.codeaction'):code_action() end,
-          { desc = "Code [A]ctions" })
-        vim.keymap.set('n', '<leader>lh', function() require('lspsaga.hover'):render_hover_doc() end,
-          { desc = "[H]over" })
-        vim.keymap.set('n', '<leader>lr', function() require('lspsaga.rename'):lsp_rename() end, { desc = "[R]ename" })
-        vim.keymap.set('n', '<leader>ld', function() require('lspsaga.definition'):peek_definition(1) end,
-          { desc = "peek [D]efinition" })
-        vim.keymap.set('n', '<leader>lg', function() require('lspsaga.definition'):goto_definition(1) end,
-          { desc = "[G]oto Definition" })
-        vim.keymap.set('n', '<leader>lo', function() require('lspsaga.symbol'):outline() end, { desc = "[O]utline" })
-        vim.keymap.set('n', '<leader>l/', function() require('lspsaga.finder'):new() end, { desc = "[/] finder" })
-        vim.keymap.set('n', '<leader>lf', function() vim.lsp.buf.format { async = true } end, { desc = "[F]ormat" })
-        vim.keymap.set({ 'n', 'x' }, '<leader>ls', function() require('ssr').open() end,
-          { desc = "[S]earch and replace" })
+        on_attach_global(bufnr)
       end
 
       -- Configure lua language server for neovim development
@@ -136,10 +121,15 @@ return {
           "jsonls",
           "yamlls",
           "lua_ls",
-          -- "solargraph",
-          -- "ruby_ls",
+          "gleam",
+          "solargraph",
+          -- "ruby_lsp",
+          "ember",
+          -- "eslint",
+          -- "nextls",
+          "glint",
           "rubocop",
-          "elixirls",
+          -- "elixirls",
           "html",
           "svelte",
           "sqlls"
@@ -200,7 +190,7 @@ return {
               --   "workspaceSymbol",
               -- }
             }
-            config.cmd = { "/Users/stef/.asdf/shims/ruby-lsp" }
+            -- config.cmd = { "/Users/stef/.asdf/shims/ruby-lsp" }
           end
 
           if server == "rubocop" then
@@ -230,10 +220,29 @@ return {
       setup_servers()
     end
   },
+  {
+    "nvimtools/none-ls.nvim",
+    dependencies = {
+      "nvimtools/none-ls-extras.nvim",
+    },
+    config = function()
+      require("null-ls").setup({
+        sources = {
+          require('none-ls.diagnostics.eslint'),
+        },
+        debug = true,
+        default_timeout = 10000,
+      })
+    end
+  },
 
   -- other
-  { "onsails/lspkind-nvim",              config = function() require("lspkind").init({ mode = "symbol_text" }) end },
-  { "glepnir/lspsaga.nvim",
+  {
+    "onsails/lspkind-nvim",
+    config = function() require("lspkind").init({ mode = "symbol_text" }) end,
+  },
+  {
+    "glepnir/lspsaga.nvim",
     event = "BufRead",
     dependencies = {
       'nvim-tree/nvim-web-devicons',
@@ -244,6 +253,35 @@ return {
       }
     }
   },
-  { "williamboman/mason.nvim",           config = function() require("mason").setup() end },
-  { "williamboman/mason-lspconfig.nvim", config = function() require("mason-lspconfig").setup() end },
+  {
+    "elixir-tools/elixir-tools.nvim",
+    version = "*",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local elixir = require("elixir")
+      local elixirls = require("elixir.elixirls")
+
+      elixir.setup {
+        nextls = { enable = true },
+        elixirls = {
+          enable = true,
+          settings = elixirls.settings {
+            dialyzerEnabled = false,
+            enableTestLenses = false,
+          },
+          on_attach = function(client, bufnr)
+            on_attach_global(bufnr)
+            vim.keymap.set("n", "<space>eP", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
+            vim.keymap.set("n", "<space>ep", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
+          end,
+        },
+        projectionist = {
+          enable = false
+        }
+      }
+    end,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+  }
 }
