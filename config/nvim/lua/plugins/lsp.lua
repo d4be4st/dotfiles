@@ -2,19 +2,19 @@ local on_attach_global = function(bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   -- Mappings.
-  require("which-key").register({ ["<leader>l"] = { name = "[L]sp" } })
+  require("which-key").add({ { "<leader>l", group = "[L]sp" }, })
   vim.keymap.set('n', '<leader>lp', function() require("lspsaga.diagnostic"):goto_prev() end,
     { desc = "Goto [P]revious Diagnostics" })
   vim.keymap.set('n', '<leader>ln', function() require("lspsaga.diagnostic"):goto_next() end,
     { desc = "Goto [N]ext Diagnostics" })
   vim.keymap.set('n', '<leader>ll',
-    function() require("lspsaga.diagnostic.show"):show_diagnostics({ line = true, args = arg }) end,
+    function() require("lspsaga.diagnostic.show"):show_diagnostics({ line = true }) end,
     { desc = "Show [L]ine Diagnostics" })
   vim.keymap.set('n', '<leader>lb',
-    function() require("lspsaga.diagnostic.show"):show_diagnostics({ buffer = true, args = args }) end,
+    function() require("lspsaga.diagnostic.show"):show_diagnostics({ buffer = true }) end,
     { desc = "Show [B]uffer diagnostics" })
   vim.keymap.set('n', '<leader>lc',
-    function() require("lspsaga.diagnostic.show"):show_diagnostics({ cursor = true, args = arg }) end,
+    function() require("lspsaga.diagnostic.show"):show_diagnostics({ cursor = true }) end,
     { desc = "Show [C]ursor diagnostics" })
   vim.keymap.set('n', '<leader>la', function() require('lspsaga.codeaction'):code_action() end,
     { desc = "Code [A]ctions" })
@@ -33,6 +33,29 @@ local on_attach_global = function(bufnr)
 end
 return {
   {
+    "williamboman/mason.nvim",
+    build = ":MasonUpdate",
+    opts = {},
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = { "williamboman/mason.nvim" },
+    opts = {
+      ensure_installed = {
+        "ts_ls",
+        "cssls",
+        "jsonls",
+        "yamlls",
+        "lua_ls",
+        "eslint",
+        "pylsp",
+        "tailwindcss",
+        "svelte",
+        "sqlls",
+      },
+    },
+  },
+  {
     "neovim/nvim-lspconfig",
     event = "BufReadPre",
     dependencies = {
@@ -40,8 +63,6 @@ return {
       { "cshuaimin/ssr.nvim", name = "ssr" },
     },
     config = function()
-      local nvim_lsp = require('lspconfig')
-
       local on_attach = function(client, bufnr)
         on_attach_global(bufnr)
       end
@@ -103,7 +124,7 @@ return {
       -- config that activates keymaps and enables snippet support
       local function make_config()
         -- local capabilities = vim.lsp.protocol.make_client_capabilities()
-        local capabilities = require('cmp_nvim_lsp').default_capabilities()
+        local capabilities = require('blink.cmp').get_lsp_capabilities()
 
         return {
           -- enable snippet support
@@ -116,21 +137,24 @@ return {
       local function setup_servers()
         -- get all installed servers
         local servers = {
-          "tsserver",
+          "ts_ls",
           "cssls",
           "jsonls",
           "yamlls",
           "lua_ls",
           "gleam",
-          "solargraph",
-          -- "ruby_lsp",
-          "ember",
-          -- "eslint",
-          -- "nextls",
-          "glint",
+          -- "solargraph",
+          "ruby_lsp",
           "rubocop",
+          "herb_ls",
+          -- "ember",
+          "eslint",
+          -- "nextls",
+          -- "glint"
           -- "elixirls",
-          "html",
+          "pylsp",
+          "tailwindcss",
+          -- "html",
           "svelte",
           "sqlls"
         }
@@ -164,33 +188,15 @@ return {
             config.filetypes = { "html", "heex", "erb" }
           end
 
-          if server == "ruby_ls" then
-            config.on_attach = ruby_attach
+          if server == "ruby_lsp" then
             config.init_options = {
-              safeAutocorrect = false,
-              rubyLsp = { featuresConfiguration = { inlayHint = { enableAll = true } } }
-              -- enabledFeatures = {
-              --   "codeActions",
-              --   "codeActionResolve",
-              --   "codeLens",
-              --   "definition",
-              --   "diagnostics",
-              --   "documentHighlights",
-              --   "documentLink",
-              --   "documentSymbols",
-              --   "foldingRange",
-              --   "formatting",
-              --   "inlayHint",
-              --   "hover",
-              --   "onTypeFormatting",
-              --   "pathCompletion",
-              --   "selectionRange",
-              --   "semanticHighlighting",
-              --   "showSyntaxTree",
-              --   "workspaceSymbol",
-              -- }
+              featuresConfiguration = {
+                inlayHint = { enableAll = true },
+                rubocop = { safeAutocorrect = false }
+              },
+              formatter = "auto",
+              linters = {}
             }
-            -- config.cmd = { "/Users/stef/.asdf/shims/ruby-lsp" }
           end
 
           if server == "rubocop" then
@@ -199,48 +205,29 @@ return {
             }
           end
 
-          nvim_lsp[server].setup(config)
+          vim.lsp.config(server, config)
+          vim.lsp.enable(server)
         end
       end
 
       vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
         vim.lsp.diagnostic.on_publish_diagnostics, {
-        virtual_text = {
-          format = function(diagnostic)
-            if diagnostic.code then
-              return string.format("[%s] %s", diagnostic.code, diagnostic.message)
-            else
-              return diagnostic.message
+          virtual_text = {
+            format = function(diagnostic)
+              if diagnostic.code then
+                return string.format("[%s] %s", diagnostic.code, diagnostic.message)
+              else
+                return diagnostic.message
+              end
             end
-          end
+          }
         }
-      }
       )
 
       setup_servers()
     end
   },
-  {
-    "nvimtools/none-ls.nvim",
-    dependencies = {
-      "nvimtools/none-ls-extras.nvim",
-    },
-    config = function()
-      require("null-ls").setup({
-        sources = {
-          require('none-ls.diagnostics.eslint'),
-        },
-        debug = true,
-        default_timeout = 10000,
-      })
-    end
-  },
-
   -- other
-  {
-    "onsails/lspkind-nvim",
-    config = function() require("lspkind").init({ mode = "symbol_text" }) end,
-  },
   {
     "glepnir/lspsaga.nvim",
     event = "BufRead",

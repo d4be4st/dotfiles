@@ -1,14 +1,12 @@
 return {
   {
-    'windwp/nvim-spectre',
+    "MagicDuck/grug-far.nvim",
+    opts = {},
     keys = {
-      {'<leader>s', function() require('spectre').open() end, 'n', desc = "Open [S]pectre"},
-      {'<leader>S', function() require('spectre').open_visual({select_word=true}) end, desc = "Open [S]pectre with word"},
-      {'<leader>s', function() require('spectre').open_visual() end, 'v', desc = "Open [S]pectre with selection"},
+      { "<leader>s", function() require("grug-far").open() end,                                                              desc = "Find and Replace" },
+      { "<leader>S", function() require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } }) end,          desc = "Find and Replace (word)" },
+      { "<leader>s", function() require("grug-far").with_visual_selection() end, mode = "v",                                 desc = "Find and Replace (selection)" },
     },
-    config = function ()
-      require('spectre').setup()
-    end
   },
   {
     "folke/flash.nvim",

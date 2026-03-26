@@ -46,3 +46,5 @@
 	aiOpenAIKeyOption = butlerAPI
 	aiOpenAIModelName = gpt-4-turbo-preview
 	aiModelProvider = openai
+[credential]
+	username = d4be4st

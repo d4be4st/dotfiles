@@ -19,7 +19,7 @@ return {
       dap.listeners.before.event_terminated.dapui_config = dapui.close
       dap.listeners.before.event_exited.dapui_config = dapui.close
 
-      require('which-key').register({ ["<leader>d"] = { name = "+[d]ebug" } })
+      require('which-key').add({ { "<leader>d", group = "[d]ebug" } })
       vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle [B]reakpoint" })
       vim.keymap.set('n', '<Leader>dB', function () dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, { desc = "Set Conditional [Breakpoint]"})
       vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Start/[C]ontinue" })

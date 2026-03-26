@@ -18,9 +18,10 @@ vim.g.maplocalleader = " "
 
 require "general.settings"
 
-require("lazy").setup('plugins')
+require("lazy").setup('plugins', {
+  change_detection = { notify = false },
+})
 
 require "general.mappings"
+require "my_plugins.extensions"
 require "my_plugins.file"
-require "my_plugins.gleam"
-require "my_plugins.git"

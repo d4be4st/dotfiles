@@ -18,3 +18,5 @@ alias rof='rspec --only-failures'
 alias ram="git ls-files -m | xargs ls -1 2>/dev/null | grep -E '\.rake$|\.rb$' | xargs rubocop -A"
 alias ras="git diff --name-only --cached | xargs ls -1 2>/dev/null | grep -E '\.rake$|\.rb$' | xargs rubocop -A"
 alias els="git diff --name-only --cached | xargs ls -1 2>/dev/null | grep -E '\.ts$' | xargs eslint --fix"
+
+alias gfmd='gfm && bundle install && rails db:migrate data:migrate && gco -- .'

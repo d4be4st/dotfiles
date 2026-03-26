@@ -5,26 +5,24 @@ return {
     dependencies = {
       "RRethy/nvim-treesitter-endwise",
       'nvim-treesitter/nvim-treesitter-textobjects',
-      'nvim-treesitter/playground'
+      'ravsii/tree-sitter-d2'
     },
     config = function()
       require 'nvim-treesitter.configs'.setup {
+        auto_install = true,
         ensure_installed = {
           "bash",
-          -- "crystal",
           "css",
           "elixir",
           "eex",
           "html",
           "javascript",
           "heex",
-          "html",
           "markdown",
           "markdown_inline",
           "json",
           "lua",
           "ruby",
-          "scss",
           "scss",
           "yaml",
         },
@@ -107,6 +105,16 @@ return {
 
       local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
 
+      -- Additional parsers
+      -- local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+      -- parser_config.d2 = {
+      --   install_info = {
+      --     url = "https://github.com/ravsii/tree-sitter-d2",
+      --     files = { "src/parser.c" },
+      --   },
+      --   filetype = "d2",
+      -- }
+
       -- Repeat movement with ; and ,
       -- ensure ; goes forward and , goes backward regardless of the last direction
       vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move_next)
@@ -119,9 +127,4 @@ return {
       vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T)
     end,
   },
-    -- Other languages
-  {
-    'jlcrochet/vim-crystal',
-  },
-
 }

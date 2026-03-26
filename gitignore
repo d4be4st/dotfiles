@@ -19,3 +19,7 @@ doc/
 .yardoc
 
 shell.nix
+opencode.json
+.opencode
+
+local-llm

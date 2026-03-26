@@ -15,7 +15,6 @@ vim.opt.undodir = "/Users/stef/.config/nvim/undodir" -- undo directory
 vim.opt.updatetime = 100 -- default updatetime 4000ms is not good for async update
 vim.opt.swapfile = false -- do not use swapfile
 vim.opt.undofile = true -- enable undo file
-vim.opt.undofile = true -- enable undo file
 vim.opt.colorcolumn = "150" -- higlight column
 vim.opt.list = true -- show tabs
 vim.opt.number = true -- show numbers

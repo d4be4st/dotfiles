@@ -48,17 +48,13 @@ vim.keymap.set('v', 'L', 'g_', { desc = "Select to the end of the line"})
 vim.keymap.set('n', 'Y', 'y$', { desc = "[Y]ank whole line"})
 
 -- Yank and paste from clipboard
-wk.register({["<leader>y"] = { name = "+yank" }})
+wk.add({ { "<leader>y", group = "yank" }, })
 vim.keymap.set('v', '<leader>y', '"+y', { desc = "Yank selection to clipboard"})
 vim.keymap.set('n', '<leader>Y', '"+Y', { desc = "Yank whole line to clipboard"})
 vim.keymap.set('v', '<leader>Y', '"+Y', { desc = "Yank whole line to clipboard"})
 vim.keymap.set('n', '<leader>yy', '"+yy', { desc = "Yank whole line to clipboard"})
 vim.keymap.set('n', '<leader>p', '"+p', { desc = "Paste from clipboard"})
 vim.keymap.set('v', '<leader>p', '"+p', { desc = "Paste from to selection"})
-
--- -- Delete and change to black hole
--- vim.keymap.set('n', '<leader>d', '"_dd', { desc = "Delete without yanking"})
--- vim.keymap.set('v', '<leader>d', '"_d', { desc = "Delete selection without yanking"})
 
 -- Reselect pasted text
 vim.keymap.set('n', 'gp', '`[v`]', { desc = "Reselect pasted text"})
@@ -73,25 +69,6 @@ vim.keymap.set('n', 'S', 'mzi<CR><ESC>`z', { desc = "[S]plit line"})
 vim.keymap.set('n', 'vA', 'ggVG', { desc = "Select all text"})
 
 -- Switch between tabs
--- set Ctrl-n to S-Fn in iterm prefs
--- vim.keymap.set('n', '<S-F1>', '1gt')
--- vim.keymap.set('n', '<S-F2>', '2gt')
--- vim.keymap.set('n', '<S-F3>', '3gt')
--- vim.keymap.set('n', '<S-F4>', '4gt')
--- vim.keymap.set('n', '<S-F5>', '5gt')
--- vim.keymap.set('n', '<S-F6>', '6gt')
--- vim.keymap.set('n', '<S-F7>', '7gt')
--- vim.keymap.set('n', '<S-F8>', '8gt')
--- vim.keymap.set('n', '<S-F9>', '9gt')
--- vim.keymap.set('n', '<F13>', '1gt')
--- vim.keymap.set('n', '<F14>', '2gt')
--- vim.keymap.set('n', '<F15>', '3gt')
--- vim.keymap.set('n', '<F16>', '4gt')
--- vim.keymap.set('n', '<F17>', '5gt')
--- vim.keymap.set('n', '<F18>', '6gt')
--- vim.keymap.set('n', '<F19>', '7gt')
--- vim.keymap.set('n', '<F20>', '8gt')
--- vim.keymap.set('n', '<F21>', '9gt')
 vim.keymap.set('n', '<leader>1', '1gt')
 vim.keymap.set('n', '<leader>2', '2gt')
 vim.keymap.set('n', '<leader>3', '3gt')
@@ -101,28 +78,14 @@ vim.keymap.set('n', '<leader>6', '6gt')
 vim.keymap.set('n', '<leader>7', '7gt')
 vim.keymap.set('n', '<leader>8', '8gt')
 vim.keymap.set('n', '<leader>9', '9gt')
--- vim.keymap.set('n', '1', '1gt', { desc = "Go to tab 1"})
--- vim.keymap.set('n', '2', '2gt', { desc = "Go to tab 2"})
--- vim.keymap.set('n', '3', '3gt', { desc = "Go to tab 3"})
--- vim.keymap.set('n', '4', '4gt', { desc = "Go to tab 4"})
--- vim.keymap.set('n', '5', '5gt', { desc = "Go to tab 5"})
--- vim.keymap.set('n', '6', '6gt', { desc = "Go to tab 6"})
--- vim.keymap.set('n', '7', '7gt', { desc = "Go to tab 7"})
--- vim.keymap.set('n', '8', '8gt', { desc = "Go to tab 8"})
--- vim.keymap.set('n', '9', '9gt', { desc = "Go to tab 9"})
 
 -- Intelligent windows resizing using ctrl + arrow keys
 vim.keymap.set('n', '<S-Up>', '   :resize +2<CR>', { silent = true, desc = "Resize up"})
 vim.keymap.set('n', '<S-Down>', ' :resize -2<CR>', { silent = true, desc = "Resize down"})
 vim.keymap.set('n', '<S-Left>', ' :vertical resize +2<CR>', { silent = true, desc = "Resize left"})
 vim.keymap.set('n', '<S-Right>', ':vertical resize -2<CR>', { silent = true, desc = "Resize right"})
--- Zoom one pane
--- vim.keymap.set('n', '<leader>-', '<C-W><C-|><C-W><C-_>')
--- Restore panes
--- vim.keymap.set('n', '<leader>=', '<C-w><C-=>')
-
--- Creating splits withyempty buffers in all directions
-wk.register({["<leader>n"] = { name = "+new panes" } })
+-- Creating splits with empty buffers in all directions
+wk.add({ { "<leader>n", group = "new panes" }, })
 vim.keymap.set('n', '<leader>nh', ':leftabove  vnew<CR>', { desc = "Create new pane above"})
 vim.keymap.set('n', '<leader>nl', ':rightbelow vnew<CR>', { desc = "Create new pane below"})
 vim.keymap.set('n', '<leader>nk', ':leftabove  new<CR>', { desc = "Create new pane left"})
@@ -133,6 +96,17 @@ vim.keymap.set('n', '<leader>nt', ':tabe<CR>', { desc = "Create new tab"})
 vim.keymap.set('c', '<C-a>', '<home>', { desc = "Command -- goto beginning"})
 
 -- Terminal mode
-vim.keymap.set('t', '<ESC>', [[<C-\><C-n>]], { desc = "Return to normal mode"})
--- Copy dir/file/line to clipboard
--- wk.register({ ["<leader>s"] = { name = "+specs" } })
+-- <ESC> exits terminal mode (does NOT send Esc to the process — safe for most cases).
+-- If a process like Claude Code would be cancelled by Esc, use <C-q> instead
+-- (also mapped per-terminal in lua/plugins/terminal.lua via TermOpen autocmd).
+vim.keymap.set('t', '<ESC>', [[<C-\><C-n>]], { desc = "Return to normal mode" })
+vim.keymap.set('t', '<C-q>',  [[<C-\><C-n>]], { desc = "Return to normal mode (no Esc sent)" })
+
+-- Navigate away from any terminal (including Claude Code) with <C-hjkl>.
+-- Global so it works regardless of which plugin opened the terminal.
+-- NOTE: <C-h> (backspace) and <C-l> (clear screen) are intercepted — use
+-- <Backspace> and `reset` instead inside the terminal.
+vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], { desc = "Terminal: go left" })
+-- vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], { desc = "Terminal: go down" })
+vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], { desc = "Terminal: go up" })
+vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], { desc = "Terminal: go right" })
