@@ -11,3 +11,4 @@ config/nvim/undodir
 config/nvim/vscode-css/css-language-features
 config/nvim/.netrwhist
 config/nvim/plugin/packer_compiled.lua
+dot_config/nvim/undodir

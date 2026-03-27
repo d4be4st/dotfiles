@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
+# Bootstrap dotfiles on a fresh machine.
+# Assumes the repo is already cloned to ~/.dotfiles.
 
 set -e
 
-CONFIG="install.conf.yaml"
-DOTBOT_DIR="dotbot"
+if ! command -v chezmoi &>/dev/null; then
+  echo "Installing chezmoi..."
+  brew install chezmoi
+fi
 
-DOTBOT_BIN="bin/dotbot"
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+chezmoi init --source "$HOME/.dotfiles"
+chezmoi apply
 
-cd "${BASEDIR}"
-git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
-git submodule update --init --recursive "${DOTBOT_DIR}"
-
-"${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  Manual steps — download these from 1Password:"
+echo ""
+echo "    ~/.zshenv        → 'zshenv' secure note"
+echo "    ~/.ssh/config    → 'ssh config' secure note"
+echo "    ~/.ssh/id_rsa    → 'SSH Key' private key"
+echo "    ~/.ssh/id_rsa.pub"
+echo ""
+echo "  Then fix SSH key permissions:"
+echo "    chmod 600 ~/.ssh/id_rsa"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

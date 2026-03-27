@@ -1,7 +1,3 @@
 bundler
-mina-infinum
-secrets_cli
 rubocop
-scss_lint
 overcommit
-fit-commit

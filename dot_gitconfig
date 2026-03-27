@@ -6,20 +6,21 @@
   excludesfile = /Users/stef/.gitignore
   editor = nvim
   ignorecase = false
-  pager = diff-so-fancy | less --tabs=4 -RFX
+  pager = delta
   autocrlf = input
 [push]
   default = current
   autoSetupRemote = true
-[color "diff"]
-  meta = yellow
-  frag = magenta bold
-  commit = yellow bold
-  old = red bold
-  new = green bold
-  whitespace = red reverse
 [color]
   ui = true
+[interactive]
+  diffFilter = delta --color-only
+[delta]
+  navigate = true
+  side-by-side = true
+  line-numbers = true
+[diff]
+  colorMoved = default
 [mergetool "diffconflicts"]
   cmd = nvim -c DiffviewOpen
   trustExitCode = true
@@ -42,9 +43,5 @@
   gpgsign = true
 [init]
   defaultBranch = master
-[gitbutler]
-	aiOpenAIKeyOption = butlerAPI
-	aiOpenAIModelName = gpt-4-turbo-preview
-	aiModelProvider = openai
 [credential]
 	username = d4be4st

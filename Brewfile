@@ -2,41 +2,76 @@ tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/core"
 tap "homebrew/services"
-brew "coreutils"
-brew "libyaml"
-brew "asdf"
-brew "awscli"
+
+brew "chezmoi"       # dotfiles manager
+
+# Core shell & system
 brew "bash"
-brew "bat"
-brew "curl"
-brew "diff-so-fancy"
-brew "fd"
-brew "git"
-brew "jq"
-brew "lcov"
-# brew "lazydocker"
-brew "lazygit"
-brew "lua-language-server"
-brew "neovim"
-# brew "postgresql"
-# brew "mysql", restart_service: true
-# brew "redis", restart_service: true
-brew "ripgrep"
-brew "tree"
-brew "tidy-viewer"
-brew "wget"
 brew "zsh"
+brew "coreutils"
+brew "gnu-sed"
+brew "curl"
+brew "wget"
+brew "git"
+brew "gh"
+
+# Modern CLI replacements
+brew "bat"          # cat
+brew "fd"           # find
+brew "ripgrep"      # grep
+brew "delta"        # diff
+brew "zoxide"       # cd
+brew "tree"
+
+# Editors & terminal
+brew "neovim"
+brew "lazygit"
+
+# JSON / YAML / data
+brew "jq"
+brew "jnv"          # interactive JSON navigator
+brew "fx"           # JSON viewer/processor
+brew "yq"           # YAML processor
+brew "tidy-viewer"  # CSV pretty-printer
+
+# Dev tools
+brew "asdf"
+brew "gnupg"
+brew "libyaml"
+brew "mysql-client"
+brew "pipx"
+brew "lcov"
 brew "shared-mime-info"
+brew "terminal-notifier"
+
+# Cloud & infra
+brew "awscli"
+brew "railway"
+brew "nmap"
+
+# Diagramming & docs
+brew "d2"
+
+# Misc
+brew "transmission-cli"
+# brew "peon-ping"
+# brew "opencode"
+
+# Casks
+cask "1password"
 cask "aerial"
 cask "alfred"
 cask "firefox"
+cask "gitify"
 cask "google-chrome"
+cask "hammerspoon"
 cask "iina"
+cask "orbstack"
 cask "shottr"
 cask "slack"
+cask "steam"
 cask "tableplus"
 cask "the-unarchiver"
+cask "transmission"
 cask "visual-studio-code"
-cask "1password"
-cask "orbstack"
 cask "warp"
