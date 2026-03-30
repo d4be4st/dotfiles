@@ -65,6 +65,24 @@ return {
           lualine_y = {},
           lualine_z = {},
         },
+        tabline = {
+          lualine_a = {
+            {
+              'tabs',
+              mode = 1,         -- show filename only (number added via fmt)
+              path = 0,         -- filename only
+              show_modified_status = true,
+              symbols = { modified = '●' },
+              tabs_color = {
+                active   = 'TabLineSel',
+                inactive = 'TabLine',
+              },
+              fmt = function(name, context)
+                return context.tabnr .. ' ' .. name
+              end,
+            }
+          },
+        },
       })
     end,
   },

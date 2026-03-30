@@ -1,10 +1,7 @@
+home
 README.md
 install
-install.conf.yaml
 xterm-color-count.sh
-dotbot
 ssh
 rbenv
 tmux
-kifla.enc
-ssh_config.enc
