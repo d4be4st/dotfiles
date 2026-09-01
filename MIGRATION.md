@@ -174,6 +174,42 @@ rsync -av --no-links $OLD:.local/bin/ ~/.local/bin/
 chmod +x ~/.local/bin/*
 ```
 
+### 2i. GUI app state
+
+The Brewfile installs the apps; it carries none of their settings. Only two
+apps hold state worth moving, and both also hold a license file.
+
+**Quit both apps on the old machine first.** macOS caches plist writes in
+`cfprefsd`, so copying a running app's preferences can capture a stale file.
+
+TablePlus — saved connections, groups, favorites, query history, license:
+
+```bash
+TP="Library/Application Support/com.tinyapp.TablePlus"
+mkdir -p ~/"$TP"
+rsync -av $OLD:"$TP/Data" $OLD:"$TP/.licensemac" ~/"$TP/"
+rsync -av $OLD:Library/Preferences/com.tinyapp.TablePlus.plist ~/Library/Preferences/
+```
+
+Connection *passwords* live in the login Keychain, not in these files, so they
+do not come across. Re-enter them on first connect.
+
+Alfred — workflows, snippets, settings, Powerpack license. `Databases/` is
+61 MB of clipboard history and is deliberately skipped:
+
+```bash
+AL="Library/Application Support/Alfred"
+mkdir -p ~/"$AL"
+rsync -av $OLD:"$AL/Alfred.alfredpreferences" $OLD:"$AL/Automation" \
+          $OLD:"$AL/prefs.json" $OLD:"$AL"/powerpack.*.dat ~/"$AL/"
+```
+
+Everything else is not worth carrying. VS Code has a 96-byte `settings.json`,
+no snippets and 7 extensions, so reinstall it. Gitify's 52 MB is Electron
+cache behind a single OAuth token, so just log in again. 1Password, Slack,
+Chrome and Firefox all restore from their accounts. Hammerspoon is already
+covered by `~/.hammerspoon` in Step 2g, and Ghostty by the dotfiles repo.
+
 ---
 
 ## Step 3 — dotfiles
@@ -278,6 +314,40 @@ Then the rest from `knowledge/tooling/claude-plugins.md`.
 you want `tb-session` search over old work, and the old machine stays online
 for that anyway. Skip by default.
 
+### 4d. Local Docker infrastructure
+
+Nothing here is carried. The old machine had ~49 GB of Docker state (17.4 GB
+images, 29.5 GB volumes, 2.1 GB build cache) and all of it rebuilds: images
+re-pull, `*-gems-data` and `*-node_modules-data` volumes are just bundle and
+npm caches, and the meilisearch volumes (6 GB across two) are reindexed.
+
+Compose lives in `productiveio/local-development`, cloned to a folder named
+`docker` rather than `local-development`. Build contexts are relative
+(`context: ../api`), so keep the sibling layout under `~/dev/productive/`:
+`api`, `app`, `mailer`, `realtime`, `docs-realtime`, `exporter`, `polaris`.
+
+OrbStack comes from the Brewfile in Step 3b, so it is already installed.
+
+```bash
+git clone git@github.com:productiveio/local-development.git ~/dev/productive/docker
+cd ~/dev/productive/docker
+docker compose up -d mysql mysql-test redis memcached postgres meilisearch
+```
+
+Those six support services are what actually runs day to day; the app services
+in the compose file are not used, since apps run from workspaces via
+`ov resume`. `postgres` is only there for polaris, which is why its volume was
+by far the biggest thing on the old disk.
+
+Manage it afterwards with the `tb-devctl` skill rather than raw compose.
+
+**Ignore the README's `/etc/hosts` advice.** `*.productive.io.localhost`
+resolves to loopback natively on macOS (RFC 6761) and Caddy already fronts
+these hostnames. Do not add entries; see `~/.claude/local-dev-servers.md`.
+
+Databases start empty. Re-seed however the team does it now rather than
+copying volumes across.
+
 ---
 
 ## Step 5 — must re-login, cannot be copied [HUMAN]
@@ -346,10 +416,22 @@ what the old machine showed.
 
 ## Appendix B — deliberately left behind
 
-`~/.asdf`, `~/.aider*`, `~/.kiro`, `~/.copilot`, `~/.gemini`, `~/.opencode`,
+**Rebuilt by a later step, not copied:** Docker images, volumes and build
+cache (~49 GB, Step 4d); every git clone under `~/dev/productive/` (Steps 4a
+and 4d re-clone what's needed); `~/.claude/plugins` (542 MB, Step 4b);
+`node_modules` anywhere.
+
+**Dead tooling:** `~/.asdf` (replaced by mise; its shims are already broken on
+the old machine), `~/.env` (stale `OPENROUTER_API_KEY` from the aider era),
+`~/.aider*`, `~/.kiro`, `~/.copilot`, `~/.gemini`, `~/.opencode`,
 `~/.antigravity`, `~/.cursor`, `~/.agent-os`, `~/.claudecodebrowser`,
-`~/.ollama`, `~/.claude.json.tmp.*`, `~/.claude/plugins`, `~/.claude/projects`,
+`~/.ollama`, and everything peon-ping (brew formula, tap, `skills/peon-ping-*`,
+`hooks/peon-ping/`).
+
+**GUI app caches:** `Alfred/Databases` (61 MB clipboard history), Gitify's
+52 MB of Electron cache, TablePlus `Cache/` and `Temp/`, VS Code extensions.
+
+**Churn and history:** `~/.claude.json.tmp.*`, `~/.claude/projects` (386 MB),
 `~/.claude/{cache,debug,downloads,paste-cache,shell-snapshots,sessions,session-data}`,
 `~/dev/worktrees` and `~/dev/productive/worktrees` (all four clean and merged),
-every clone under `~/dev/productive/` except `work`, and `node_modules`
-anywhere.
+`~/dev/productive/db_backup` (268 MB of seed dumps).
