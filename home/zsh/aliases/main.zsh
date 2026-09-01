@@ -1,0 +1,6 @@
+alias es='exec $SHELL'
+alias vi='nvim'
+alias vim='nvim'
+alias lg='lazygit'
+alias cat='bat'
+alias OD='OVERCOMMIT_DISABLE=1'

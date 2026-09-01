@@ -1,0 +1,15 @@
+theme = Catppuccin Mocha
+font-size = 19
+font-family = FiraCode Nerd Font Mono
+
+# Shell integration — enables OSC 133 prompt marks (jump between command outputs)
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
+
+# Padding
+window-padding-x = 8
+window-padding-y = 8
+
+# ponytail: tmux auto-start disabled — plain zsh; run `tmux new-session -A -s home` manually
+
+# Prompt mark navigation uses Ghostty defaults: Cmd+Shift+Up / Cmd+Shift+Down
