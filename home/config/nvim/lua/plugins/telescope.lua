@@ -23,11 +23,28 @@ return {
       { "<leader>fc", function() Snacks.picker.command_history() end,                                        desc = "[C]ommand history" },
       { "<leader>fe", function() Snacks.picker.resume() end,                                                 desc = "R[e]sume" },
       { "<leader>fm", function() Snacks.picker.keymaps() end,                                                desc = "Key[m]aps" },
-      { "<leader>fg", function() Snacks.picker.git_status() end,                                             desc = "[G]it status" },
       { "<leader>fh", function() Snacks.picker.help() end,                                                   desc = "[H]elp tags" },
       { "<leader>fs", function() Snacks.picker.lsp_symbols() end,                                            desc = "LSP [S]ymbols" },
       { "<leader>fd", function() Snacks.picker.diagnostics() end,                                            desc = "[D]iagnostics" },
       { "<leader>ft", function() Snacks.picker.treesitter() end,                                             desc = "[T]reesitter symbols" },
+      { "<leader>fy", function()
+        local items = {}
+        for _, ft in ipairs(vim.fn.getcompletion("", "filetype")) do
+          items[#items + 1] = { text = ft }
+        end
+        Snacks.picker.pick({
+          title = "Filetypes",
+          format = "text",
+          layout = { hidden = { "preview" } },
+          items = items,
+          confirm = function(picker, item)
+            picker:close()
+            if item then
+              vim.bo.filetype = item.text
+            end
+          end,
+        })
+      end, desc = "Filet[y]pes" },
       -- ruby
       { "<leader>rm", function() Snacks.picker.files({ cwd = "db/migrate" }) end,                            desc = "[M]igrations" },
     },

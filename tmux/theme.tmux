@@ -1,58 +1,39 @@
-# Nightfox
-# normal="#81B29A"
-# command="#719cd6"
-# warning="#dbc074"
-# fg_tab_active="#393b44"
-# fg_active="#dfdfe0"
-# fg_inactive="#526175"
-# bg_active="#192330"
+# Catppuccin Mocha — matches Ghostty theme
+thm_bg="#1e1e2e"
+thm_fg="#cdd6f4"
+thm_cyan="#89dceb"
+thm_black="#181825"
+thm_gray="#313244"
+thm_magenta="#cba6f7"
+thm_pink="#f5c2e7"
+thm_red="#f38ba8"
+thm_green="#a6e3a1"
+thm_yellow="#f9e2af"
+thm_blue="#89b4fa"
+thm_orange="#fab387"
+thm_black4="#585b70"
 
-# --> Catppuccin
-fg_active="#f9c096"
-bg_active="#1e1e28"
-fg_tab_active="#15121c"
-normal="#b1e3ad"
-warning="#ebddaa"
-command="#a4b9ef"
+set -g status-style "bg=${thm_black},fg=${thm_fg}"
+set -g status-left-length 40
+set -g status-right-length 60
 
-set -g "status" "on"
-set -g "status-justify" "left"
+# Left: session name
+set -g status-left "#[bg=${thm_blue},fg=${thm_black},bold] #S #[bg=${thm_black},fg=${thm_blue}]"
 
-set -g "status-left-length" "100"
-set -g "status-right-length" "100"
-set -g "status-right-style" "none"
+# Right: date + time
+set -g status-right "#[fg=${thm_black4}] %Y-%m-%d  %H:%M "
 
-set -g "message-style" "fg=$fg_active,bg=$bg_active"
+# Window tabs
+set -g window-status-format         "#[bg=${thm_black},fg=${thm_black4}] #I:#W "
+set -g window-status-current-format "#[bg=${thm_gray},fg=${thm_blue},bold] #I:#W "
+set -g window-status-separator      ""
 
-set -g "message-command-style" "fg=$fg_active,bg=$bg_active"
+# Pane borders
+set -g pane-border-style        "fg=${thm_gray}"
+set -g pane-active-border-style "fg=${thm_blue}"
 
-set -g "status-style" "none"
-set -g "status-left-style" "none"
+# Message / command line
+set -g message-style "bg=${thm_gray},fg=${thm_fg}"
 
-setw -g "window-status-style" "fg=$bg_active,bg=$bg_active,none"
-
-setw -g "window-status-activity-style" "fg=$bg_active,bg=$bg_active,none"
-
-setw -g "window-status-separator" ""
-
-set -g "window-style" "fg=$fg_inactive,bg=$bg_active"
-set -g "window-active-style" "fg=$fg_active,bg=$bg_active"
-
-set -g "pane-border-style" "fg=$fg_active"
-set -g "pane-active-border-style" "fg=$fg_active"
-
-set -g "display-panes-active-colour" "$warning"
-set -g "display-panes-colour" "$command"
-
-set -g "status-bg" "$bg_active"
-set -g "status-fg" "$fg_active"
-
-set -g "@prefix_highlight_fg" "$bg_active"
-set -g "@prefix_highlight_bg" "$normal"
-set -g "@prefix_highlight_copy_mode_attr" "fg=$bg_active,bg=$normal"
-set -g "@prefix_highlight_output_prefix" "  "
-
-set -g status-left "#[fg=$fg_tab_active,bg=#{?client_prefix,$command,$normal},bold] #S "
-set -g status-right ""
-setw -g window-status-format " #[fg=$fg_active,bg=$bg_active] #I  #W "
-setw -g window-status-current-format " #[fg=$fg_tab_active,bg=$fg_active,bold] #I  #W  #F "
+# Copy mode
+set -g mode-style "bg=${thm_blue},fg=${thm_black}"

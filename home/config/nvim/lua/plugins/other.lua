@@ -16,21 +16,17 @@ return {
 
   -- pane manipulations
   {
-    "anuvyklack/windows.nvim",
-    dependencies = "anuvyklack/middleclass",
-    config = function()
-      require('windows').setup(
-        {
-          autowidth = {
-            enable = false
-          }
-        }
-      )
-      require('which-key').add({ { "<leader>w", group = "[w]indow" }, })
-      vim.keymap.set('n', "<leader>wm", require('windows.commands').maximize, { desc = "[M]aximize" })
-      vim.keymap.set('n', "<leader>we", require('windows.commands').equalize, { desc = "[E]qualize" })
-      vim.keymap.set('n', "<leader>wt", require('windows.autowidth').toggle, { desc = "[E]qualize" })
-    end
+    "christoomey/vim-tmux-navigator",
+    cmd = {
+      "TmuxNavigateLeft", "TmuxNavigateDown",
+      "TmuxNavigateUp", "TmuxNavigateRight",
+    },
+    keys = {
+      { "<c-h>", "<cmd>TmuxNavigateLeft<cr>" },
+      { "<c-j>", "<cmd>TmuxNavigateDown<cr>" },
+      { "<c-k>", "<cmd>TmuxNavigateUp<cr>" },
+      { "<c-l>", "<cmd>TmuxNavigateRight<cr>" },
+    },
   },
   {
     'Wansmer/treesj',

@@ -86,7 +86,7 @@ chmod 600 ~/.zshenv
 
 ```bash
 mkdir -p ~/.claude
-rsync -av $OLD:'.claude/{settings.json,CLAUDE.md,keybindings.json,mcp.json,local-dev-servers.md,statusline-command.sh,workspace.md}' ~/.claude/
+rsync -av $OLD:'.claude/{settings.json,CLAUDE.md,keybindings.json,mcp.json,local-dev-servers.md,statusline-command.sh,workspace.md,telemetry.env}' ~/.claude/
 rsync -av $OLD:'.claude/{hooks,agents,commands,output-styles,skills}' ~/.claude/
 chmod +x ~/.claude/statusline-command.sh ~/.claude/hooks/* 2>/dev/null
 ```
@@ -144,10 +144,15 @@ chezmoi covers `alacritty`, `ghostty`, and `nvim` under `~/.config`, plus the
 `home/` dotfiles. Everything below is outside it.
 
 ```bash
-rsync -av $OLD:'.config/{herdr,workspaces,w,gh,git,keyboardcowboy}' ~/.config/
+rsync -av $OLD:'.config/{herdr,workspaces,w,gh,git,keyboardcowboy,atuin}' ~/.config/
+rsync -av $OLD:.local/share/atuin ~/.local/share/
 rsync -av $OLD:.hammerspoon ~/
 rsync -av $OLD:.tool-versions ~/
 ```
+
+`~/.local/share/atuin` is 6 MB: 2023 shell-history entries plus the `key` file
+that sync is keyed on. `zsh/tools.zsh` initializes atuin as your Ctrl+R, so it
+is in the Brewfile.
 
 `~/.config/herdr/agent-detection/` holds local rules that shadow upstream;
 they are the reason herdr reports agent state correctly.

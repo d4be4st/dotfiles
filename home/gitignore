@@ -23,3 +23,8 @@ opencode.json
 .opencode
 
 local-llm
+
+**/.claude/settings.local.json
+
+# review.nvim notes (per-worktree, written by Claude Code)
+.review.json

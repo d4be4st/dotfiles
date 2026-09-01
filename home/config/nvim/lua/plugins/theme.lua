@@ -71,6 +71,7 @@ return {
               'tabs',
               mode = 1,         -- show filename only (number added via fmt)
               path = 0,         -- filename only
+              max_length = vim.o.columns,
               show_modified_status = true,
               symbols = { modified = '●' },
               tabs_color = {

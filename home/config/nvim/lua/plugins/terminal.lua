@@ -11,17 +11,6 @@ return {
         -- makes toggle() assert "Terminal was not created".
         win = { position = "bottom", height = 0.35 },
       },
-      lazygit = {
-        win = {
-          style  = "lazygit",
-          border = "rounded",
-          width  = 0.95,
-          height = 0.90,
-        },
-        on_close = function()
-          pcall(function() require('gitsigns').refresh() end)
-        end,
-      },
     },
     init = function()
       require("which-key").add({ { "<leader>t", group = "[t]erminal" } })
@@ -65,11 +54,6 @@ return {
           require("snacks").terminal.toggle(nil, { win = { position = "right" } })
         end,
         desc = "[L] right (vertical) terminal",
-      },
-      {
-        "<leader>tg",
-        function() require("snacks").lazygit() end,
-        desc = "Laz[y]git",
       },
     },
   },

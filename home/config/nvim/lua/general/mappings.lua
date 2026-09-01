@@ -110,3 +110,34 @@ vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], { desc = "Terminal: go left"
 -- vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], { desc = "Terminal: go down" })
 vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], { desc = "Terminal: go up" })
 vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], { desc = "Terminal: go right" })
+
+-- Window sizing (replaces windows.nvim; both are plain built-in <C-w> commands)
+wk.add({ { "<leader>w", group = "[w]indow" }, })
+vim.keymap.set('n', '<leader>wm', '<C-w>_<C-w>|', { desc = "[M]aximize" })
+vim.keymap.set('n', '<leader>we', '<C-w>=',      { desc = "[E]qualize" })
+
+-- Open the current file on GitHub, always on the remote's default branch.
+local function gh_open(with_lines)
+  local root = vim.fs.root(0, ".git")
+  if not root then return vim.notify("not in a git repo", vim.log.levels.WARN) end
+  local function git(...)
+    local out = vim.trim(vim.fn.system(vim.list_extend({ "git", "-C", root }, { ... })))
+    return vim.v.shell_error == 0 and out or nil
+  end
+  local remote = git("remote", "get-url", "origin")
+  local slug = remote and remote:gsub("%.git$", ""):match("github%.com[:/](.+)$")
+  if not slug then return vim.notify("no github origin remote", vim.log.levels.WARN) end
+  -- refs/remotes/origin/HEAD is a local cached ref (no network); `git remote
+  -- set-head origin -a` repopulates it if a clone is missing it.
+  local head = git("symbolic-ref", "--short", "refs/remotes/origin/HEAD") or "origin/main"
+  local branch = head:gsub("^origin/", "")
+  local url = ("https://github.com/%s/blob/%s/%s"):format(slug, branch, vim.fn.expand("%:p"):sub(#root + 2))
+  if with_lines then
+    local s, e = vim.fn.line("v"), vim.fn.line(".")
+    if s > e then s, e = e, s end
+    url = url .. "#L" .. s .. (s ~= e and ("-L" .. e) or "")
+  end
+  vim.ui.open(url)
+end
+vim.keymap.set('n', '<leader>gf', function() gh_open(false) end, { desc = "Open in GitHub [F]ile" })
+vim.keymap.set({ 'n', 'v' }, '<leader>gl', function() gh_open(true) end, { desc = "Open in GitHub [L]ines" })

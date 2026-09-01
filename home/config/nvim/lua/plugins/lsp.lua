@@ -124,7 +124,7 @@ return {
       -- config that activates keymaps and enables snippet support
       local function make_config()
         -- local capabilities = vim.lsp.protocol.make_client_capabilities()
-        local capabilities = require('blink.cmp').get_lsp_capabilities()
+        local capabilities = vim.lsp.protocol.make_client_capabilities()
 
         return {
           -- enable snippet support
@@ -144,7 +144,7 @@ return {
           "lua_ls",
           "gleam",
           -- "solargraph",
-          "ruby_lsp",
+          -- "ruby_lsp",
           "rubocop",
           "herb_ls",
           -- "ember",
