@@ -204,11 +204,44 @@ rsync -av $OLD:"$AL/Alfred.alfredpreferences" $OLD:"$AL/Automation" \
           $OLD:"$AL/prefs.json" $OLD:"$AL"/powerpack.*.dat ~/"$AL/"
 ```
 
-Everything else is not worth carrying. VS Code has a 96-byte `settings.json`,
-no snippets and 7 extensions, so reinstall it. Gitify's 52 MB is Electron
-cache behind a single OAuth token, so just log in again. 1Password, Slack,
-Chrome and Firefox all restore from their accounts. Hammerspoon is already
-covered by `~/.hammerspoon` in Step 2g, and Ghostty by the dotfiles repo.
+### 2j. Zen Browser profile
+
+The `zen` cask comes from the Brewfile. The profile does not, and it is 4.0 GB
+across two profiles; the active one is `ei91s0r8.Default (alpha)`, named in
+`profiles.ini`.
+
+**Quit Zen first**, or the sqlite files copy mid-write.
+
+Sign into Firefox Sync on the new machine for bookmarks, history, passwords,
+open tabs and extensions. Sync does **not** carry Zen's own settings, so copy
+those by hand. This skips `storage/`, which is 3.3 GB of the 3.7 GB:
+
+```bash
+Z="Library/Application Support/zen/Profiles/ei91s0r8.Default (alpha)"
+mkdir -p ~/"$Z"
+rsync -av $OLD:"$Z/prefs.js" $OLD:"$Z/containers.json" \
+          $OLD:"$Z/zen-themes.css" $OLD:"$Z/zen-keyboard-shortcuts.json" \
+          $OLD:"$Z/zen-themes" $OLD:"$Z/zen-sessions-backup" ~/"$Z/"
+rsync -av $OLD:Library/Application\ Support/zen/profiles.ini ~/Library/Application\ Support/zen/
+```
+
+`zen-sessions-backup` (52 MB) is what holds your workspaces and split views.
+Drop it if you would rather start clean.
+
+If you would rather not use Sync, `logins.json` carries saved passwords but is
+useless without `key4.db` from the same profile — copy both or neither.
+
+Copying the whole profile also works and preserves every logged-in web session,
+but it is 3.7 GB and brings `favicons.sqlite` (59 MB), `gmp-widevinecdm` and
+sync WAL files that all regenerate on their own.
+
+### 2k. Apps with nothing worth carrying
+
+Install and move on. VS Code has a 96-byte `settings.json`, no snippets and 7
+extensions. Gitify's 52 MB is Electron cache behind a single OAuth token, so
+log in again. 1Password, Slack, Chrome and Firefox all restore from their
+accounts. Hammerspoon is already covered by `~/.hammerspoon` in Step 2g, and
+Ghostty by the dotfiles repo.
 
 ---
 
@@ -429,7 +462,10 @@ the old machine), `~/.env` (stale `OPENROUTER_API_KEY` from the aider era),
 `hooks/peon-ping/`).
 
 **GUI app caches:** `Alfred/Databases` (61 MB clipboard history), Gitify's
-52 MB of Electron cache, TablePlus `Cache/` and `Temp/`, VS Code extensions.
+52 MB of Electron cache, TablePlus `Cache/` and `Temp/`, VS Code extensions,
+and the Zen profile's `storage/` (3.3 GB), `favicons.sqlite`,
+`gmp-widevinecdm` and sync WAL files, plus the stale `77i7c0e5.default`
+profile (376 MB).
 
 **Churn and history:** `~/.claude.json.tmp.*`, `~/.claude/projects` (386 MB),
 `~/.claude/{cache,debug,downloads,paste-cache,shell-snapshots,sessions,session-data}`,

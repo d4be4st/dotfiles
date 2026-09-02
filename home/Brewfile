@@ -64,6 +64,7 @@ cask "session-manager-plugin"  # AWS ECS exec, /aws-mirror skill
 cask "aerial"
 cask "alfred"
 cask "firefox"
+cask "zen"           # daily driver; auto-updates itself, brew won't manage upgrades
 cask "gitify"
 cask "google-chrome"
 cask "hammerspoon"
