@@ -146,7 +146,6 @@ chezmoi covers `alacritty`, `ghostty`, and `nvim` under `~/.config`, plus the
 ```bash
 rsync -av $OLD:'.config/{herdr,workspaces,w,gh,git,keyboardcowboy,atuin}' ~/.config/
 rsync -av $OLD:.local/share/atuin ~/.local/share/
-rsync -av $OLD:.hammerspoon ~/
 rsync -av $OLD:.tool-versions ~/
 ```
 
@@ -237,11 +236,15 @@ sync WAL files that all regenerate on their own.
 
 ### 2k. Apps with nothing worth carrying
 
-Install and move on. VS Code has a 96-byte `settings.json`, no snippets and 7
-extensions. Gitify's 52 MB is Electron cache behind a single OAuth token, so
-log in again. 1Password, Slack, Chrome and Firefox all restore from their
-accounts. Hammerspoon is already covered by `~/.hammerspoon` in Step 2g, and
-Ghostty by the dotfiles repo.
+Install and move on. Gitify's 52 MB is Electron cache behind a single OAuth
+token, so log in again. 1Password, Slack and Chrome all restore from their
+accounts. Ghostty config comes from the dotfiles repo, and Keyboard Cowboy's
+from `~/.config/keyboardcowboy` in Step 2g.
+
+Dropped rather than migrated: Hammerspoon (Keyboard Cowboy replaced it; it was
+not even running on the old machine) and VS Code. `~/.hammerspoon` still holds
+`workspace-hud.lua`, 20 KB of real work, if you ever want it back — it is on
+the old machine, which stays online.
 
 ---
 

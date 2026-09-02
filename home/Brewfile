@@ -21,14 +21,9 @@ brew "tree"
 
 # Editors & terminal
 brew "neovim"
-brew "lazygit"
 
 # JSON / YAML / data
 brew "jq"
-brew "jnv"          # interactive JSON navigator
-brew "fx"           # JSON viewer/processor
-brew "yq"           # YAML processor
-brew "tidy-viewer"  # CSV pretty-printer
 
 # Dev tools
 brew "mise"          # runtime manager, reads ~/.tool-versions
@@ -37,21 +32,14 @@ brew "mysql-client"
 brew "libpq"         # psql for /prod-db postgres targets
 brew "redis"
 brew "pipx"
-brew "lcov"
 brew "shared-mime-info"
-brew "terminal-notifier"
 
 # Cloud & infra
 brew "awscli"
-brew "railway"
-brew "nmap"
 brew "caddy"         # HTTPS proxy for *.productive.io.localhost worktree routes
 brew "overmind"      # runs workspace Procfiles, /ov skill
 brew "vpnutil"       # /vpn skill drives the Productive VPN through this
 brew "herdr"         # terminal multiplexer
-
-# Diagramming & docs
-brew "d2"
 
 # Misc
 brew "transmission-cli"
@@ -63,11 +51,10 @@ cask "ghostty"
 cask "session-manager-plugin"  # AWS ECS exec, /aws-mirror skill
 cask "aerial"
 cask "alfred"
-cask "firefox"
 cask "zen"           # daily driver; auto-updates itself, brew won't manage upgrades
 cask "gitify"
-cask "google-chrome"
-cask "hammerspoon"
+cask "google-chrome"  # claude-in-chrome extension needs Chrome specifically
+cask "keyboard-cowboy" # hotkeys; replaced hammerspoon, auto-updates itself
 cask "iina"
 cask "orbstack"
 cask "shottr"
@@ -76,4 +63,3 @@ cask "steam"
 cask "tableplus"
 cask "the-unarchiver"
 cask "transmission"
-cask "visual-studio-code"
