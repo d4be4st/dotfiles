@@ -175,10 +175,10 @@ chmod +x ~/.local/bin/*
 
 ### 2i. GUI app state
 
-The Brewfile installs the apps; it carries none of their settings. Only two
-apps hold state worth moving, and both also hold a license file.
+The Brewfile installs the apps; it carries none of their settings. Only
+TablePlus holds state worth moving.
 
-**Quit both apps on the old machine first.** macOS caches plist writes in
+**Quit TablePlus on the old machine first.** macOS caches plist writes in
 `cfprefsd`, so copying a running app's preferences can capture a stale file.
 
 TablePlus — saved connections, groups, favorites, query history, license:
@@ -193,15 +193,21 @@ rsync -av $OLD:Library/Preferences/com.tinyapp.TablePlus.plist ~/Library/Prefere
 Connection *passwords* live in the login Keychain, not in these files, so they
 do not come across. Re-enter them on first connect.
 
-Alfred — workflows, snippets, settings, Powerpack license. `Databases/` is
-61 MB of clipboard history and is deliberately skipped:
+Alfred is **not** carried — Raycast replaces it on the new machine (Brewfile).
+Sign into a Raycast account and its settings, extensions, snippets and
+quicklinks sync down; there is nothing to rsync.
 
-```bash
-AL="Library/Application Support/Alfred"
-mkdir -p ~/"$AL"
-rsync -av $OLD:"$AL/Alfred.alfredpreferences" $OLD:"$AL/Automation" \
-          $OLD:"$AL/prefs.json" $OLD:"$AL"/powerpack.*.dat ~/"$AL/"
+Alfred workflows are not importable into Raycast, so anything hand-built there
+is gone. The old machine keeps all of it if Raycast does not stick:
+
 ```
+Library/Application Support/Alfred/Alfred.alfredpreferences   9.6M  workflows + snippets
+Library/Application Support/Alfred/Automation                 4.8M
+Library/Application Support/Alfred/powerpack.DV0K42Q90G.dat   4.0K  paid license
+```
+
+Do not delete those on the old machine; the Powerpack license is the only copy
+of something you paid for.
 
 ### 2j. Zen Browser profile
 
@@ -464,7 +470,7 @@ the old machine), `~/.env` (stale `OPENROUTER_API_KEY` from the aider era),
 `~/.ollama`, and everything peon-ping (brew formula, tap, `skills/peon-ping-*`,
 `hooks/peon-ping/`).
 
-**GUI app caches:** `Alfred/Databases` (61 MB clipboard history), Gitify's
+**GUI app caches:** all of `Alfred/` (replaced by Raycast; see 2i), Gitify's
 52 MB of Electron cache, TablePlus `Cache/` and `Temp/`, VS Code extensions,
 and the Zen profile's `storage/` (3.3 GB), `favicons.sqlite`,
 `gmp-widevinecdm` and sync WAL files, plus the stale `77i7c0e5.default`

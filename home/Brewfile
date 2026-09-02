@@ -50,7 +50,7 @@ cask "1password-cli"
 cask "ghostty"
 cask "session-manager-plugin"  # AWS ECS exec, /aws-mirror skill
 cask "aerial"
-cask "alfred"
+cask "raycast"       # trying this in place of alfred; auto-updates itself
 cask "zen"           # daily driver; auto-updates itself, brew won't manage upgrades
 cask "gitify"
 cask "google-chrome"  # claude-in-chrome extension needs Chrome specifically
