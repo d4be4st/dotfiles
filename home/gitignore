@@ -10,6 +10,7 @@ coverage
 .git
 .solargraph.yml
 .tool-versions
+mise.local.toml
 Guardfile
 priv_docs/
 

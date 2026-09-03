@@ -1,39 +1,65 @@
 # MacBook migration runbook
 
-Moving to a new MacBook, carrying only what cannot be reproduced. **Not** a
-Migration Assistant transfer; the old machine has years of dead AI-tool dirs
-(`.aider`, `.kiro`, `.copilot`, `.gemini`, `.opencode`, `.antigravity`,
-`.cursor`) that should not follow.
+Rewritten 2026-09-03, straight after running it (Bestija-v4 to Bestija-v6).
+Every correction from that run is baked in; the numbers in Step 6 are what a
+finished machine actually reported, not what the previous draft guessed.
+
+Carry only what cannot be reproduced. **Not** a Migration Assistant transfer:
+the old disk accumulates dead AI-tool dirs (`.aider`, `.kiro`, `.copilot`,
+`.gemini`, `.opencode`, `.antigravity`, `.cursor`, `.claudecodebrowser`) that
+should not follow.
 
 The old machine stays online as a fallback, so anything missed can be pulled
 later. Nothing here is destructive on the old machine.
 
-**Old machine:** `Bestija-v4.local` (LAN `192.168.1.23`), user `stef`.
-Set `OLD=stef@Bestija-v4.local` in every shell below.
+Set this in every shell below, filling in the old machine's name:
+
+```bash
+OLD=stef@<old-host>.local     # e.g. stef@Bestija-v4.local
+```
 
 Steps marked **[HUMAN]** need a password, a browser, or a GUI. Everything else
 Claude can run unattended with Bash.
+
+**Order that worked:** Step 0, 1, 2a-2c, then **Zen (2j) early** so you have a
+working browser with your logins for every OAuth step that follows. The rest
+in order after that.
 
 ---
 
 ## Step 0 — on the OLD machine [HUMAN]
 
-SSH is off by default. Turn on Remote Login:
+1. Commit and push everything that is config, not half-finished code:
 
-```bash
-sudo systemsetup -setremotelogin on
-```
+   ```bash
+   cd ~/.dotfiles && git status --short     # expect clean before you leave
+   git add -A && git commit -m "sync before machine migration" && git push
+   ```
 
-Verify it is listening:
+   Last time this repo was missing 14 load-bearing uncommitted files (zprofile,
+   the whole `home/zsh/` tree, aliases, ghostty config, `review.lua`). Cloning
+   it as-is would have given a machine with no login shell, no prompt, no PATH.
+   **Check `git status` here before anything else.** Half-finished worktree
+   changes are a separate matter and stay uncommitted (Appendix A).
 
-```bash
-lsof -nP -iTCP:22 -sTCP:LISTEN
-```
+2. Turn on Remote Login (off by default):
 
-Both machines must be on the same Wi-Fi for the `.local` name to resolve.
-If Bonjour misbehaves, use `192.168.1.23` instead.
+   ```bash
+   sudo systemsetup -setremotelogin on
+   lsof -nP -iTCP:22 -sTCP:LISTEN     # confirm it is listening
+   ```
 
-Turn Remote Login back off once the migration is done.
+3. Note the LAN IP (`ipconfig getifaddr en0`). Both machines on the same
+   Wi-Fi for `.local` to resolve; use the raw IP if Bonjour misbehaves.
+
+4. **Quit Zen and TablePlus.** Their sqlite files and plists copy mid-write
+   otherwise, and macOS caches plist writes in `cfprefsd`.
+
+5. Do **not** run `brew bundle dump`. `home/Brewfile` is hand-curated with
+   section comments and deliberately excludes ~25 installed packages. Review it
+   by hand instead.
+
+Remote Login goes back off in Step 7.
 
 ---
 
@@ -42,22 +68,42 @@ Turn Remote Login back off once the migration is done.
 ```bash
 xcode-select --install
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
 brew install rsync git gh
+curl -fsSL https://claude.ai/install.sh | bash     # PATH: ~/.local/bin
 ```
 
-Then start `claude` and hand it this file. Password prompts for rsync are
-expected on every command until Step 3 installs the ssh config.
+Name the machine and turn the firewall on:
+
+```bash
+sudo scutil --set ComputerName "Bestija-vN" \
+  && sudo scutil --set LocalHostName "Bestija-vN" \
+  && sudo scutil --set HostName "Bestija-vN"
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+```
+
+Generate a fresh key and push it to the old machine, so every rsync below runs
+without a password prompt:
+
+```bash
+ssh-keygen -t ed25519 -a 100 -C "stef@Bestija-vN" -f ~/.ssh/id_ed25519 \
+  && ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+ssh-copy-id -i ~/.ssh/id_ed25519.pub $OLD
+```
+
+Then start `claude` and hand it this file.
+
+> **Gotcha hit last time:** ssh multiplexing fails with `ControlPath too long
+> (… >= 104 bytes)` if the socket lands in Claude's scratchpad path. Run ssh
+> from `~` or pass `-o ControlPath=~/.ssh/cm-%C`.
 
 ---
 
 ## Step 2 — Tier 1: irreplaceable
 
-Exists nowhere but the old disk. Under 5 MB total. Do `.ssh` first; nothing
-else works without it.
-
-```bash
-OLD=stef@Bestija-v4.local
-```
+Exists nowhere but the old disk. Under 5 MB total, minus Zen. Do `.ssh` first;
+nothing else works without it.
 
 ### 2a. SSH keys
 
@@ -67,121 +113,138 @@ chmod 700 ~/.ssh
 chmod 600 ~/.ssh/id_rsa ~/.ssh/config
 ```
 
-Sanity check: `ssh -T git@github.com` should greet you by username.
+Sanity check: `ssh -T git@github.com` greets you by username.
 
-### 2b. Live API tokens
+### 2b. Tokens — check before copying
 
-`~/.zshenv` is where the real token values live. `list-secrets.mjs` reports
-six of them as "env only, not in keychain", meaning this file is their only
-copy on disk.
+`~/.zshenv` holds raw token values. **Last time every one of them was already
+revoked, so it was skipped entirely.** Read it first, keep only what is still
+live, and prefer the keychain (Step 5) over a plaintext file:
 
 ```bash
-rsync -av $OLD:.zshenv ~/
-chmod 600 ~/.zshenv
+ssh $OLD 'cat .zshenv'          # inspect, do not blind-copy
 ```
 
 ### 2c. Claude config and local skills
 
-`~/.claude/skills` holds ~30 skills that are not in any marketplace plugin.
+`~/.claude/skills` holds skills that are not in any marketplace plugin (24 on
+the finished machine).
 
 ```bash
 mkdir -p ~/.claude
-rsync -av $OLD:'.claude/{settings.json,CLAUDE.md,keybindings.json,mcp.json,local-dev-servers.md,statusline-command.sh,workspace.md,telemetry.env}' ~/.claude/
+rsync -av $OLD:'.claude/{settings.json,CLAUDE.md,keybindings.json,local-dev-servers.md,statusline-command.sh,workspace.md,telemetry.env}' ~/.claude/
 rsync -av $OLD:'.claude/{hooks,agents,commands,output-styles,skills}' ~/.claude/
 chmod +x ~/.claude/statusline-command.sh ~/.claude/hooks/* 2>/dev/null
 ```
 
-Optional, saves re-adding MCP servers by hand. The file is ~400 KB and mixes
-in session cruft, so skip it if you would rather start clean:
+Skip `.claude/mcp.json` — Claude Code reads global MCP servers from
+`~/.claude.json`, not from there. Optional, saves re-adding MCP servers by
+hand; ~400 KB with session cruft mixed in:
 
 ```bash
 rsync -av $OLD:.claude.json ~/
 ```
 
+After copying, **check every path referenced in `settings.json` exists**
+(`fileSuggestion`, hooks, statusline). A stale path fails silently.
+
+Also check what those scripts shell out to. `file-suggestion.sh` needs `rg`
+and **`fzy`**, and fzy is not in the Brewfile — without it the hook returns
+nothing and looks identical to a missing script. Hooks also run with a
+stripped PATH, so anything mise-managed (python3, node) is unreachable from
+one; prepend `/opt/homebrew/bin` inside the script.
+
 ### 2d. Claude memory
 
-30 accumulated feedback rules, not in any git repo.
+Feedback rules, in no git repo. There is a `memory/` dir per project, not one
+central one, so pull them all:
 
 ```bash
-mkdir -p ~/.claude/projects/-Users-stef-dev-productive-work
-rsync -av $OLD:'.claude/projects/-Users-stef-dev-productive-work/memory' \
-  ~/.claude/projects/-Users-stef-dev-productive-work/
+rsync -av --include='*/' --include='memory/***' --exclude='*' \
+  $OLD:.claude/projects/ ~/.claude/projects/
 ```
 
 ### 2e. Workspace state
 
-Requires the `work` repo from Step 4a to exist first, or just create the dir.
-`workspaces/` and `knowledge/me.md` are both gitignored, so they are local-only.
+Needs `~/dev/productive/work` from Step 4a, or just the dir. `workspaces/` and
+`knowledge/me.md` are gitignored, so local-only.
 
-The excludes drop the checked-out repo worktrees (gigabytes, all
-reproducible) while keeping `workspace.md`, the notes, `output/`, `Caddyfile`,
-`Procfile`, `.tmuxinator.yml`, and the local-only notes git repo in each
-workspace root.
+**Notes only, no worktrees.** Worktrees are gigabytes and reproducible; pull
+one only for a workspace you are actively mid-task on.
 
 ```bash
 mkdir -p ~/dev/productive/work/workspaces
 rsync -av \
   --exclude='/*/api/' --exclude='/*/frontend/' --exclude='/*/ai-agent/' \
   --exclude='/*/backoffice/' --exclude='/*/devportal/' --exclude='/*/logs/' \
+  --exclude='.tmuxinator.yml' \
   $OLD:dev/productive/work/workspaces/ ~/dev/productive/work/workspaces/
 
 rsync -av $OLD:dev/productive/work/knowledge/me.md ~/dev/productive/work/knowledge/
 ```
 
+`.tmuxinator.yml` is excluded — herdr replaced tmuxinator.
+
+Two things this keeps that matter: each workspace's `.claude/skills/*` entries
+are **symlinks into its `api` worktree**, and the local-only notes git repo in
+each workspace root.
+
+> **Use rsync, not a zip.** A zip of a workspace dereferences those symlinks
+> into real dirs, and `unzip` then fails with `Permission denied` on every one
+> (it cannot write through a symlink-to-directory). `rsync -a` preserves them.
+> If a symlink dangles afterwards, its target worktree just is not checked out
+> yet, which is expected.
+
 ### 2f. Caddy routing table
 
-35 `reverse_proxy` blocks, one per worktree hostname. Pulled to a temp path
-because a fresh `brew install caddy` writes its own default Caddyfile; merge
-by hand rather than clobbering.
+One `reverse_proxy` block per worktree hostname. Pulled to a temp path because
+a fresh `brew install caddy` writes its own default Caddyfile; merge by hand.
 
 ```bash
 rsync -av $OLD:/opt/homebrew/etc/Caddyfile /tmp/Caddyfile.old
 ```
 
+The current setup uses **`import` lines** pointing at per-workspace Caddyfiles
+rather than one monolithic file. Ignore `work/scripts/setup-caddy.sh`; take the
+imports. See `~/.claude/local-dev-servers.md`.
+
 ### 2g. Configs chezmoi does NOT manage
 
-chezmoi covers `alacritty`, `ghostty`, and `nvim` under `~/.config`, plus the
+chezmoi covers `alacritty`, `ghostty` and `nvim` under `~/.config`, plus the
 `home/` dotfiles. Everything below is outside it.
 
 ```bash
 rsync -av $OLD:'.config/{herdr,workspaces,w,gh,git,keyboardcowboy,atuin}' ~/.config/
 rsync -av $OLD:.local/share/atuin ~/.local/share/
-rsync -av $OLD:.tool-versions ~/
 ```
 
-`~/.local/share/atuin` is 6 MB: 2023 shell-history entries plus the `key` file
-that sync is keyed on. `zsh/tools.zsh` initializes atuin as your Ctrl+R, so it
-is in the Brewfile.
+`~/.local/share/atuin` is ~6 MB: years of shell history plus the `key` file
+sync is keyed on. `zsh/tools.zsh` binds atuin to Ctrl+R.
 
 `~/.config/herdr/agent-detection/` holds local rules that shadow upstream;
-they are the reason herdr reports agent state correctly.
+they are why herdr reports agent state correctly.
 
-`~/.tool-versions` pins 9 runtimes and is not chezmoi-managed, so it has to be
-copied. See Step 3b.
+**Do not copy `~/.tool-versions`.** It was skipped last time on purpose; mise
+reads each repo's own pins and `~/.config/mise/config.toml`. Copying it drags
+in runtimes no repo asks for (erlang, elixir, bun, gleam, go).
 
 ### 2h. Personal CLIs
 
-`~/.local/bin` holds `workspaces`, `w-popup`, `ov-popup`, `pr-popup`, `agent`,
-and the `tb-*` family. `--no-links` skips the symlinks that point into
-`~/.local/share` (those tools get reinstalled in Step 5).
-
-Delete `~/.local/bin/saggar` afterwards; it was a trial and is not in use.
+`~/.local/bin` holds `workspaces`, `w-popup`, `ov-popup`, `pr-popup`, `agent`
+and the `tb-*` family. `--no-links` skips symlinks into `~/.local/share`
+(those tools get reinstalled in Step 5).
 
 ```bash
 mkdir -p ~/.local/bin
 rsync -av --no-links $OLD:.local/bin/ ~/.local/bin/
 chmod +x ~/.local/bin/*
+rm -f ~/.local/bin/saggar ~/.local/bin/tb-lf     # trials, not in use
 ```
 
-### 2i. GUI app state
+### 2i. TablePlus
 
-The Brewfile installs the apps; it carries none of their settings. Only
-TablePlus holds state worth moving.
-
-**Quit TablePlus on the old machine first.** macOS caches plist writes in
-`cfprefsd`, so copying a running app's preferences can capture a stale file.
-
-TablePlus — saved connections, groups, favorites, query history, license:
+The Brewfile installs the apps; it carries none of their settings. TablePlus is
+the only one holding state worth moving. **Quit it on the old machine first.**
 
 ```bash
 TP="Library/Application Support/com.tinyapp.TablePlus"
@@ -190,39 +253,20 @@ rsync -av $OLD:"$TP/Data" $OLD:"$TP/.licensemac" ~/"$TP/"
 rsync -av $OLD:Library/Preferences/com.tinyapp.TablePlus.plist ~/Library/Preferences/
 ```
 
-Connection *passwords* live in the login Keychain, not in these files, so they
-do not come across. Re-enter them on first connect.
+Connection *passwords* live in the login Keychain, not these files. Re-enter on
+first connect.
 
-Alfred is **not** carried — Raycast replaces it on the new machine (Brewfile).
-Sign into a Raycast account and its settings, extensions, snippets and
-quicklinks sync down; there is nothing to rsync.
+### 2j. Zen Browser profile — do this early
 
-Alfred workflows are not importable into Raycast, so anything hand-built there
-is gone. The old machine keeps all of it if Raycast does not stick:
-
-```
-Library/Application Support/Alfred/Alfred.alfredpreferences   9.6M  workflows + snippets
-Library/Application Support/Alfred/Automation                 4.8M
-Library/Application Support/Alfred/powerpack.DV0K42Q90G.dat   4.0K  paid license
-```
-
-Do not delete those on the old machine; the Powerpack license is the only copy
-of something you paid for.
-
-### 2j. Zen Browser profile
-
-The `zen` cask comes from the Brewfile. The profile does not, and it is 4.0 GB
-across two profiles; the active one is `ei91s0r8.Default (alpha)`, named in
-`profiles.ini`.
-
-**Quit Zen first**, or the sqlite files copy mid-write.
+The `zen` cask comes from the Brewfile. The profile does not; it is ~4 GB
+across profiles, and the active one is named in `profiles.ini` (last time
+`ei91s0r8.Default (alpha)`). **Quit Zen on the old machine first.**
 
 Sign into Firefox Sync on the new machine for bookmarks, history, passwords,
-open tabs and extensions. Sync does **not** carry Zen's own settings, so copy
-those by hand. This skips `storage/`, which is 3.3 GB of the 3.7 GB:
+open tabs and extensions. Sync does **not** carry Zen's own settings:
 
 ```bash
-Z="Library/Application Support/zen/Profiles/ei91s0r8.Default (alpha)"
+Z="Library/Application Support/zen/Profiles/<profile>"
 mkdir -p ~/"$Z"
 rsync -av $OLD:"$Z/prefs.js" $OLD:"$Z/containers.json" \
           $OLD:"$Z/zen-themes.css" $OLD:"$Z/zen-keyboard-shortcuts.json" \
@@ -230,74 +274,37 @@ rsync -av $OLD:"$Z/prefs.js" $OLD:"$Z/containers.json" \
 rsync -av $OLD:Library/Application\ Support/zen/profiles.ini ~/Library/Application\ Support/zen/
 ```
 
-`zen-sessions-backup` (52 MB) is what holds your workspaces and split views.
-Drop it if you would rather start clean.
+This skips `storage/`, which is most of the size. `zen-sessions-backup`
+(~52 MB) holds workspaces and split views; drop it to start clean.
 
-If you would rather not use Sync, `logins.json` carries saved passwords but is
-useless without `key4.db` from the same profile — copy both or neither.
+Two things Sync does not carry, and neither does the list above:
 
-Copying the whole profile also works and preserves every logged-in web session,
-but it is 3.7 GB and brings `favicons.sqlite` (59 MB), `gmp-widevinecdm` and
-sync WAL files that all regenerate on their own.
+- **MultiAccountContainers saved sites.** Its extension storage lives under
+  `storage/default/moz-extension+++<uuid>`; pull that one dir if the container
+  assignments matter, or reassign by hand.
+- Saved passwords without Sync: `logins.json` is useless without `key4.db`
+  from the same profile. Copy both or neither.
+
+Whatever you do, **nuke whatever browsing you did on the new machine before
+copying**, or the old profile merges into a half-used one.
 
 ### 2k. Apps with nothing worth carrying
 
-Install and move on. Gitify's 52 MB is Electron cache behind a single OAuth
-token, so log in again. 1Password, Slack and Chrome all restore from their
-accounts. Ghostty config comes from the dotfiles repo, and Keyboard Cowboy's
-from `~/.config/keyboardcowboy` in Step 2g.
+Install and move on. Gitify is Electron cache behind one OAuth token, so log in
+again. 1Password, Slack and Chrome restore from their accounts. Ghostty config
+comes from the dotfiles repo, Keyboard Cowboy's from `~/.config/keyboardcowboy`
+in Step 2g.
 
-Dropped rather than migrated: Hammerspoon (Keyboard Cowboy replaced it; it was
-not even running on the old machine) and VS Code. `~/.hammerspoon` still holds
-`workspace-hud.lua`, 20 KB of real work, if you ever want it back — it is on
-the old machine, which stays online.
+Dropped for good: Hammerspoon (Keyboard Cowboy replaced it), VS Code, Alfred
+(Raycast replaces it — sign into a Raycast account and settings, extensions,
+snippets and quicklinks sync down; nothing to rsync). Alfred workflows are not
+importable into Raycast; the old machine keeps
+`Library/Application Support/Alfred/` including the paid Powerpack license, so
+do not delete it there.
 
 ---
 
 ## Step 3 — dotfiles
-
-### 3a. Push from the old machine first [HUMAN]
-
-**This is the highest-risk step in the migration.** The dotfiles repo on
-GitHub is missing 14 load-bearing files that were never committed. Cloning it
-as-is gives you a machine with no login shell, no prompt, no PATH, no aliases,
-and no Ghostty config.
-
-Never committed:
-
-| path | what breaks without it |
-|---|---|
-| `home/zprofile` + `symlink_dot_zprofile.tmpl` | entire login shell: PATH, mise, mysql-client, `load-secrets.sh`, `load-otel.sh` |
-| `home/zsh/{path,plugins,prompt,tools}.zsh` | prompt, plugins, PATH, tool init |
-| `home/zsh/aliases/main.zsh` | every alias |
-| `dot_zsh/symlink_{path,plugins,prompt,tools}.zsh.tmpl` | the symlinks that wire the above in |
-| `home/config/ghostty/` + `dot_config/symlink_ghostty.tmpl` | terminal config |
-| `home/config/nvim/lua/plugins/review.lua` | review.nvim, how you read diffs |
-
-Also modified and unpushed: nvim config (13 files), `zshrc`, `gitconfig`,
-`gitignore`, `tmux.conf`, `tmux/theme.tmux`, `Brewfile`.
-
-`home/warp/settings.toml` is untracked too; Warp was dropped from the Brewfile,
-so leave it out.
-
-This is config, not half-finished code. It has to be committed and pushed; the
-unfinished worktree changes in Appendix A are a separate matter and stay
-uncommitted.
-
-Do **not** run `brew bundle dump`. `home/Brewfile` is hand-curated with
-section comments and deliberately excludes ~25 installed packages; a dump
-would flatten it and drag the junk along. It was already reviewed and updated
-for this migration: `git-delta` name fix, `mise` in place of `asdf`, added
-`caddy` / `overmind` / `vpnutil` / `herdr` / `libpq` / `redis` /
-`1password-cli` / `ghostty` / `session-manager-plugin`, dropped `gnupg` and
-`warp` and the four dead `tap` lines.
-
-```bash
-cd ~/.dotfiles
-git add -A && git commit -m "sync before machine migration" && git push
-```
-
-### 3b. Install on the new machine
 
 ```bash
 brew install chezmoi
@@ -306,27 +313,20 @@ git clone git@github.com:d4be4st/dotfiles ~/.dotfiles
 brew bundle install --file=~/.dotfiles/home/Brewfile
 ```
 
-**Runtimes are on mise now, not asdf.** `zprofile` activates mise and
-`~/.tool-versions` (copied in Step 2g) is read as-is. Two of its entries use
-asdf plugin names; mise's canonical names are `node` and `go`:
-
-```
-nodejs 25.8.1   ->  node 25.8.1
-golang 1.26.2   ->  go 1.26.2
-```
-
-mise aliases both, but rename them to be safe. Then:
+**Runtimes are on mise, not asdf.** `zprofile` activates mise. Install from the
+repos' own pins rather than a personal `.tool-versions`:
 
 ```bash
-mise install     # python 3.12.5, ruby 3.4.1, node, erlang, elixir, bun, gleam, go, rust
+mise install     # in each repo, or once ~/.config/mise/config.toml is in place
 mise doctor
 ```
 
-Do not copy `~/.asdf`; it is dead, and its shims are already broken on the old
-machine.
+Do not copy `~/.asdf`; it is dead and its shims are already broken.
 
 `~/.zprofile` sources `load-secrets.sh` and `load-otel.sh` from the `work`
-repo, so those paths must exist (Step 4a) before a new shell is clean.
+repo, so Step 4a must run before a new shell is clean.
+
+`home/gitignore` carries the global ignores (`mise.local.toml`, `.review.json`).
 
 ---
 
@@ -340,9 +340,16 @@ git clone git@github.com:productiveio/work.git ~/dev/productive/work
 cd ~/dev/productive/work && ./scripts/repo-sync.sh
 ```
 
+Then `/setup` in the `work` repo for the rest: dirs, `~/.aws/config`,
+telemetry, caddy, overcommit.
+
+Two things that run needs to know: **skip `worktrees/`** (workspaces replaced
+it), and every repo lives in `~/dev/productive/` with `work/repos/*` as
+symlinks into them. Clone fresh, default branch only, no old branches.
+
 ### 4b. Claude plugins
 
-542 MB on the old machine. Reinstall from the marketplace instead:
+~540 MB on the old machine. Reinstall from the marketplace instead:
 
 ```
 /plugin install p-dev@productive
@@ -350,45 +357,59 @@ cd ~/dev/productive/work && ./scripts/repo-sync.sh
 
 Then the rest from `knowledge/tooling/claude-plugins.md`.
 
-### 4c. Session transcripts
+### 4c. Session transcripts — optional, ~400 MB
 
-`~/.claude/projects` is 386 MB of past session history. Only worth pulling if
-you want `tb-session` search over old work, and the old machine stays online
-for that anyway. Skip by default.
+Only needed for `tb-session` search over old work. Worth it, but **protect
+today's local memory files**: the main pass excludes `memory/`, then a second
+pass fills gaps without overwriting.
+
+```bash
+rsync -av --exclude='memory/' $OLD:.claude/projects/ ~/.claude/projects/
+rsync -av --ignore-existing --include='*/' --include='memory/***' --exclude='*' \
+  $OLD:.claude/projects/ ~/.claude/projects/
+```
 
 ### 4d. Local Docker infrastructure
 
-Nothing here is carried. The old machine had ~49 GB of Docker state (17.4 GB
-images, 29.5 GB volumes, 2.1 GB build cache) and all of it rebuilds: images
-re-pull, `*-gems-data` and `*-node_modules-data` volumes are just bundle and
-npm caches, and the meilisearch volumes (6 GB across two) are reindexed.
+Nothing is carried; ~49 GB of images, volumes and build cache all rebuilds.
+Meilisearch reindexes, `*-gems-data` and `*-node_modules-data` are just caches.
 
-Compose lives in `productiveio/local-development`, cloned to a folder named
-`docker` rather than `local-development`. Build contexts are relative
-(`context: ../api`), so keep the sibling layout under `~/dev/productive/`:
-`api`, `app`, `mailer`, `realtime`, `docs-realtime`, `exporter`, `polaris`.
-
-OrbStack comes from the Brewfile in Step 3b, so it is already installed.
+Clone under the repo's **own name** — the README's expected layout is
+`local-development` alongside the sibling repos, and build contexts are
+relative (`context: ../api`):
 
 ```bash
-git clone git@github.com:productiveio/local-development.git ~/dev/productive/docker
-cd ~/dev/productive/docker
-docker compose up -d mysql mysql-test redis memcached postgres meilisearch
+git clone git@github.com:productiveio/local-development.git ~/dev/productive/local-development
+cd ~/dev/productive/local-development
+docker compose up -d mysql redis memcached postgres meilisearch
 ```
 
-Those six support services are what actually runs day to day; the app services
-in the compose file are not used, since apps run from workspaces via
-`ov resume`. `postgres` is only there for polaris, which is why its volume was
-by far the biggest thing on the old disk.
+OrbStack comes from the Brewfile. Manage this afterwards with the `tb-devctl`
+skill rather than raw compose.
 
-Manage it afterwards with the `tb-devctl` skill rather than raw compose.
+Four things that bit last time:
+
+1. **There is no `mysql-test` service.** Older drafts of this runbook listed
+   it; the compose file has no such service and the command fails. Five
+   services, as above.
+2. **`postgres:latest` is now 18.x and crash-loops** against the compose
+   file's `postgres-data:/var/lib/postgresql/data` mount — PG 18 moved to
+   major-version-specific data dirs and wants the mount at
+   `/var/lib/postgresql`. Fix the mount (or pin the image). This is a repo bug
+   that hits any fresh machine; the local fix is still uncommitted.
+3. **polaris CI tests against postgres 16** (`sem-service start postgres 16`).
+   Running 18 locally works but is a major version ahead of what is verified;
+   first suspect if polaris misbehaves against the DB.
+4. **`traefik` is in that compose file and binds :80/:443** — the same ports as
+   Caddy. A bare `docker compose up -d` starts it as a dependency and it fights
+   Caddy. Name the five services explicitly, and stop traefik if it appears.
 
 **Ignore the README's `/etc/hosts` advice.** `*.productive.io.localhost`
-resolves to loopback natively on macOS (RFC 6761) and Caddy already fronts
-these hostnames. Do not add entries; see `~/.claude/local-dev-servers.md`.
+resolves to loopback natively on macOS (RFC 6761) and Caddy fronts these
+hostnames. See `~/.claude/local-dev-servers.md`.
 
-Databases start empty. Re-seed however the team does it now rather than
-copying volumes across.
+Databases start empty. Re-seed however the team does it now; `db_backup`
+(268 MB of dumps) is deliberately left behind.
 
 ---
 
@@ -396,52 +417,107 @@ copying volumes across.
 
 - [ ] `gh auth login`
 - [ ] `claude` login
-- [ ] `aws sso login` (check `~/.aws/config` came over, or rsync it)
-- [ ] Productive VPN profile (NE VPN, reinstall the profile; `vpnutil` drives it after)
-- [ ] `sudo caddy trust` (installs the local CA so `*.productive.io.localhost` HTTPS is clean)
-- [ ] Keychain: `node ~/dev/productive/work/scripts/setup-keychain.mjs`
-      Two real entries on the old machine: `PRODUCTIVE_CLAUDE_ALLOY_USERNAME`
-      and `PRODUCTIVE_CLAUDE_ALLOY_PASSWORD`.
-- [ ] Reinstall vendored CLIs whose symlinks were skipped, only the ones you
-      still want: `uv`, `cursor-agent`. (`aider`, `posting`, `specify` were
-      trials.)
-- [ ] 1Password, Chrome profile, Ghostty/Alacritty as apps (these are normal
-      app installs, not config)
+- [ ] **`aws configure sso` before `aws sso login`.** A copied `~/.aws/config`
+      without `sso_start_url` / `sso_region` fails with
+      `Missing the following required SSO configuration values`.
+- [ ] `brew install --cask session-manager-plugin` (for the `aws-mirror` skill)
+- [ ] Productive VPN profile (NE VPN, reinstall the profile; `vpnutil` drives
+      it after)
+- [ ] `sudo caddy trust` — installs the local CA so `*.productive.io.localhost`
+      HTTPS is clean. Needs an interactive sudo; Claude cannot run it.
+- [ ] Keychain: `node ~/dev/productive/work/scripts/setup-keychain.mjs`.
+      Two real entries: `PRODUCTIVE_CLAUDE_ALLOY_USERNAME` and
+      `PRODUCTIVE_CLAUDE_ALLOY_PASSWORD`.
+      **Unlock the keychain first** — a locked keychain makes
+      `list-secrets.mjs` report 0 found and looks like an empty keychain.
+- [ ] **Vanta** — install the agent (company requirement), lands a root daemon
+      in `/Library/LaunchDaemons`.
+- [ ] **Raycast** — free ⌘Space from Spotlight first, or Raycast's onboarding
+      refuses the hotkey as already in use. Extensions install only from the
+      Store GUI; start with GitHub, Git Repos, Kill Process, Brew.
+- [ ] Reinstall vendored CLIs whose symlinks were skipped, only what you still
+      want: `uv`. (`aider`, `posting`, `specify`, `cursor-agent` were trials.)
+- [ ] 1Password, Chrome profile, Ghostty/Alacritty as apps.
+- [ ] **1Password → Settings → Developer → Use the SSH agent.** `gitconfig`
+      sets `commit.gpgsign=true` with `op-ssh-sign`, so until that toggle is on
+      **every commit fails** with `1Password: Could not connect to socket`.
+      Installing and unlocking the app is not enough; the toggle is separate.
+      Confirm the socket exists:
+      `ls ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock`
+      (`s.sock` alone is 1Password's own IPC, not the SSH agent.)
+      Separately, `gpg.ssh.allowedSignersFile` is unset, so `git log --show-signature`
+      cannot verify these signatures even though they are valid.
+
+### Optional: Zen under Marionette, for the browser MCP
+
+The `firefox-devtools` MCP drives your real logged-in Zen profile, but Zen has
+to be launched with the remote ports open. A LaunchAgent at
+`~/Library/LaunchAgents/io.zen.marionette.plist` does it, `RunAtLoad`, no
+`KeepAlive` (so quitting Zen stays quit), launching Zen with
+`--marionette --remote-debugging-port 9222`. Ports 2828 and 9222.
+
+```bash
+launchctl kickstart -k gui/$(id -u)/io.zen.marionette     # restart without logout
+```
+
+The MCP itself goes in `~/.claude.json` at user scope. Skip the puppeteer
+route and `claudecodebrowser`; both were dead ends.
 
 ---
 
 ## Step 6 — verify
 
+Numbers below are what the finished machine reported on 2026-09-03. Treat a
+mismatch as a question, not a failure — most deviations are old decisions.
+
 ```bash
-ssh -T git@github.com                                   # auth works
-mise ls                                                  # 9 runtimes, no missing
-node ~/dev/productive/work/scripts/list-secrets.mjs     # 8 found, matching old machine
-brew services list | grep -w caddy                      # started
-curl -k -I https://api.productive.io.localhost/          # route resolves
-workspaces list                                          # 20 workspaces + inbox
-ls ~/.claude/skills | wc -l                              # ~30
-ls ~/.claude/projects/-Users-stef-dev-productive-work/memory | wc -l   # 30
+ssh -T git@github.com                                    # greets you by username
+mise ls                                                  # 7: 4x node, ruby, python, rust
+node ~/dev/productive/work/scripts/list-secrets.mjs      # 5 found, 17 missing (all optional)
+brew services list | grep -w caddy                       # started
+curl -k -I https://api.productive.io.localhost/          # 502 is correct: routing works, Rails is down
+workspaces list                                          # ~17 active + done + parked + inbox
+ls ~/.claude/skills | wc -l                              # 24
+ls ~/.claude/projects/-Users-stef-dev-productive-work/memory | wc -l   # 32
+docker ps --format '{{.Names}}'                          # mysql redis memcached postgres meilisearch
+launchctl list | grep -ci vanta                          # non-zero
+aws sts get-caller-identity                              # AWSReservedSSO_DeveloperAccess
 ```
+
+Then take a **baseline snapshot** while the machine is known-clean, so you have
+something to diff against later: `launchctl list`, the LaunchDaemons and
+LaunchAgents listings, `brew list`.
+
+---
+
+## Step 7 — close out the old machine [HUMAN]
+
+Do not skip this. It stayed open for a full day last time.
+
+```bash
+# on the old machine
+sudo systemsetup -setremotelogin off
+```
+
+Then remove the new machine's key from `~/.ssh/authorized_keys` there.
 
 ---
 
 ## Appendix A — unfinished work, pulled on demand
 
-Six worktrees had uncommitted working-tree changes at planning time. Nothing
-was unpushed, so no commits are at risk. These are deliberately **not**
-committed; they are half-finished.
+Worktrees with uncommitted working-tree changes are deliberately **not**
+committed. Inventory them before you leave the old machine:
 
-| workspace | repo | dirty files |
-|---|---|---|
-| `backyard-meilisearch-api` | api | 20 |
-| `spec-first-test-refactor` | api | 14 |
-| `delta-sync-filter-changed-records-after-timestamp` | api | 10 |
-| `update-event-doesn-t-update-notetaker` | frontend | 4 |
-| `flag-detail-page-redesign-commit-consoli` | api | 1 |
-| `flag-detail-page-redesign-commit-consoli` | backoffice | 1 |
+```bash
+for d in ~/dev/productive/work/workspaces/*/*/; do
+  git -C "$d" rev-parse --git-dir >/dev/null 2>&1 || continue
+  n=$(git -C "$d" status --porcelain | wc -l)
+  [ "$n" -gt 0 ] && echo "$n  $d"
+done
+```
 
-Five of the six are paused. When you actually resume one, recreate its
-worktree normally, then overlay the working tree from the old machine:
+When you actually resume one, recreate its worktree normally, then overlay the
+working tree from the old machine:
 
 ```bash
 SLUG=spec-first-test-refactor
@@ -451,32 +527,30 @@ rsync -av --exclude='.git' --exclude='node_modules' --exclude='tmp' --exclude='l
   ~/dev/productive/work/workspaces/$SLUG/$REPO/
 ```
 
-Check `git status` in the worktree afterwards and confirm the diff matches
-what the old machine showed.
+Check `git status` in the worktree afterwards and confirm the diff matches what
+the old machine showed.
 
 ---
 
 ## Appendix B — deliberately left behind
 
-**Rebuilt by a later step, not copied:** Docker images, volumes and build
-cache (~49 GB, Step 4d); every git clone under `~/dev/productive/` (Steps 4a
-and 4d re-clone what's needed); `~/.claude/plugins` (542 MB, Step 4b);
-`node_modules` anywhere.
+**Rebuilt by a later step, not copied:** Docker images, volumes and build cache
+(~49 GB, Step 4d); every git clone under `~/dev/productive/` (Steps 4a and 4d);
+`~/.claude/plugins` (~540 MB, Step 4b); `node_modules` anywhere.
 
-**Dead tooling:** `~/.asdf` (replaced by mise; its shims are already broken on
-the old machine), `~/.env` (stale `OPENROUTER_API_KEY` from the aider era),
-`~/.aider*`, `~/.kiro`, `~/.copilot`, `~/.gemini`, `~/.opencode`,
-`~/.antigravity`, `~/.cursor`, `~/.agent-os`, `~/.claudecodebrowser`,
-`~/.ollama`, and everything peon-ping (brew formula, tap, `skills/peon-ping-*`,
-`hooks/peon-ping/`).
+**Dead tooling:** `~/.asdf` (mise replaced it), `~/.env` (stale
+`OPENROUTER_API_KEY` from the aider era), `~/.tool-versions`, `~/.aider*`,
+`~/.kiro`, `~/.copilot`, `~/.gemini`, `~/.opencode`, `~/.antigravity`,
+`~/.cursor`, `~/.agent-os`, `~/.claudecodebrowser`, `~/.ollama`,
+`~/.hammerspoon`, everything peon-ping, and `~/.local/bin/{saggar,tb-lf}`.
 
-**GUI app caches:** all of `Alfred/` (replaced by Raycast; see 2i), Gitify's
-52 MB of Electron cache, TablePlus `Cache/` and `Temp/`, VS Code extensions,
-and the Zen profile's `storage/` (3.3 GB), `favicons.sqlite`,
-`gmp-widevinecdm` and sync WAL files, plus the stale `77i7c0e5.default`
-profile (376 MB).
+**GUI app caches:** all of `Alfred/` (Raycast replaced it; the paid license
+stays on the old machine), Gitify's Electron cache, TablePlus `Cache/` and
+`Temp/`, VS Code extensions, and the Zen profile's `storage/` (minus the
+MultiAccountContainers dir if you want it), `favicons.sqlite`,
+`gmp-widevinecdm`, sync WAL files and any stale profile.
 
-**Churn and history:** `~/.claude.json.tmp.*`, `~/.claude/projects` (386 MB),
+**Churn and history:** `~/.claude.json.tmp.*`,
 `~/.claude/{cache,debug,downloads,paste-cache,shell-snapshots,sessions,session-data}`,
-`~/dev/worktrees` and `~/dev/productive/worktrees` (all four clean and merged),
+`~/dev/worktrees` and `~/dev/productive/worktrees`,
 `~/dev/productive/db_backup` (268 MB of seed dumps).

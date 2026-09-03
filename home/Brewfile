@@ -1,3 +1,5 @@
+tap "timac/vpnstatus"   # provides vpnutil (below); not in homebrew/core
+
 brew "chezmoi"       # dotfiles manager
 
 # Core shell & system
@@ -17,6 +19,7 @@ brew "ripgrep"      # grep
 brew "git-delta"    # diff, provides the `delta` binary gitconfig uses as pager
 brew "zoxide"       # cd
 brew "atuin"        # Ctrl+R, initialized in zsh/tools.zsh
+brew "fzy"          # fuzzy filter used by ~/.claude/file-suggestion.sh
 brew "tree"
 
 # Editors & terminal
@@ -62,4 +65,5 @@ cask "slack"
 cask "steam"
 cask "tableplus"
 cask "the-unarchiver"
-cask "transmission"
+cask "font-fira-code-nerd-font"   # ghostty config.font-family depends on this
+cask "homebrew/cask/transmission"   # qualified: bare name collides with transmission-cli
