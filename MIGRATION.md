@@ -214,15 +214,46 @@ chezmoi covers `alacritty`, `ghostty` and `nvim` under `~/.config`, plus the
 `home/` dotfiles. Everything below is outside it.
 
 ```bash
-rsync -av $OLD:'.config/{herdr,workspaces,w,gh,git,keyboardcowboy,atuin}' ~/.config/
+rsync -av $OLD:'.config/{herdr,workspaces,w,gh,git,atuin}' ~/.config/
 rsync -av $OLD:.local/share/atuin ~/.local/share/
 ```
+
+Custom keyboard layout, which exists nowhere but the old disk. **Install it to
+`/Library/Keyboard Layouts`, not `~/Library`.** A user-level layout can be
+selected but will not commit as a second *enabled* input source, which leaves
+ABC as the only enabled layout and macOS then refuses to remove it — the minus
+button stays greyed out. System-wide is also what the login window needs.
+
+Note the literal space in the remote path: rsync 3.5 protects args by default,
+so quoting or escaping it fails; pass it plain inside one quoted argument.
+
+```bash
+rsync -av "$OLD:/Library/Keyboard Layouts/Croatian-US.keylayout" \
+          "$OLD:/Library/Keyboard Layouts/Croatian-US.icns" \
+          /tmp/
+sudo mv /tmp/Croatian-US.keylayout /tmp/Croatian-US.icns /Library/Keyboard\ Layouts/
+```
+
+Then add it by hand: **System Settings → Keyboard → Text Input → Input
+Sources → Edit → + → Others → Croatian US**, then remove ABC. If it is not
+listed, log out and back in; macOS only scans that dir at login.
 
 `~/.local/share/atuin` is ~6 MB: years of shell history plus the `key` file
 sync is keyed on. `zsh/tools.zsh` binds atuin to Ctrl+R.
 
 `~/.config/herdr/agent-detection/` holds local rules that shadow upstream;
 they are why herdr reports agent state correctly.
+
+`~/.openpeon` (4.6 MB, 7 sound packs) is referenced by absolute path from
+`ui.sound.done_path` / `ui.sound.request_path` in `config.toml`, so skipping it
+makes `herdr config check` report missing sound files and silently fall back to
+the built-in sounds. It is not peon-ping, which stays dead:
+
+```bash
+rsync -av $OLD:.openpeon/ ~/.openpeon/
+herdr config check          # expect "config: ok"
+herdr server reload-config
+```
 
 **Do not copy `~/.tool-versions`.** It was skipped last time on purpose; mise
 reads each repo's own pins and `~/.config/mise/config.toml`. Copying it drags
@@ -292,15 +323,14 @@ copying**, or the old profile merges into a half-used one.
 
 Install and move on. Gitify is Electron cache behind one OAuth token, so log in
 again. 1Password, Slack and Chrome restore from their accounts. Ghostty config
-comes from the dotfiles repo, Keyboard Cowboy's from `~/.config/keyboardcowboy`
-in Step 2g.
+comes from the dotfiles repo.
 
-Dropped for good: Hammerspoon (Keyboard Cowboy replaced it), VS Code, Alfred
-(Raycast replaces it — sign into a Raycast account and settings, extensions,
-snippets and quicklinks sync down; nothing to rsync). Alfred workflows are not
-importable into Raycast; the old machine keeps
-`Library/Application Support/Alfred/` including the paid Powerpack license, so
-do not delete it there.
+Dropped for good: Hammerspoon, Keyboard Cowboy (both hotkey managers, both
+retired — Raycast covers it), VS Code, and Alfred (Raycast replaces it — sign
+into a Raycast account and settings, extensions, snippets and quicklinks sync
+down; nothing to rsync). Alfred workflows are not importable into Raycast; the
+old machine keeps `Library/Application Support/Alfred/` including the paid
+Powerpack license, so do not delete it there.
 
 ---
 

@@ -57,7 +57,6 @@ cask "raycast"       # trying this in place of alfred; auto-updates itself
 cask "zen"           # daily driver; auto-updates itself, brew won't manage upgrades
 cask "gitify"
 cask "google-chrome"  # claude-in-chrome extension needs Chrome specifically
-cask "keyboard-cowboy" # hotkeys; replaced hammerspoon, auto-updates itself
 cask "iina"
 cask "orbstack"
 cask "shottr"
