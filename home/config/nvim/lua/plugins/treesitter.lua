@@ -1,130 +1,55 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
+    lazy = false,
     build = ':TSUpdate',
-    dependencies = {
-      "RRethy/nvim-treesitter-endwise",
-      'nvim-treesitter/nvim-treesitter-textobjects',
-      'ravsii/tree-sitter-d2'
-    },
     config = function()
-      require 'nvim-treesitter.configs'.setup {
-        auto_install = true,
-        ensure_installed = {
-          "bash",
-          "css",
-          "elixir",
-          "eex",
-          "html",
-          "javascript",
-          "heex",
-          "markdown",
-          "markdown_inline",
-          "json",
-          "lua",
-          "ruby",
-          "scss",
-          "yaml",
-        },
-        highlight = {
-          enable = true, -- false will disable the whole extension
-          use_languagetree = true,
-          additional_vim_regex_highlighting = { "markdown" },
-        },
-        indent = {
-          enable = true
-        },
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ["am"] = "@function.outer",
-              ["im"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = "@class.inner",
-              ['ab'] = '@block.outer',
-              ['ib'] = '@block.inner',
-              ['ap'] = '@parameter.outer',
-              ['ip'] = '@parameter.inner',
-              ['ar'] = '@rspec_example.outer',
-              ['ir'] = '@rspec_example.inner',
-              ['aa'] = '@array.outer',
-              ['ia'] = '@array.inner',
-              ['ah'] = '@hash.outer',
-              ['ih'] = '@hash.inner'
-            },
-          },
-          swap = {
-            enable = true,
-            swap_next = {
-              ["<leader>ip"] = "@parameter.inner",
-              ["<leader>ia"] = "@array.inner",
-              ["<leader>ih"] = "@hash.inner",
-            },
-            swap_previous = {
-              ["<leader>iP"] = "@parameter.inner",
-              ["<leader>iA"] = "@array.inner",
-              ["<leader>iH"] = "@hash.inner",
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true, -- whether to set jumps in the jumplist
-            goto_next_start = {
-              ["]f"] = "@function.outer",
-              ["]c"] = "@class.outer",
-            },
-            goto_next_end = {
-              ["]F"] = "@function.outer",
-              ["]C"] = "@class.outer",
-            },
-            goto_previous_start = {
-              ["[f"] = "@function.outer",
-              ["[c"] = "@class.outer",
-            },
-            goto_previous_end = {
-              ["[F"] = "@function.outer",
-              ["[C"] = "@class.outer",
-            },
-            -- Below will go to either the start or the end, whichever is closer.
-            -- Use if you want more granular movements
-            -- Make it even more gradual by adding multiple queries and regex.
-            goto_next = {
-              ["]d"] = "@conditional.outer",
-            },
-            goto_previous = {
-              ["[d"] = "@conditional.outer",
-            }
-          }
-        },
-        endwise = {
-          enable = true
-        }
+      local ts = require 'nvim-treesitter'
+      ts.setup()
+      ts.install {
+        "bash",
+        "css",
+        "elixir",
+        "eex",
+        "html",
+        "javascript",
+        "heex",
+        "markdown",
+        "markdown_inline",
+        "json",
+        "lua",
+        "ruby",
+        "scss",
+        "yaml",
       }
 
-      local ts_repeat_move = require "nvim-treesitter.textobjects.repeatable_move"
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function(ev)
+          local function enable()
+            if not pcall(vim.treesitter.start, ev.buf) then
+              return false
+            end
+            vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            if ev.match == "markdown" then
+              vim.bo[ev.buf].syntax = "on"
+            end
+            return true
+          end
 
-      -- Additional parsers
-      -- local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-      -- parser_config.d2 = {
-      --   install_info = {
-      --     url = "https://github.com/ravsii/tree-sitter-d2",
-      --     files = { "src/parser.c" },
-      --   },
-      --   filetype = "d2",
-      -- }
+          if enable() then
+            return
+          end
 
-      -- Repeat movement with ; and ,
-      -- ensure ; goes forward and , goes backward regardless of the last direction
-      vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move_next)
-      vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_previous)
-
-      -- Optionally, make builtin f, F, t, T also repeatable with ; and ,
-      vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f)
-      vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F)
-      vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t)
-      vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T)
+          local lang = vim.treesitter.language.get_lang(ev.match)
+          if lang and vim.list_contains(ts.get_available(), lang) then
+            ts.install(lang):await(function()
+              if vim.api.nvim_buf_is_valid(ev.buf) then
+                enable()
+              end
+            end)
+          end
+        end,
+      })
     end,
   },
 }

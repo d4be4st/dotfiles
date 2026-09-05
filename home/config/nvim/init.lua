@@ -23,7 +23,7 @@ require "general.settings"
 -- NOTE: don't run `:Lazy clean` while gated -- it will offer to delete them all.
 local minimal = {
   "snacks.nvim", "which-key.nvim", "catppuccin", "lualine.nvim",
-  "nvim-treesitter", "nvim-treesitter-textobjects", "nvim-treesitter-endwise",
+  "nvim-treesitter",
   "nvim-web-devicons", "plenary.nvim", "nui.nvim",
   "gitsigns", "review.nvim", "codediff.nvim",
   "noice.nvim", "nvim-notify", "mini.indentscope",
