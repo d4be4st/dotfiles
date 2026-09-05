@@ -9,8 +9,3 @@ path=(
   ~/.antigravity/antigravity/bin
   $path
 )
-
-# uv / pipx managed tools
-if [[ -f "$HOME/.local/bin/env" ]]; then
-  . "$HOME/.local/bin/env"
-fi

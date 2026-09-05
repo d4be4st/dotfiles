@@ -7,7 +7,6 @@ source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 if [ "$(arch)" = "arm64" ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
     command -v mise >/dev/null && eval "$(mise activate zsh)"
-    export GITHUB_TOKEN=$(gh auth token 2>/dev/null)
 else
     eval "$(/usr/local/bin/brew shellenv)"
     alias d4="gameportingtoolkit-no-hud ~/WinGames 'C:\Program Files (x86)\Diablo IV\Diablo IV Launcher.exe'"
