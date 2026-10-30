@@ -66,7 +66,19 @@ return {
         -- j/k in the explorer loads the file under the cursor into the diff pane
         -- without moving focus out of the explorer. Hooks j/k rather than CursorMoved,
         -- so scrolling and mouse clicks don't trigger a load.
-        explorer = { auto_open_on_cursor = true },
+        explorer = {
+          auto_open_on_cursor = true,
+          formatters = {
+            file = function(ctx)
+              local row = require("codediff.ui.explorer.formatters").file(ctx)
+              local n = #(require("review.store").comments[ctx.path] or {})
+              if n > 0 then
+                table.insert(row.right, 1, { segments = { { text = "● " .. n .. " ", hl = "ReviewNote" } } })
+              end
+              return row
+            end,
+          },
+        },
         keymaps = {
           view = {
             next_hunk = "<C-n>",
@@ -134,6 +146,15 @@ return {
       -- extmark. Range comments anchor their box to the range's LAST line, so flipping
       -- those would draw the box inside the range instead of after it — left alone.
       local marks = require("review.marks")
+      local marks_refresh = marks.refresh
+      marks.refresh = function(...)
+        marks_refresh(...)
+        local tab = require("review.hooks").get_current_tabpage()
+        local explorer = tab and cd_lifecycle.get_explorer(tab)
+        if explorer then
+          explorer.tree:render()
+        end
+      end
       local render = marks.render_for_buffer
       marks.render_for_buffer = function(...)
         local set_extmark = vim.api.nvim_buf_set_extmark
@@ -205,6 +226,14 @@ return {
               lifecycle.set_tab_keymap(vim.api.nvim_get_current_tabpage(), "n", "r", function()
                 vim.cmd("ReviewReload")
               end, { desc = "Reload review annotations" })
+              lifecycle.set_tab_keymap(vim.api.nvim_get_current_tabpage(), "n", "gy", function()
+                local orig, mod = require("review.hooks").get_paths()
+                local path = mod or orig
+                if path then
+                  vim.fn.setreg("+", path)
+                  vim.notify("Copied " .. path, vim.log.levels.INFO, { title = "review.nvim" })
+                end
+              end, { desc = "Copy current file path" })
             end
           end, 150)
         end,
