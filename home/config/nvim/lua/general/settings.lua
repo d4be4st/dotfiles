@@ -22,6 +22,16 @@ vim.opt.signcolumn = "yes" -- show gutter
 vim.opt.wrap = false -- disable wrap
 vim.opt.mouse = "a"
 
+if vim.env.SSH_CONNECTION then
+  local osc52 = require("vim.ui.clipboard.osc52")
+  local paste = function() return vim.split(vim.fn.getreg('"'), "\n") end
+  vim.g.clipboard = {
+    name = "OSC 52",
+    copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+    paste = { ["+"] = paste, ["*"] = paste },
+  }
+end
+
 -- search
 vim.opt.inccommand = "split" -- show search in preview
 vim.opt.gdefault = true -- make global replace default
