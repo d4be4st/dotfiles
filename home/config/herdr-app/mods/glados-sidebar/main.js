@@ -105,8 +105,12 @@ export default class Spaces extends View {
     this.socket?.close();
   }
 
+  slugOf(w) {
+    return w.named ? w.name : w.folder.split("/").pop();
+  }
+
   jobOf(w) {
-    return w.named ? this.jobs[w.name] ?? null : null;
+    return this.jobs[this.slugOf(w)] ?? null;
   }
 
   jobText(job, t) {
@@ -150,16 +154,16 @@ export default class Spaces extends View {
       })
       .on_click(() => run("pane.focus", { pane: p.pane }))
       .child(h_flex().gap(8).items_center().text_size(12.5)
-        .child(div().flex_1().min_w(0).truncate().text_color(p.status && p.status !== "idle" ? t.foreground : t.muted).child(name))
+        .child(job ? this.jobText(job, t).flex_1().min_w(0)
+          : div().flex_1().min_w(0).truncate().text_color(p.status && p.status !== "idle" ? t.foreground : t.muted).child(name))
         .child(status(t, p.status)))
-      .when(Boolean(job), (el) => el.child(this.jobText(job, t)))
       .when(Boolean(said), (el) => el.child(div().truncate().text_size(11.5).text_color(t.ansi5).child(job.said)));
   }
 
   // Jobs the feed knows whose space isn't here (never opened, or closed).
   homeless(t) {
-    const named = new Set(spaces().filter((s) => s.named).map((s) => s.name));
-    const jobs = Object.values(this.jobs).filter((j) => !named.has(j.slug));
+    const housed = new Set(spaces().map((s) => this.slugOf(s)));
+    const jobs = Object.values(this.jobs).filter((j) => !housed.has(j.slug));
     if (!jobs.length) return [];
     return [
       div().id("homeless").h(26).mt(8).px(8).flex().items_center().text_size(11).text_color(t.dim).child(`No space · ${jobs.length}`),
