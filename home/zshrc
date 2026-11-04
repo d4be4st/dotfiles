@@ -9,4 +9,6 @@ source ~/.zsh/mappings.zsh
 
 for file in ~/.zsh/aliases/*.zsh; do source "$file"; done
 
-alias idle='/Users/stef/.claude/skills/idle/idle.sh'
+# opencode
+export PATH=/Users/stef/.opencode/bin:$PATH
+export PATH=/opt/homebrew/opt/libpq/bin:$PATH
