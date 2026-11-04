@@ -1,7 +1,7 @@
 // A factory job's whole record as a popup, the web page's job view: brief, open gate, PRs,
 // workspace, ledger, files, history. Opened from a factory chip card with props {slug}.
 
-import { View, div } from "gpui-kit";
+import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex, TextView } from "gpui-base";
 import { exec, spaces, run, theme, props, closeOverlay } from "herdr";
 
@@ -50,11 +50,13 @@ export default class FactoryJob extends View {
     const p = j.progress ?? {};
     return v_flex().gap(4).pb(10).border_b_1().border_color(t.border)
       .child(h_flex().gap(8).items_center()
-        .child(div().flex_1().min_w(0).truncate().text_size(16).font_semibold().child(j.slug))
+        .child(div().min_w(0).truncate().text_size(16).font_semibold().child(j.slug))
+        .child(div().id("copy").flex_none().p(4).rounded(5).text_color(t.muted).cursor_pointer()
+          .hover((s) => s.bg(t.raised).text_color(t.foreground)).on_click((_, cx) => cx.write_to_clipboard(j.slug))
+          .child(svg("mods/glados-job/copy.svg").size(14)))
+        .child(div().flex_1())
         .when(Boolean(space), (el) => el.child(div().id("go").px(8).py(2).rounded(5).border_1().border_color(t.border).text_size(12).text_color(t.muted)
           .hover((s) => s.bg(t.raised)).on_click(() => { run("space.select", { id: space.id }); closeOverlay(props().overlay); }).child("Go to space")))
-        .child(div().id("copy").px(8).py(2).rounded(5).border_1().border_color(t.border).text_size(12).text_color(t.muted)
-          .hover((s) => s.bg(t.raised)).on_click((_, cx) => cx.write_to_clipboard(j.slug)).child("Copy name"))
         .child(div().id("web").px(8).py(2).rounded(5).border_1().border_color(t.border).text_size(12).text_color(t.muted)
           .hover((s) => s.bg(t.raised)).on_click(() => exec("open", [`${BASE}/#job/${encodeURIComponent(j.slug)}`])).child("Web page")))
       .child(h_flex().gap(6).items_center().flex_wrap()

@@ -1,5 +1,6 @@
 {
   "id": "root",
+  "colors": { "selection": "#9399b266" },
   "cloned_from": {
     "name": "main",
     "version": "0.1.12"
