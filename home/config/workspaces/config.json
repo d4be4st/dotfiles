@@ -1,0 +1,19 @@
+{
+  "vault": "/Users/stef/dev/productive/work/workspaces",
+  "repos": {
+    "api": "/Users/stef/dev/productive/api",
+    "frontend": "/Users/stef/dev/productive/frontend",
+    "devportal": "/Users/stef/dev/productive/devportal",
+    "developer-portal": "/Users/stef/dev/productive/developer-portal",
+    "ai-agent": "/Users/stef/dev/productive/ai-agent",
+    "ai-api": "/Users/stef/dev/productive/ai-api",
+    "fantastic-productive": "/Users/stef/dev/productive/fantastic-productive",
+    "backyard": "/Users/stef/dev/productive/backyard",
+    "claude-plugins": "/Users/stef/dev/productive/claude-plugins",
+    "questly": "/Users/stef/dev/private/questly",
+    "robosseum": "/Users/stef/dev/private/robosseum/server",
+    "alpha_line": "/Users/stef/dev/private/alpha_line"
+  },
+  "specs": "/Users/stef/dev/productive/specs",
+  "session_driver": "tmux"
+}
