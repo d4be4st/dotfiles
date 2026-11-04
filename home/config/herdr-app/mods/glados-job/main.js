@@ -2,7 +2,7 @@
 // workspace, ledger, files, history. Opened from a factory chip card with props {slug}.
 
 import { View, div } from "gpui-kit";
-import { v_flex, h_flex } from "gpui-base";
+import { v_flex, h_flex, TextView } from "gpui-base";
 import { exec, spaces, run, theme, props, closeOverlay } from "herdr";
 
 const BASE = "http://bestija-v4:4281";
@@ -29,7 +29,7 @@ export default class FactoryJob extends View {
   }
 
   text(s, color, size = 12.5) {
-    return div().whitespace_normal().text_size(size).text_color(color).child(s || " ");
+    return div().whitespace_normal().text_size(size).text_color(color).child(TextView.markdown(`t-${this.n++}`, s || " ").selectable(true));
   }
 
   tag(label, color) {
@@ -53,6 +53,8 @@ export default class FactoryJob extends View {
         .child(div().flex_1().min_w(0).truncate().text_size(16).font_semibold().child(j.slug))
         .when(Boolean(space), (el) => el.child(div().id("go").px(8).py(2).rounded(5).border_1().border_color(t.border).text_size(12).text_color(t.muted)
           .hover((s) => s.bg(t.raised)).on_click(() => { run("space.select", { id: space.id }); closeOverlay(props().overlay); }).child("Go to space")))
+        .child(div().id("copy").px(8).py(2).rounded(5).border_1().border_color(t.border).text_size(12).text_color(t.muted)
+          .hover((s) => s.bg(t.raised)).on_click((_, cx) => cx.write_to_clipboard(j.slug)).child("Copy name"))
         .child(div().id("web").px(8).py(2).rounded(5).border_1().border_color(t.border).text_size(12).text_color(t.muted)
           .hover((s) => s.bg(t.raised)).on_click(() => exec("open", [`${BASE}/#job/${encodeURIComponent(j.slug)}`])).child("Web page")))
       .child(h_flex().gap(6).items_center().flex_wrap()
@@ -106,6 +108,7 @@ export default class FactoryJob extends View {
   render() {
     const t = theme();
     const j = this.job;
+    this.n = 0;
     const body = !j ? [this.text("loading…", t.dim)]
       : j.error ? [this.text(j.error, t.blocked)]
         : [
