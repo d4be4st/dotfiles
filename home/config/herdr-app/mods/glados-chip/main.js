@@ -119,7 +119,7 @@ export default class FactoryChip extends View {
     const rest = row.lines.slice(row.key?.startsWith("proposal:") ? 3 : 2);
     const prop = d.body !== undefined ? proposalParts(d.body) : null;
     const slug = row.job?.slug ?? (row.key?.startsWith("workspace:") ? null : row.key?.startsWith("job:") ? row.key.slice(4) : null);
-    const space = (slug || row.key?.startsWith("workspace:")) && spaces().find((s) => s.named && s.name === (slug ?? row.key.slice(10)));
+    const space = (slug || row.key?.startsWith("workspace:")) && spaces().find((s) => (s.named ? s.name : s.folder.split("/").pop()) === (slug ?? row.key.slice(10)));
     const actions = row.actions ?? [];
     const links = [
       ...(space ? [this.button(`go-${i}`, "Go to space", t, () => { run("space.select", { id: space.id }); closeOverlay(props().overlay); })] : []),

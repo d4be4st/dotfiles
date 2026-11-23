@@ -4,7 +4,7 @@
 
 import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
-import { spaces, machines, panes, run, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout } from "herdr";
+import { spaces, machines, panes, run, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout, nextCommand } from "herdr";
 import { follow } from "./feed.js";
 
 const TONES = (t) => ({ dim: t.dim, red: t.ansi1, green: t.ansi2, yellow: t.ansi3, blue: t.ansi4, magenta: t.ansi5, purple: t.ansi5, cyan: t.ansi6 });
@@ -21,6 +21,12 @@ function byJob(feed) {
       if (row.key?.startsWith("pr:") && !j.prs.some((p) => p.url === row.url)) j.prs.push({ url: row.url, line: row.lines[0] });
     }
   }
+  for (const sec of feed?.sections ?? [])
+    for (const row of sec.rows)
+      for (const url of row.job?.prs ?? []) {
+        const j = out[row.job.slug];
+        if (!j.prs.some((p) => p.url === url)) j.prs.push({ url, line: null });
+      }
   return out;
 }
 
@@ -89,16 +95,32 @@ export default class Spaces extends View {
     this.reconnecting = JSON.parse(localStorage.getItem("machines.reconnecting") ?? "{}");
     for (const state of Object.values(this.reconnecting)) state.busy = false;
     this.folded = new Set(JSON.parse(localStorage.getItem("machines.folded") ?? "[]"));
+    this.agentsHidden = localStorage.getItem("agents.hidden") === "1";
+    this.flipped = new Set(JSON.parse(localStorage.getItem("agents.flipped") ?? "[]"));
+    cx.spawn(async (cx) => {
+      for (;;) {
+        if (await nextCommand() !== "agents") continue;
+        this.agentsHidden = !this.agentsHidden;
+        this.flipped.clear();
+        localStorage.setItem("agents.hidden", this.agentsHidden ? "1" : "0");
+        localStorage.setItem("agents.flipped", "[]");
+        cx.notify();
+      }
+    });
     this.refreshMachines(cx);
     cx.timer.every(15000, cx => this.refreshMachines(cx));
     // `git status` walks the whole tree, on another machine a process there:
     // only when its answer could have changed (see `due`).
     cx.timer.every(250, (cx) => this.checkNew(cx));
     this.error = null;
-    this.hovered = null;
     this.jobs = {};
     this.ps = [];
     cx.spawn(async (cx) => follow(this, cx));
+    cx.timer.every(15000, (cx) => {
+      if (Date.now() - this.fedAt <= 45000) return;
+      this.socket?.close();
+      cx.spawn(async (cx) => follow(this, cx));
+    });
   }
 
   close() {
@@ -132,47 +154,43 @@ export default class Spaces extends View {
 
   // A space's agents (anything that reports a status or runs a known agent); the job's step goes
   // on its lead: the pane the factory knows, else the space's first agent.
+  agentsOf(w) {
+    const tabs = new Set((w.tabs ?? []).map((tb) => tb.id));
+    return this.ps.filter((p) => p.terminal && tabs.has(p.tab) && (p.status || p.program?.agent));
+  }
+
+  agentsOpen(w) {
+    return this.agentsHidden === this.flipped.has(w.id);
+  }
+
+  flip(w, cx) {
+    this.flipped.has(w.id) ? this.flipped.delete(w.id) : this.flipped.add(w.id);
+    localStorage.setItem("agents.flipped", JSON.stringify([...this.flipped]));
+    cx.notify();
+  }
+
   agentRows(w, job, t) {
     const tabs = new Map((w.tabs ?? []).map((tb) => [tb.id, tb]));
-    const mine = this.ps.filter((p) => p.terminal && tabs.has(p.tab) && (p.status || p.program?.agent));
+    const open = this.agentsOpen(w);
+    const mine = this.agentsOf(w).filter((p) => open || p.status === "blocked");
     const lead = job && (mine.find((p) => job.target?.pane === `hc:${p.terminal}`) ?? mine[0]);
     const rows = mine.map((p) => this.agentRow(p, tabs.get(p.tab), p === lead ? job : null, t));
-    if (job && !lead) rows.push(div().id(`job-${w.id}`).pl(36).pr(8).pb(4).flex_none().child(this.jobText(job, t)));
+    if (job && !lead && open) rows.push(div().id(`job-${w.id}`).pl(36).pr(8).pb(4).flex_none().child(this.jobText(job, t)));
     return rows;
   }
 
   agentRow(p, tab, job, t) {
     const name = tab.named ? tab.name : p.program?.name ?? tab.name;
-    const said = job?.said && (p.status === "blocked" || p.focused || this.hovered === p.pane);
+    const said = job?.said;
     return v_flex().id(`ag-${p.pane}`).pl(36).pr(8).py(4).flex_none().rounded(8).cursor_pointer()
       .when(p.focused, (el) => el.bg(t.raised))
       .hover((s) => s.bg(t.hover))
-      .on_hover((on, cx) => {
-        if (on) this.hovered = p.pane;
-        else if (this.hovered === p.pane) this.hovered = null;
-        cx.notify();
-      })
       .on_click(() => run("pane.focus", { pane: p.pane }))
       .child(h_flex().gap(8).items_center().text_size(12.5)
         .child(job ? this.jobText(job, t).flex_1().min_w(0)
           : div().flex_1().min_w(0).truncate().text_color(p.status && p.status !== "idle" ? t.foreground : t.muted).child(name))
         .child(status(t, p.status)))
       .when(Boolean(said), (el) => el.child(div().truncate().text_size(11.5).text_color(t.ansi5).child(job.said)));
-  }
-
-  // Jobs the feed knows whose space isn't here (never opened, or closed).
-  homeless(t) {
-    const housed = new Set(spaces().map((s) => this.slugOf(s)));
-    const jobs = Object.values(this.jobs).filter((j) => !housed.has(j.slug));
-    if (!jobs.length) return [];
-    return [
-      div().id("homeless").h(26).mt(8).px(8).flex().items_center().text_size(11).text_color(t.dim).child(`No space · ${jobs.length}`),
-      ...jobs.map((j) => v_flex().id(`homeless-${j.slug}`).px(8).py(4).flex_none()
-        .child(h_flex().gap(6).items_center()
-          .child(div().flex_1().min_w(0).truncate().text_color(t.muted).child(j.slug))
-          .child(this.jobTail(j, t)))
-        .child(this.jobText(j, t))),
-    ];
   }
 
   checkNew(cx) {
@@ -354,12 +372,19 @@ export default class Spaces extends View {
     openOverlay({ mod: "glados-menu", kind: "popup", width: 220, height: 480, props: { tab: "space", target: { id: w.id }, ...(job && { job }) } });
   }
 
+  quiet(w) {
+    const job = this.jobOf(w);
+    if (!job || w.active || job.waits || job.lead === "missing") return false;
+    if (this.agentsOf(w).some((p) => p.status && p.status !== "idle")) return false;
+    return /^(in review|soak)/.test(job.step ?? "");
+  }
+
   // Spaces in order, each worktree space moved under its main checkout's.
   ordered() {
     const sp = spaces(), ps = panes();
     const ready = (w) => this.shown.has(w.id) || where(w, ps) in this.git || Date.now() - (this.born[w.id] ??= Date.now()) > 1500;
     for (const w of sp) if (!this.shown.has(w.id) && ready(w)) this.shown.add(w.id);
-    const list = sp.map((w, i) => ({ w, i, g: this.git[where(w, ps)] ?? null })).filter((r) => this.shown.has(r.w.id));
+    const list = sp.map((w, i) => ({ w, i, g: this.git[where(w, ps)] ?? null })).filter((r) => this.shown.has(r.w.id) && !this.quiet(r.w));
     const mains = new Set(list.filter((r) => r.g && !r.g.linked).map((r) => r.g.repo));
     const nested = (r) => r.g?.linked && mains.has(r.g.repo);
     const out = [];
@@ -496,9 +521,13 @@ export default class Spaces extends View {
           .items_center()
           .when(Boolean(tree), el => el.pl(22).child(svg("mods/workspace-chrome/branch.svg").size(13).text_color(t.dim)))
           .when(!tree, el => el.child(h_flex().size(18).flex_none().rounded(5).bg(fill).items_center().justify_center().text_size(10.5).font_bold().text_color("#ffffff").child([...w.name][0]?.toUpperCase() ?? "?")))
-          .child(div().flex_shrink(0).max_w(150).truncate().text_color(t.foreground).child(w.name))
+          .child(div().min_w(0).max_w(150).truncate().text_color(t.foreground).child(w.name))
           .child(g ? this.gitTail(g, tree, w.name, t) : div().flex_1())
-          .when(Boolean(this.jobOf(w)), (el) => el.child(this.jobTail(this.jobOf(w), t))),
+          .when(Boolean(this.jobOf(w)), (el) => el.child(this.jobTail(this.jobOf(w), t)))
+          .when(this.agentsOf(w).length > 0, (el) => el.child(div().id(`agents-${w.id}`).flex_none().rounded(4).text_color(t.dim)
+            .hover((s) => s.text_color(t.foreground))
+            .on_mouse_down("left", (_e, cx) => { cx.stop_propagation(); this.flip(w, cx); })
+            .child(svg(`mods/workspace-chrome/chevron-${this.agentsOpen(w) ? "down" : "right"}.svg`).size(11)))),
       );
   }
 
@@ -537,7 +566,6 @@ export default class Spaces extends View {
       .when(Boolean(this.error) && !collapsed, (el) => el.child(div().h(26).pl(16).pr(10).flex().items_center().truncate().text_size(11.5).text_color(t.blocked).child(this.error)))
       .child(v_flex().flex_1().min_h(0).px(8).pb(14).overflow_y_scrollbar().mode("always")
         .on_mouse_up("left", (_e, cx) => { this.pressed = null; cx.notify(); })
-        .children(this.grouped(t, collapsed))
-        .when(!collapsed, (el) => el.children(this.homeless(t))));
+        .children(this.grouped(t, collapsed)));
   }
 }

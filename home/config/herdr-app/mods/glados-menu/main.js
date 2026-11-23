@@ -14,8 +14,8 @@ function jobItems(j) {
   if (!j) return [];
   return [
     ["Job record", "glados.record", { slug: j.slug }],
-    ...(j.prs ?? []).map((pr) => [`PR ${pr.url.replace(/^.*github\.com\/[^/]+\/([^/]+)\/pull\/(\d+).*$/, "$1#$2")}`, "glados.open", { url: pr.url }]),
-    ...(j.task ? [["Productive task", "glados.open", { url: `https://app.productive.io/109-productive/tasks/${j.task}` }]] : []),
+    ...(j.prs ?? []).map((pr) => [`Open PR ${pr.url.replace(/^.*github\.com\/[^/]+\/([^/]+)\/pull\/(\d+).*$/, "$1#$2")}`, "glados.open", { url: pr.url }]),
+    ...(j.task ? [["Productive task", "glados.productive", { task: j.task }]] : []),
     ...(j.servers ?? []).filter((s) => s.up).map((s) => [`Open ${s.service}`, "glados.open", { url: `https://${s.host}` }]),
     ["Copy name", "glados.copy", { text: j.slug }],
     ["Mark done", "glados.done", { slug: j.slug }],
@@ -78,6 +78,7 @@ function items(p, git, job) {
       ];
     default:
       return [
+        ["Productive tasks", "glados.productive", {}],
         ["New space", "space.new", {}],
         ["Keybinds", "app.help", {}],
         ["Theme: graphite", "app.theme", { name: "graphite" }],
@@ -88,7 +89,7 @@ function items(p, git, job) {
   }
 }
 
-const GLADOS_ICONS = { "glados.record": "file-text", "glados.copy": "files", "glados.done": "circle-check" };
+const GLADOS_ICONS = { "glados.record": "file-text", "glados.copy": "files", "glados.done": "circle-check", "glados.productive": "check" };
 
 function menuIcon(command, args) {
   if (command === "glados.open") return `mods/glados-chrome/${args.url.includes("github.com") ? "git-compare" : args.url.includes("productive.io/") ? "check" : "server"}.svg`;
@@ -134,6 +135,7 @@ export default class Menu extends View {
     if (it[1] === "glados.record") openOverlay({ mod: "glados-job", kind: "popup", width: 0.75, height: 0.85, props: { slug: it[2].slug } });
     else if (it[1] === "glados.open") exec("open", [it[2].url]);
     else if (it[1] === "glados.copy") cx.write_to_clipboard(it[2].text);
+    else if (it[1] === "glados.productive") openOverlay({ mod: "glados-productive", kind: "dialog", width: 0.7, height: 0.85, props: it[2] });
     else if (it[1] === "glados.done")
       cx.spawn(async () => {
         try {

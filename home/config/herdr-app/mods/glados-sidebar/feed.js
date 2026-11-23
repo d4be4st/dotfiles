@@ -20,15 +20,20 @@ const eventEnd = (bytes) => {
 };
 
 export async function follow(view, cx) {
-  for (;;) {
+  const gen = view.feedGen = (view.feedGen ?? 0) + 1;
+  view.fedAt = Date.now();
+  while (gen === view.feedGen) {
     try {
       const socket = await net.connect(HOST, PORT);
+      if (gen !== view.feedGen) return socket.close();
       view.socket = socket;
+      view.fedAt = Date.now();
       await socket.write(`GET /feed HTTP/1.0\r\nHost: ${HOST}:${PORT}\r\nAccept: text/event-stream\r\n\r\n`);
       let pending = new Uint8Array(0);
       for (;;) {
         const chunk = await socket.read();
-        if (chunk === null) break;
+        if (chunk === null || gen !== view.feedGen) break;
+        view.fedAt = Date.now();
         pending = join(pending, chunk);
         for (let end = eventEnd(pending); end >= 0; end = eventEnd(pending)) {
           const data = utf8(pending.subarray(0, end)).split("\n").find((l) => l.startsWith("data: "));

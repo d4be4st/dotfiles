@@ -16,6 +16,8 @@
     "cmd-shift-l": "layout.switch",
     "cmd-n": "space.new",
     "cmd-p": "mod.open:picker",
+    "cmd-o": "mod.open:glados-productive",
+    "cmd-e": "glados-sidebar.agents",
     "cmd-shift-p": "app.palette",
     "cmd-,": "app.settings",
     "cmd-d": "pane.split:right",

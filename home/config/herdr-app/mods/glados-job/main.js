@@ -46,7 +46,7 @@ export default class FactoryJob extends View {
   }
 
   head(j, t) {
-    const space = spaces().find((s) => s.named && s.name === j.slug);
+    const space = spaces().find((s) => (s.named ? s.name : s.folder.split("/").pop()) === j.slug);
     const p = j.progress ?? {};
     return v_flex().gap(4).pb(10).border_b_1().border_color(t.border)
       .child(h_flex().gap(8).items_center()
