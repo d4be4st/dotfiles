@@ -1,6 +1,5 @@
 {
   "id": "root",
-  "colors": { "selection": "#9399b266" },
   "cloned_from": {
     "name": "main",
     "version": "0.1.12"
@@ -177,6 +176,9 @@
     "light": "catppuccin-latte",
     "dark": "catppuccin-mocha"
   },
+  "colors": {
+    "selection": "#9399b266"
+  },
   "terminal_padding": [
     14,
     12
@@ -189,5 +191,8 @@
   "traffic_lights": [
     12,
     16
+  ],
+  "link_handlers": [
+    "glados-links"
   ]
 }

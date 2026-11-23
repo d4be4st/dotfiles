@@ -1,0 +1,8 @@
+{
+  "place": "none",
+  "title": "Links",
+  "link_handlers": [
+    { "kind": "url", "pattern": "(?i)^nvim://file" },
+    { "kind": "file", "pattern": "." }
+  ]
+}
