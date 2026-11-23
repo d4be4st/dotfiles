@@ -14,6 +14,6 @@
     "robosseum": "/Users/stef/dev/private/robosseum/server",
     "alpha_line": "/Users/stef/dev/private/alpha_line"
   },
-  "specs": "/Users/stef/dev/productive/specs",
+  "plans": "/Users/stef/dev/productive/plans",
   "session_driver": "tmux"
 }

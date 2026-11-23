@@ -4,6 +4,25 @@ return {
     lazy = false,
     build = ':TSUpdate',
     config = function()
+      vim.filetype.add({ extension = { plain = 'plain' } })
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'TSUpdate',
+        callback = function()
+          require('nvim-treesitter.parsers').plain = {
+            install_info = {
+              url = 'https://github.com/plainlang/tree-sitter-plain',
+              revision = '0c18b48f98d0ae5def55f0c9baaab317ccad7471',
+              queries = 'queries',
+            },
+          }
+        end,
+      })
+      local function plain_concepts()
+        vim.api.nvim_set_hl(0, '@variable.special.plain', { link = 'Constant' })
+      end
+      plain_concepts()
+      vim.api.nvim_create_autocmd('ColorScheme', { callback = plain_concepts })
+
       local ts = require 'nvim-treesitter'
       ts.setup()
       ts.install {
@@ -17,6 +36,7 @@ return {
         "markdown",
         "markdown_inline",
         "json",
+        "plain",
         "lua",
         "ruby",
         "scss",

@@ -22,7 +22,7 @@ vim.opt.signcolumn = "yes" -- show gutter
 vim.opt.wrap = false -- disable wrap
 vim.opt.mouse = "a"
 
-if vim.env.SSH_CONNECTION then
+if vim.env.SSH_CONNECTION or vim.env.HC_TERMINAL_ID then
   local osc52 = require("vim.ui.clipboard.osc52")
   local paste = function() return vim.split(vim.fn.getreg('"'), "\n") end
   vim.g.clipboard = {
