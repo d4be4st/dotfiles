@@ -174,18 +174,20 @@ export default class Spaces extends View {
     const open = this.agentsOpen(w);
     const mine = this.agentsOf(w).filter((p) => open || p.status === "blocked");
     const lead = job && (mine.find((p) => job.target?.pane === `hc:${p.terminal}`) ?? mine[0]);
-    const rows = mine.map((p) => this.agentRow(p, tabs.get(p.tab), p === lead ? job : null, t));
+    const rows = mine.map((p) => this.agentRow(p, tabs.get(p.tab), p === lead ? job : null, t, w));
     if (job && !lead && open) rows.push(div().id(`job-${w.id}`).pl(36).pr(8).pb(4).flex_none().child(this.jobText(job, t)));
     return rows;
   }
 
-  agentRow(p, tab, job, t) {
+  agentRow(p, tab, job, t, w) {
     const name = tab.named ? tab.name : p.program?.name ?? tab.name;
     const said = job?.said;
+    const [machine, terminal] = p.terminal.includes("/") ? p.terminal.split("/") : [w.machine, p.terminal];
     return v_flex().id(`ag-${p.pane}`).pl(36).pr(8).py(4).flex_none().rounded(8).cursor_pointer()
       .when(p.focused, (el) => el.bg(t.raised))
       .hover((s) => s.bg(t.hover))
       .on_click(() => run("pane.focus", { pane: p.pane }))
+      .on_mouse_down("right", () => openOverlay({ mod: "glados-menu", kind: "popup", width: 420, height: 200, props: { tab: "agent", target: { terminal, machine } } }))
       .child(h_flex().gap(8).items_center().text_size(12.5)
         .child(job ? this.jobText(job, t).flex_1().min_w(0)
           : div().flex_1().min_w(0).truncate().text_color(p.status && p.status !== "idle" ? t.foreground : t.muted).child(name))

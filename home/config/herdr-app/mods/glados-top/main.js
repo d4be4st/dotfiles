@@ -3,7 +3,7 @@
 
 import { View, div, svg } from "gpui-kit";
 import { h_flex } from "gpui-base";
-import { theme, shared, openOverlay, exec } from "herdr";
+import { theme, shared, openOverlay, closeOverlay, exec } from "herdr";
 import { loadInbox } from "./inbox.js";
 
 const TONES = (t) => ({ dim: t.dim, red: t.ansi1, green: t.ansi2, yellow: t.ansi3, blue: t.ansi4, magenta: t.ansi5, purple: t.ansi5, cyan: t.ansi6 });
@@ -25,6 +25,13 @@ export default class GladosTop extends View {
     });
   }
 
+  toggle(key, spec) {
+    const open = this.open;
+    this.open = null;
+    if (open?.key === key) return closeOverlay(open.id);
+    this.open = { key, id: openOverlay(spec) };
+  }
+
   render() {
     const t = theme();
     const f = shared("factory.feed");
@@ -34,7 +41,7 @@ export default class GladosTop extends View {
         .text_color(this.inboxError ? t.blocked : unread ? t.accent : t.muted)
         .cursor_pointer().hover((s) => s.bg(t.raised))
         .when(Boolean(this.inboxError), (el) => el.tooltip(this.inboxError))
-        .on_click(() => openOverlay({ mod: "glados-notifications", kind: "popup", at: "pointer", width: 420, height: 0.7 }))
+        .on_click(() => this.toggle("inbox", { mod: "glados-notifications", kind: "popup", at: "pointer", width: 420, height: 0.7 }))
         .child(h_flex().gap(4).items_center()
           .child(svg("mods/glados-top/productive.svg").w(14).h(12).flex_none().text_color(this.inboxError ? t.blocked : unread ? t.accent : t.muted))
           .child(this.inboxError ? "!" : String(unread))))
@@ -42,11 +49,11 @@ export default class GladosTop extends View {
       .children((f?.sections ?? []).filter((sec) => sec.name !== "running").map((sec) => div().id(`chip-${sec.name}`).flex_none()
         .px(6).py(1).rounded(5).border_1().border_color(t.border).text_color(sec.name === "needs attention" ? t.blocked : t.muted)
         .cursor_pointer().hover((s) => s.bg(t.raised))
-        .on_click(() => openOverlay({ mod: "glados-chip", kind: "popup", at: "pointer", width: 560, height: 0.7, props: { only: sec.name } }))
+        .on_click(() => this.toggle(`chip-${sec.name}`, { mod: "glados-chip", kind: "popup", at: "pointer", width: 560, height: 0.7, props: { only: sec.name } }))
         .child(`${sec.name} ${sec.rows.length}`)))
       .child(div().id("numbers").flex_none().px(6).py(1).rounded(5).border_1().border_color(t.border).text_color(t.muted)
         .cursor_pointer().hover((s) => s.bg(t.raised))
-        .on_click(() => openOverlay({ mod: "glados-numbers", kind: "popup", at: "pointer", width: 600, height: 0.8 }))
+        .on_click(() => this.toggle("numbers", { mod: "glados-numbers", kind: "popup", at: "pointer", width: 600, height: 0.8 }))
         .child("numbers"))
       .child(div().flex_1())
       .children((f?.foot ?? []).map((spans) => h_flex().flex_none().gap(4)

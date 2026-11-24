@@ -16,7 +16,6 @@ function jobItems(j) {
     ["Job record", "glados.record", { slug: j.slug }],
     ...(j.prs ?? []).map((pr) => [`Open PR ${pr.url.replace(/^.*github\.com\/[^/]+\/([^/]+)\/pull\/(\d+).*$/, "$1#$2")}`, "glados.open", { url: pr.url }]),
     ...(j.task ? [["Productive task", "glados.productive", { task: j.task }]] : []),
-    ...(j.servers ?? []).filter((s) => s.up).map((s) => [`Open ${s.service}`, "glados.open", { url: `https://${s.host}` }]),
     ["Copy name", "glados.copy", { text: j.slug }],
     ["Mark done", "glados.done", { slug: j.slug }],
   ];
@@ -36,10 +35,28 @@ async function checkout(folder, on) {
   return common.stdout.trim() === `${top.stdout.trim()}/.git` ? "main" : "linked";
 }
 
-function items(p, git, job) {
+// The Claude sessions running in a herdr terminal, by the HC_TERMINAL_ID each inherited; headless ones skipped.
+const SESSIONS = `for f in "$HOME"/.claude/sessions/*.json; do p=\${f##*/}; p=\${p%.json}
+grep -q '"entrypoint":"sdk' "$f" && continue
+ps -wwE -p "$p" -o command= 2>/dev/null | grep -Eq "(^| )HC_TERMINAL_ID=$1( |$)" && echo "$(sed -n 's/.*"name":"\\([^"]*\\)".*/\\1/p' "$f")"
+done; true`;
+
+// "<service> <host>" for each of a workspace's Caddy routes whose port is listening.
+const SERVERS = `ws=$(printf %s "$1" | sed -n 's#^\\(.*/workspaces/[^/]*\\).*#\\1#p')
+[ -f "$ws/Caddyfile" ] || exit 0
+awk '/^http/ { for (i = 1; i <= NF; i++) if ($i ~ /^https:/) { h = $i; sub(/^https:\\/\\//, "", h); sub(/[ ,{]+$/, "", h) } }
+  /reverse_proxy/ { p = $2; sub(/.*:/, "", p); print h, p }' "$ws/Caddyfile" | while read h p; do
+  lsof -nP -iTCP:"$p" -sTCP:LISTEN -t >/dev/null 2>&1 && s=\${h%%.*} && echo "\${s%-\${ws##*/}} $h"
+done; true`;
+
+function items(p, git, job, names, urls) {
   p = p ?? {};
   const tg = p.target ?? {};
   switch (p.tab) {
+    case "agent":
+      if (!names) return [["Looking up the session…", "noop", {}]];
+      if (!names.length) return [["No Claude session here", "noop", {}]];
+      return names.map((n) => [`Copy @${n}`, "glados.copy", { text: `@${n}` }]);
     case "pane": {
       // A kept sub-agent can go back under its parent, still running.
       const all = terminals();
@@ -71,6 +88,7 @@ function items(p, git, job) {
     case "space":
       return [
         ...jobItems(job),
+        ...(urls ?? []).map(([service, host]) => [`Open ${service}`, "glados.open", { url: `https://${host}` }]),
         ["Rename", "space.rename", { id: tg.id }],
         ...(git ? [["New worktree", "worktree", { space: tg.id, action: "new" }], ["Open worktree", "worktree", { space: tg.id, action: "open" }]] : []),
         ...(git === "linked" ? [["Remove worktree", "worktree", { space: tg.id, action: "remove" }]] : []),
@@ -122,11 +140,25 @@ export default class Menu extends View {
         this.git = await checkout(folder, space.machine).catch(() => null);
         cx.notify();
       });
+    this.urls = null;
+    if (folder)
+      cx.spawn(async (cx) => {
+        const r = await exec("sh", ["-c", SERVERS, "sh", folder], { on: space.machine }).catch(() => null);
+        this.urls = (r?.stdout ?? "").split("\n").filter(Boolean).map((l) => l.split(" "));
+        cx.notify();
+      });
+    this.names = null;
+    if (p?.tab === "agent")
+      cx.spawn(async (cx) => {
+        const r = await exec("sh", ["-c", SESSIONS, "sh", p.target.terminal], { on: p.target.machine }).catch(() => null);
+        this.names = (r?.stdout ?? "").split("\n").filter(Boolean);
+        cx.notify();
+      });
   }
 
   choose(i, cx) {
-    const it = items(props(), this.git, this.job)[i];
-    if (!it) return;
+    const it = items(props(), this.git, this.job, this.names, this.urls)[i];
+    if (!it || it[1] === "noop") return;
     if (it[1] === "glados.done" && !this.armed) {
       this.armed = true;
       return cx.notify();
@@ -151,7 +183,7 @@ export default class Menu extends View {
 
   render(cx) {
     const t = theme();
-    const list = items(props(), this.git, this.job);
+    const list = items(props(), this.git, this.job, this.names, this.urls);
     return v_flex()
       .id("menu")
       .track_focus(this.handle)
@@ -185,7 +217,7 @@ export default class Menu extends View {
             .hover((s) => s.bg(t.hover))
             .on_click((_e, cx) => this.choose(i, cx))
             .child(svg(menuIcon(it[1], it[2])).size(14).flex_none().text_color(t.muted))
-            .child(div().flex_1().when(it[1] === "glados.done" && this.armed, (el) => el.text_color(t.blocked)).child(it[1] === "glados.done" && this.armed ? "Mark done? again" : it[0]))
+            .child(div().flex_1().min_w(0).truncate().when(it[1] === "glados.done" && this.armed, (el) => el.text_color(t.blocked)).child(it[1] === "glados.done" && this.armed ? "Mark done? again" : it[0]))
             .child(div().text_size(11).text_color(t.dim).child(shortcut(it[1], it[2])))),
         ),
       );
